@@ -1,0 +1,7 @@
+[browser]
+# Streamlit'in varsayılan kullanım istatistiği gönderimini kapat
+gatherUsageStats = false
+
+[client]
+# Sağ üstteki "Deploy" gibi geliştirici düğmelerini gizle
+toolbarMode = "minimal"
