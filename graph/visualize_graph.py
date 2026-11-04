@@ -4,15 +4,20 @@ import os
 from pyvis.network import Network
 
 
-def create_visual_graph():
+def create_visual_graph(edges_path=None, csv_path=None, output_path=None):
+    """Grafiği HTML olarak üretir ve dosya yolunu döndürür.
+
+    Parametreler verilmezse repodaki varsayılan dosyalar kullanılır (komut
+    satırından çalıştırma). Uygulama kendi çalıştırma klasörünü verir.
+    """
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    edges_path = os.path.abspath(os.path.join(current_dir, "edges.json"))
-    csv_path = os.path.abspath(os.path.join(current_dir, "../inventory/inventory_v1.0.csv"))
-    output_path = os.path.abspath(os.path.join(current_dir, "attack_graph_v1.html"))
+    edges_path = edges_path or os.path.abspath(os.path.join(current_dir, "edges.json"))
+    csv_path = csv_path or os.path.abspath(os.path.join(current_dir, "../inventory/inventory_v1.0.csv"))
+    output_path = output_path or os.path.abspath(os.path.join(current_dir, "attack_graph_v1.html"))
 
     if not os.path.exists(edges_path):
         print(f"[HATA] Edges dosyası bulunamadı: {edges_path}")
-        return
+        return None
 
     vulnerability_names = {}
     if os.path.exists(csv_path):
@@ -156,6 +161,7 @@ def create_visual_graph():
 
     net.save_graph(output_path)
     print(f"[BAŞARILI] Renkli yollar ve optimize dikey yerleşim uygulandı: {output_path}")
+    return output_path
 
 
 if __name__ == "__main__":

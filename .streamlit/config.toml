@@ -1,0 +1,11 @@
+[browser]
+# Streamlit'in varsayılan kullanım istatistiği gönderimini kapat
+gatherUsageStats = false
+
+[server]
+# Uygulama sadece bu bilgisayardan açılabilsin, aynı ağdaki başka cihazlardan değil
+address = "localhost"
+
+[client]
+# Sağ üstteki "Deploy" gibi geliştirici düğmelerini gizle
+toolbarMode = "minimal"
