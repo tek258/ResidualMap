@@ -3,13 +3,8 @@
 import streamlit as st
 
 from config import TARGETS
-from pipeline import docker_check, runs
-
-
-@st.cache_data(ttl=10, show_spinner=False)
-def _durumlar(konteyner):
-    # Her etkileşimde Docker'ı yeniden sorgulamamak için 10 sn önbellek
-    return docker_check.docker_durumu(), docker_check.konteyner_durumu(konteyner)
+from pipeline import runs
+from steps.ortak import durumlar as _durumlar
 
 
 def render():
