@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RUNS_DIR = REPO_ROOT / "runs"                  # her çalıştırmanın klasörü (gitignore'da)
 RAW_DIR = REPO_ROOT / "inventory" / "raw"      # mevcut ham tarama dosyaları
+FROZEN_INVENTORY = REPO_ROOT / "inventory" / "inventory_v1.0.csv"   # dondurulmuş envanter
 
 # --- İzin verilen hedefler ---
 # Uygulama YALNIZCA bu listedeki hedefleri tarar. Arayüzde serbest adres girme
