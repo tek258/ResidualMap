@@ -8,14 +8,11 @@
 import streamlit as st
 
 from config import TARGETS
-from steps import bulgular, hedef, tarama
+from steps import bulgular, grafik, hedef, tarama
 
 st.set_page_config(page_title="ResidualMap", page_icon="🛡️", layout="wide")
 
 ADIMLAR = ["1. Hedef", "2. Tarama", "3. Bulgular", "4. Grafik"]
-YAKINDA = {  # henüz yazılmamış adımlar ve hangi issue'da geleceği
-    "4. Grafik": "U4",
-}
 
 st.session_state.setdefault("run_id", None)
 st.session_state.setdefault("target", None)
@@ -43,5 +40,4 @@ elif adim == "2. Tarama":
 elif adim == "3. Bulgular":
     bulgular.render()
 else:
-    st.header(adim)
-    st.info(f"Bu adım {YAKINDA[adim]} ile eklenecek.")
+    grafik.render()
