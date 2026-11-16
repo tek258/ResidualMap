@@ -1,0 +1,37 @@
+vuln_id,waf,ids,iam,segmentasyon,yama,dayanak,gerekce,emin_degil
+V001,engeller,tespit eder,etkisiz,etkisiz,etkisiz,test,CRS SQLi kuralları ve test-waf.sh SQLi testi doğrultusunda WAF isteği 403 ile engeller,
+V002,engeller,tespit eder,etkisiz,etkisiz,etkisiz,test,test-waf.sh arama SQLi testi ve CRS 942 kuralları ile veritabanı şema sızıntısı engellenir,
+V003,engeller,tespit eder,etkisiz,etkisiz,etkisiz,test,test-waf.sh XSS testi ve CRS 941 kuralları sayesinde sipariş takip parametresindeki zararlı script engellenir,
+V004,engeller,tespit eder,etkisiz,etkisiz,etkisiz,test,Arama kutusundan gönderilen XSS payload'ı WAF CRS kuralları ve test-waf.sh ile yakalanıp engellenir,
+V005,engeller,tespit eder,azaltır,etkisiz,etkisiz,test,API gövdesinde gönderilen XSS girdisi WAF CRS kurallarınca engellenir ve IAM yetkisiz yazmayı kısıtlar,
+V006,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,varsayım,IDOR mantıksal bir yetkilendirme kusurudur; WAF ve IDS meşru istekten ayıramaz,evet
+V007,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,varsayım,Sepet manipülasyonu mantıksal yetki hatası olduğundan ağ ve kimlik kontrolleri nesne bazlı erişimi engelleyemez,evet
+V008,etkisiz,etkisiz,engeller,etkisiz,etkisiz,varsayım,Kullanıcı kaydı Keycloak'a devredildiğinde kayıt formu alanları ve rol atamaları merkezi olarak yönetilerek mass assignment engellenir,evet
+V009,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,varsayım,/ftp dizin listeleme meşru bir HTTP GET isteği olduğundan WAF ve IDS tarafından engellenemez,
+V010,engeller,tespit eder,azaltır,etkisiz,etkisiz,kural seti,OWASP CRS 934 kuralları harici XML entity bildirimlerini engeller ve Suricata yükleme trafiğinde alarm üretir,evet
+V011,etkisiz,etkisiz,engeller,etkisiz,etkisiz,varsayım,Keycloak parola sıfırlama sürecini güvenli bağlantı ve OTP ile yöneterek zayıf güvenlik sorularını tamamen devre dışı bırakır,
+V012,azaltır,etkisiz,azaltır,etkisiz,etkisiz,varsayım,WAF kaynak denetimleri ve Keycloak Bearer token yapısı klasik CSRF isteklerini zorlaştırır ancak tam engellemez,evet
+V013,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,varsayım,Uygulamanın kendi allowlist mantığı zayıf olduğundan ağ ve kimlik katmanları geçerli parametreli yönlendirmeyi engelleyemez,
+V014,etkisiz,etkisiz,engeller,etkisiz,etkisiz,varsayım,Merkezi kimlik doğrulaması Keycloak'a bağlandığında istemci kaynak kodunda unutulan statik test kimlik bilgileri geçersiz kalır,
+V015,azaltır,tespit eder,engeller,etkisiz,etkisiz,varsayım,Keycloak yerleşik hesap kilitleme ve parola politikaları ile zayıf admin parolasının kaba kuvvetle ele geçirilmesini engeller,
+V016,azaltır,etkisiz,etkisiz,etkisiz,etkisiz,kural seti,Nginx ters vekili ve WAF yanıt filtreleri sunucu hatalarını yakalayıp genel hata sayfası dönerek stack trace sızıntısını azaltır,
+V017,engeller,etkisiz,etkisiz,etkisiz,etkisiz,kural seti,Nginx ters vekilinde Content-Security-Policy yanıt başlığı eklenerek eksik güvenlik başlığı giderilir,
+V018,engeller,etkisiz,etkisiz,etkisiz,etkisiz,kural seti,Nginx ters vekili üzerinde CORS yanıt başlıkları katı kurallarla tanımlanarak kontrolsüz çapraz köken erişimi engellenir,
+V019,engeller,etkisiz,etkisiz,etkisiz,etkisiz,test,WAF kurulunca sunucu sürüm bilgisi kayboldu (4 Kasım taraması),
+V020,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,varsayım,İstemci tarafında çalışan derlenmiş JavaScript kodundaki güvensiz fonksiyonlara ağ ve kimlik kontrolleri etki edemez,
+V021,engeller,etkisiz,etkisiz,etkisiz,etkisiz,kural seti,Nginx ters vekili üzerinden COOP ve COEP başlıkları eklenerek eksik güvenlik başlıkları doğrudan giderilir,
+V022,etkisiz,etkisiz,azaltır,etkisiz,engeller,varsayım,WAF JWT kriptografik algoritmasını denetlemez; Keycloak merkezi kimlik yönetimi riski azaltır ve yama zafiyeti engeller,
+V023,azaltır,etkisiz,etkisiz,etkisiz,engeller,kural seti,CRS kuralları gelen isteklerdeki __proto__ özelliklerini kısmen filtreler; kesin çözüm kütüphanenin güncellenmesidir,evet
+V024,engeller,tespit eder,azaltır,etkisiz,engeller,kural seti,CRS 932 RCE kuralları komut enjeksiyonu paternlerini engeller ve IDS tespit eder; kütüphane güncellemesi zafiyeti kapatır,
+V025,etkisiz,etkisiz,azaltır,etkisiz,engeller,varsayım,Kriptografik algoritma zayıflığına ağ kontrolleri etki edemez; Keycloak kullanımı riski azaltır ve yama açığı engeller,
+V026,etkisiz,etkisiz,azaltır,etkisiz,engeller,varsayım,Zayıf rastgelelik uygulama içi bir kusurdur; Keycloak güvenli token üreterek riski azaltır ve kesin çözüm kütüphane güncellemesidir,
+V027,engeller,tespit eder,etkisiz,etkisiz,engeller,test,test-waf.sh path traversal testi ve CRS LFI kuralları arşiv içindeki dizin geçişi saldırılarını engeller; yama kalıcı çözümdür,
+V028,azaltır,etkisiz,etkisiz,etkisiz,engeller,kural seti,Nginx ters vekili X-Forwarded-For başlıklarını güvenilir şekilde ayarlayarak IP taklit riskini azaltır; yama kütüphane açığını engeller,
+V029,etkisiz,etkisiz,etkisiz,etkisiz,engeller,varsayım,Arşiv dosyası içindeki Unicode normalizasyon hatasına ağ kontrolleri erişemez; yalnızca kütüphanenin güncellenmesi çözer,
+V030,etkisiz,etkisiz,azaltır,etkisiz,engeller,varsayım,Keycloak merkezi kimlik denetimi yetki kontrolünü devralarak express-jwt atlatma riskini azaltır; kütüphane güncellemesi engeller,
+V031,engeller,tespit eder,etkisiz,etkisiz,engeller,test,test-waf.sh path traversal testi ve CRS 930 LFI kuralları yerel dosya yolu geçişini engeller; kütüphane yaması doğrudan kapatır,
+V032,azaltır,etkisiz,etkisiz,etkisiz,engeller,varsayım,WAF istek boyutu ve hız kısıtlamaları ile ReDoS saldırılarını kısmen zorlaştırır; kesin çözüm kütüphanenin güncellenmesidir,
+V033,engeller,etkisiz,etkisiz,etkisiz,engeller,kural seti,Nginx ters vekili HTTP başlık boyutu ve sayısı sınırları ile aşırı başlık DoS paketlerini backend'e ulaşmadan engeller,
+V034,azaltır,etkisiz,azaltır,etkisiz,engeller,kural seti,CRS multipart istek gövdesi denetimleri hatalı paketleri filtreleyerek DoS riskini azaltır; yama kütüphane hatasını engeller,evet
+V035,etkisiz,etkisiz,etkisiz,etkisiz,engeller,varsayım,Kütüphane zafiyeti; WAF ve IDS erişemez sadece güncelleme çözer,
+V036,etkisiz,etkisiz,etkisiz,etkisiz,engeller,varsayım,İşletim sistemi libc kütüphanesi bellek zafiyetine ağ kontrolleri etki edemez; paket güncellemesi ile engellenir,
