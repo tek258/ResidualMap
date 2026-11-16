@@ -1,12 +1,12 @@
-# H5-K5: WAF ilk çalıştırma (ModSecurity + OWASP CRS, DetectionOnly)
-# Çalıştırma: docker compose up -d   |   Giriş noktası: http://localhost:8080
+# H5-K5: WAF ilk calistirma (ModSecurity + OWASP CRS, DetectionOnly)
+# Calistirma: docker compose up -d   |   Giris noktasi: http://localhost:8080
 services:
   juice-shop:
     image: bkimminich/juice-shop
     container_name: juice-shop
     restart: unless-stopped
     expose:
-      - "3000"          # host'a açılmaz, sadece WAF erişir
+      - "3000"          # host'a acilmaz, sadece WAF erisir
     networks: [lab]
 
   waf:
@@ -31,7 +31,7 @@ services:
       BLOCKING_PARANOIA: "1"
       ANOMALY_INBOUND: "5"
       ANOMALY_OUTBOUND: "4"
-      # --- nginx logları ---
+      # --- nginx loglari ---
       ACCESSLOG: /var/log/nginx/access.log
       ERRORLOG: /var/log/nginx/error.log
       LOGLEVEL: warn
@@ -40,21 +40,26 @@ services:
       - ./logs/nginx:/var/log/nginx
       - ./logs/modsecurity:/var/log/modsecurity
     networks: [lab]
+
   suricata:
-      image: jasonish/suricata:latest
-      container_name: lab-suricata
-      restart: unless-stopped
-      network_mode: "service:waf"
-      cap_add:
-        - NET_ADMIN
-        - NET_RAW
-        - SYS_NICE
-      depends_on:
-        - waf
-      command: -i eth0 -S /etc/suricata/custom/local.rules
-      volumes:
-        - ./suricata/rules:/etc/suricata/custom
-        - ./suricata/logs:/var/log/suricata
+    image: jasonish/suricata:latest
+    container_name: lab-suricata
+    restart: unless-stopped
+    network_mode: "service:waf"
+    depends_on:
+      - waf
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_NICE
+    command: ["-i", "eth0", "-k", "none"]
+    volumes:
+      - ./suricata/suricata.yaml:/etc/suricata/suricata.yaml
+      - ./suricata/disable.conf:/etc/suricata/disable.conf
+      - ./suricata/threshold.config:/etc/suricata/threshold.config
+      - ./suricata/rules/local.rules:/etc/suricata/rules/local.rules
+      - ./suricata/lib:/var/lib/suricata
+      - ./suricata/logs:/var/log/suricata
 
 networks:
   lab:
