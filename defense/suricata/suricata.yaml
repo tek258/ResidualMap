@@ -1,0 +1,100 @@
+%YAML 1.1
+---
+# Minimal lab yapılandırması (Suricata 7.x)
+
+vars:
+  address-groups:
+    # Docker ağları. Windows'ta host'tan gelen istekler bridge gateway'inden
+    # (172.x) göründüğü için kaynak da HOME_NET içinde kalır.
+    HOME_NET: "[172.16.0.0/12,192.168.0.0/16,10.0.0.0/8]"
+    # Lab: ET kurallarının çoğu "$EXTERNAL_NET -> $HOME_NET" bekler.
+    # EXTERNAL_NET'i !$HOME_NET bırakırsak host'tan gelen test trafiği eşleşmez.
+    EXTERNAL_NET: "any"
+    HTTP_SERVERS: "$HOME_NET"
+    SMTP_SERVERS: "$HOME_NET"
+    SQL_SERVERS: "$HOME_NET"
+    DNS_SERVERS: "$HOME_NET"
+    TELNET_SERVERS: "$HOME_NET"
+    AIM_SERVERS: "$EXTERNAL_NET"
+    DC_SERVERS: "$HOME_NET"
+    DNP3_SERVER: "$HOME_NET"
+    DNP3_CLIENT: "$HOME_NET"
+    MODBUS_CLIENT: "$HOME_NET"
+    MODBUS_SERVER: "$HOME_NET"
+    ENIP_CLIENT: "$HOME_NET"
+    ENIP_SERVER: "$HOME_NET"
+  port-groups:
+    HTTP_PORTS: "[80,3000,8080]"   # nginx + Juice Shop (3000)
+    SHELLCODE_PORTS: "!80"
+    ORACLE_PORTS: 1521
+    SSH_PORTS: 22
+    DNP3_PORTS: 20000
+    MODBUS_PORTS: 502
+    FILE_DATA_PORTS: "[$HTTP_PORTS,110,143]"
+    FTP_PORTS: 21
+    GENEVE_PORTS: 6081
+    VXLAN_PORTS: 4789
+    TEREDO_PORTS: 3544
+
+default-log-dir: /var/log/suricata
+
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+      types:
+        - alert:
+            payload-printable: yes
+            metadata: yes
+        - http:
+            extended: yes
+        - dns
+        - flow
+        - anomaly:
+            enabled: yes
+
+logging:
+  default-log-level: notice
+  outputs:
+    - console:
+        enabled: yes
+
+af-packet:
+  - interface: eth0
+    cluster-id: 99
+    cluster-type: cluster_flow
+    defrag: yes
+
+app-layer:
+  protocols:
+    http:
+      enabled: yes
+    tls:
+      enabled: yes
+    dns:
+      enabled: yes
+
+stream:
+  memcap: 64mb
+  checksum-validation: no
+  reassembly:
+    memcap: 128mb
+    depth: 1mb
+
+datasets:
+  defaults:
+    memcap: 100mb
+    hashsize: 2048
+
+detect:
+  profile: medium
+
+default-rule-path: /var/lib/suricata/rules
+rule-files:
+  - suricata.rules                     # suricata-update çıktısı (ET Open)
+  - /etc/suricata/rules/local.rules    # lab için kendi kurallarımız
+
+classification-file: /etc/suricata/classification.config
+reference-config-file: /etc/suricata/reference.config
+threshold-file: /etc/suricata/threshold.config
