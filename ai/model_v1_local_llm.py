@@ -1,15 +1,18 @@
 import json
 import logging
 import os
+import re
+import time
 import requests
 import pandas as pd
 
-# Logging ayarları
+# Logging ayarları (UTF-8 ile Türkçe karakter sorunu önlendi)
 os.makedirs("ai", exist_ok=True)
 logging.basicConfig(
     filename="ai/model_v1_execution.log",
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    encoding="utf-8"
 )
 
 LOCAL_LLM_URL = "http://localhost:11434/api/generate"
@@ -48,22 +51,75 @@ Zafiyet Detayları:
 }}
 """
 
-def query_local_llm(prompt):
+def normalize_label(raw_label):
+    text = str(raw_label).strip().lower()
+    if "kritik" in text or "critical" in text:
+        return "Kritik"
+    if "yüksek" in text or "yuksek" in text or "high" in text:
+        return "Yüksek"
+    if "orta" in text or "medium" in text:
+        return "Orta"
+    if "düşük" in text or "dusuk" in text or "low" in text:
+        return "Düşük"
+    return str(raw_label).strip().capitalize()
+
+def query_local_llm(prompt, vuln_id, max_retries=3):
     payload = {
         "model": MODEL_NAME,
         "prompt": prompt,
         "stream": False,
-        "format": "json"
+        "format": "json",
+        "options": {
+            "temperature": 0.1,
+            "num_ctx": 2048
+        }
     }
-    try:
-        response = requests.post(LOCAL_LLM_URL, json=payload, timeout=90)
-        response.raise_for_status()
-        result = response.json()
-        content = result.get("response", "{}")
-        return json.loads(content)
-    except Exception as e:
-        logging.error(f"LLM sorgu hatası veya geçersiz JSON: {e}")
-        return None
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            response = requests.post(LOCAL_LLM_URL, json=payload, timeout=180)
+            response.raise_for_status()
+            result = response.json()
+            content = result.get("response", "{}").strip()
+
+            # Olası markdown kod bloklarını temizle
+            if content.startswith("```"):
+                content = re.sub(r"^```(?:json)?\s*|\s*```$", "", content, flags=re.DOTALL).strip()
+
+            data = json.loads(content)
+
+            # Modelin farklı anahtar isimleri kullanma ihtimaline karşı esnek okuma
+            score = data.get("risk_score_llm")
+            if score is None:
+                score = data.get("risk_score") if data.get("risk_score") is not None else data.get("score")
+
+            label = (
+                data.get("risk_label_llm")
+                or data.get("risk_label")
+                or data.get("label")
+                or data.get("severity")
+            )
+            reason = (
+                data.get("llm_reason")
+                or data.get("reason")
+                or data.get("gerekce")
+                or ""
+            )
+
+            if score is not None and label is not None:
+                return {
+                    "risk_score_llm": float(score),
+                    "risk_label_llm": normalize_label(label),
+                    "llm_reason": str(reason).strip()
+                }
+            else:
+                logging.warning(f"[{vuln_id}] Eksik JSON anahtarı (Deneme {attempt}/{max_retries}): {content}")
+
+        except Exception as e:
+            logging.error(f"[{vuln_id}] Deneme {attempt}/{max_retries} hatası: {e}")
+            time.sleep(2)
+
+    return None
 
 def score_vulnerabilities(inventory_path, output_csv_path):
     if not os.path.exists(inventory_path):
@@ -71,10 +127,11 @@ def score_vulnerabilities(inventory_path, output_csv_path):
         return None
 
     df = pd.read_csv(inventory_path)
+    total = len(df)
     results = []
     skipped_count = 0
 
-    print(f"Toplam {len(df)} kayıt işleniyor...")
+    print(f"Toplam {total} kayıt işleniyor...")
 
     for idx, row in df.iterrows():
         vuln_id = row.get("vuln_id", f"unknown_{idx}")
@@ -94,21 +151,20 @@ def score_vulnerabilities(inventory_path, output_csv_path):
             notes=row.get("notes", "Yok")
         )
 
-        llm_resp = query_local_llm(prompt)
-        
-        # Geçersiz JSON veya eksik anahtar kontrolü (try/except mantığıyla atlama)
+        llm_resp = query_local_llm(prompt, vuln_id)
+
         if llm_resp and "risk_score_llm" in llm_resp and "risk_label_llm" in llm_resp:
             results.append({
                 "vuln_id": vuln_id,
-                "risk_score_llm": float(llm_resp["risk_score_llm"]),
-                "risk_label_llm": str(llm_resp["risk_label_llm"]),
-                "llm_reason": str(llm_resp.get("llm_reason", ""))
+                "risk_score_llm": llm_resp["risk_score_llm"],
+                "risk_label_llm": llm_resp["risk_label_llm"],
+                "llm_reason": llm_resp["llm_reason"]
             })
-            print(f"[{idx+1}/36] Başarılı: {vuln_id} -> {llm_resp['risk_label_llm']}")
+            print(f"[{idx+1}/{total}] Başarılı: {vuln_id} -> {llm_resp['risk_label_llm']} ({llm_resp['risk_score_llm']})")
         else:
             skipped_count += 1
-            logging.warning(f"Kayıt atlandı (Geçersiz JSON/Yanıt): {vuln_id}")
-            print(f"[{idx+1}/36] HATA/Atlandı: {vuln_id}")
+            logging.warning(f"Kayıt atlandı (Tüm denemeler başarısız): {vuln_id}")
+            print(f"[{idx+1}/{total}] HATA/Atlandı: {vuln_id}")
 
     res_df = pd.DataFrame(results)
     res_df.to_csv(output_csv_path, index=False)
@@ -121,11 +177,11 @@ def calculate_metrics(results_df, inventory_path, expert_labels_path):
         return
 
     inv_df = pd.read_csv(inventory_path)
-    
+
     # 1. Baseline (CVSS-only) ile Top-10 Örtüşme Oranı
     baseline_top10 = set(inv_df.sort_values(by="cvss_score", ascending=False).head(10)["vuln_id"])
     llm_top10 = set(results_df.sort_values(by="risk_score_llm", ascending=False).head(10)["vuln_id"])
-    
+
     overlap = len(baseline_top10.intersection(llm_top10))
     overlap_ratio = (overlap / 10.0) * 100
     print(f"\n--- METRİKLER ---")
@@ -135,7 +191,7 @@ def calculate_metrics(results_df, inventory_path, expert_labels_path):
     if os.path.exists(expert_labels_path):
         exp_df = pd.read_csv(expert_labels_path)
         merged = pd.merge(results_df, exp_df, on="vuln_id")
-        
+
         if not merged.empty:
             match_count = (merged["risk_label_llm"] == merged["label"]).sum()
             match_ratio = (match_count / len(merged)) * 100
@@ -149,6 +205,6 @@ if __name__ == "__main__":
     inventory_file = "inventory/inventory_v1.0.csv"
     output_file = "ai/results_v1_llm.csv"
     expert_file = "ai/expert_labels.csv"
-    
+
     res_df = score_vulnerabilities(inventory_file, output_file)
     calculate_metrics(res_df, inventory_file, expert_file)

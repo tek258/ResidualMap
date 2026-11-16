@@ -15,13 +15,25 @@ RCE_CWES = {"cwe-1321", "cwe-94", "cwe-22", "cwe-176", "cwe-122", "cwe-119"}
 DOS_CWES = {"cwe-400", "cwe-476", "cwe-248"}
 
 
-def map_to_target(v_id, name, cwe_id):
+# Kazanım (grants_capability) tabanlı hedefler: bir zafiyet bu yetkinlikleri
+# kazandırıyorsa, sonucu CWE'den bağımsız olarak bu hedeftir. Örn. V025 (zayıf
+# PBKDF2, CWE-328) CWE'ye göre sızıntı hedefine düşerdi, ama admin_credentials
+# kazandırdığı için admin hedefine gider. Kayıt numarasına bağlı değildir.
+GRANTS_TARGETS = {
+    "admin_session": "node_target_admin",
+    "admin_credentials": "node_target_admin",
+    "forged_identity": "node_target_admin",
+    "stolen_session": "node_target_account_takeover",
+}
+
+
+def map_to_target(v_id, name, cwe_id, grants="none"):
     """
-    Zafiyetin CWE koduna ve adına bakarak nihai etki hedefini belirler.
-    V025 için özel olarak hedefi node_target_admin (admin erişimi) olarak sabitler.
+    Zafiyetin nihai etki hedefini belirler: önce kazandırdığı yetkinliğe
+    (grants_capability), sonra CWE koduna ve adına bakar.
     """
-    if v_id == "V025":
-        return "node_target_admin"
+    if grants in GRANTS_TARGETS:
+        return GRANTS_TARGETS[grants]
 
     cwe = cwe_id.lower().strip()
     name_lower = name.lower()
@@ -61,18 +73,23 @@ TARGET_TECHNIQUE_NAMES = {
 }
 
 
-def generate_attack_edges():
+def generate_attack_edges(csv_path=CSV_PATH, output_edges_path=OUTPUT_EDGES_PATH):
+    """Kenarları üretip output_edges_path'e yazar ve döndürür.
+
+    Parametreler verilmezse repodaki envanter ve graph/edges.json kullanılır
+    (komut satırından çalıştırma). Uygulama kendi çalıştırma klasörünü verir.
+    """
     edges = []
 
     # Envanter dosyasının kontrolü
-    if not os.path.exists(CSV_PATH):
-        print(f"[HATA] Envanter dosyası bulunamadı: {CSV_PATH}")
-        return
+    if not os.path.exists(csv_path):
+        print(f"[HATA] Envanter dosyası bulunamadı: {csv_path}")
+        return None
 
     vulnerabilities = []
 
     # CSV verilerinin okunması ve normalize edilerek belleğe alınması
-    with open(CSV_PATH, mode="r", encoding="utf-8") as file:
+    with open(csv_path, mode="r", encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for row in reader:
             v_id = row.get("vuln_id", "").strip()
@@ -123,7 +140,7 @@ def generate_attack_edges():
             })
 
         # CWE bazlı hedef eşlemesi ve Leads To kenarının eklenmesi
-        target_node = map_to_target(v_id, name, cwe_id)
+        target_node = map_to_target(v_id, name, cwe_id, v["grants_capability"])
         if target_node is not None:
             edges.append({
                 "source": v_id,
@@ -163,15 +180,16 @@ def generate_attack_edges():
             unique_edges.append(e)
 
     # Üretilen tekil kenar listesinin edges.json dosyasına yazılması
-    with open(OUTPUT_EDGES_PATH, "w", encoding="utf-8") as outfile:
+    with open(output_edges_path, "w", encoding="utf-8") as outfile:
         json.dump(unique_edges, outfile, indent=4, ensure_ascii=False)
 
     # İşlem sonuç raporu
-    print(f"[BAŞARILI] Toplam {len(unique_edges)} tekil kenar üretildi: {OUTPUT_EDGES_PATH}")
+    print(f"[BAŞARILI] Toplam {len(unique_edges)} tekil kenar üretildi: {output_edges_path}")
     if unmapped_targets:
         print(f"[UYARI] {len(unmapped_targets)} zafiyet hiçbir hedefe eşlenemedi: {', '.join(unmapped_targets)}")
     else:
         print("Tüm zafiyetler bir hedefe eşlendi.")
+    return unique_edges
 
 
 if __name__ == "__main__":
