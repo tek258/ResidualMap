@@ -1,7 +1,7 @@
-# H5-K6: WAF engelleme modu (ModSecurity + OWASP CRS, MODSEC_RULE_ENGINE=On)
-# Onceki adim H5-K5: DetectionOnly. Degisiklikler ve istisnalar: docs/waf-engelleme-notu.md
+# S3-K5: WAF engelleme modu (ModSecurity + OWASP CRS, MODSEC_RULE_ENGINE=On)
+# Onceki adim: DetectionOnly ile ilk calistirma. Degisiklikler ve istisnalar: docs/waf-engelleme-notu.md
 # Calistirma: docker compose up -d --force-recreate waf suricata   |   Giris noktasi: http://localhost:8080
-# Dogrulama:  ./test-waf.sh  &&  python3 test-juice-flows.py
+# Dogrulama:  ./test-waf.sh  &&  python3 test-juice-flows.py   (ikisi de cikis kodu 0 vermeli)
 services:
   juice-shop:
     image: bkimminich/juice-shop
@@ -12,7 +12,11 @@ services:
     networks: [lab]
 
   waf:
-    image: owasp/modsecurity-crs:nginx   # nginx + ModSecurity v3 + CRS bir arada
+    # nginx + ModSecurity v3 + CRS bir arada. CRS surumu SABIT: istisnalar
+    # (modsecurity/REQUEST-900-...) kural ID'lerine bagli ve CRS 4.30.0 ile test
+    # edildi. Kayan "nginx" etiketi CRS'i sessizce yukseltebilir; yukseltme
+    # yapilacaksa once test-waf.sh ve test-juice-flows.py ile yeniden dogrulanmali.
+    image: owasp/modsecurity-crs:4.30.0-nginx-202610180210
     container_name: waf-nginx
     restart: unless-stopped
     depends_on: [juice-shop]
@@ -42,6 +46,8 @@ services:
       - ./nginx/logging.conf.template:/etc/nginx/templates/conf.d/logging.conf.template:ro
       # Juice Shop yanlis pozitif istisnalari (CRS'ten once yuklenir)
       - ./modsecurity/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:ro
+      # Sanal yamalar: CRS'in kacirdigi bilinen aciklar (SY-1 = V003)
+      - ./modsecurity/REQUEST-900-VIRTUAL-PATCHES-JUICESHOP.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-VIRTUAL-PATCHES-JUICESHOP.conf:ro
       - ./logs/nginx:/var/log/nginx
       - ./logs/modsecurity:/var/log/modsecurity
     networks: [lab]
