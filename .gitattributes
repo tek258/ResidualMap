@@ -1,0 +1,8 @@
+# Container icinde calisan dosyalar her zaman LF kalmali (Windows'ta CRLF'ye cevrilmesin)
+*.conf     text eol=lf
+*.sh       text eol=lf
+*.py       text eol=lf
+*.yml      text eol=lf
+*.yaml     text eol=lf
+*.rules    text eol=lf
+*.template text eol=lf

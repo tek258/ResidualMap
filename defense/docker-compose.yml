@@ -1,5 +1,7 @@
-# H5-K5: WAF ilk calistirma (ModSecurity + OWASP CRS, DetectionOnly)
-# Calistirma: docker compose up -d   |   Giris noktasi: http://localhost:8080
+# H5-K6: WAF engelleme modu (ModSecurity + OWASP CRS, MODSEC_RULE_ENGINE=On)
+# Onceki adim H5-K5: DetectionOnly. Degisiklikler ve istisnalar: docs/waf-engelleme-notu.md
+# Calistirma: docker compose up -d --force-recreate waf suricata   |   Giris noktasi: http://localhost:8080
+# Dogrulama:  ./test-waf.sh  &&  python3 test-juice-flows.py
 services:
   juice-shop:
     image: bkimminich/juice-shop
@@ -21,7 +23,7 @@ services:
       PORT: "8080"
       PROXY: "1"
       # --- ModSecurity ---
-      MODSEC_RULE_ENGINE: DetectionOnly      # sadece logla, engelleme YOK
+      MODSEC_RULE_ENGINE: "On"               # ENGELLEME: anomali skoru esigi asan istek 403 alir
       MODSEC_AUDIT_ENGINE: RelevantOnly      # sadece kural tetikleyen istekler
       MODSEC_AUDIT_LOG_FORMAT: JSON
       MODSEC_AUDIT_LOG_TYPE: Serial
@@ -31,12 +33,15 @@ services:
       BLOCKING_PARANOIA: "1"
       ANOMALY_INBOUND: "5"
       ANOMALY_OUTBOUND: "4"
+      ALLOWED_METHODS: "GET HEAD POST OPTIONS"   # CRS varsayilani; PUT/PATCH/DELETE sadece istisna dosyasindaki yollarda acik
       # --- nginx loglari ---
       ACCESSLOG: /var/log/nginx/access.log
       ERRORLOG: /var/log/nginx/error.log
       LOGLEVEL: warn
     volumes:
       - ./nginx/logging.conf.template:/etc/nginx/templates/conf.d/logging.conf.template:ro
+      # Juice Shop yanlis pozitif istisnalari (CRS'ten once yuklenir)
+      - ./modsecurity/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:ro
       - ./logs/nginx:/var/log/nginx
       - ./logs/modsecurity:/var/log/modsecurity
     networks: [lab]
