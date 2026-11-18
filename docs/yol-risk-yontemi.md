@@ -1,71 +1,68 @@
-# Saldırı Yolu Risk Değerlendirme ve Nicelleştirme Yöntemi
+# ResidualMap - Saldırı Yolu Risk Değerlendirme Metodolojisi
 
-Bu doküman, **ResidualMap** saldırı grafiği analizi kapsamında tespit edilen her bir saldırı yolunun (attack path) tek bir sayısal risk değeriyle ifade edilmesi için kullanılan metodolojiyi, yöntem karşılaştırmalarını ve örnek hesaplamaları içermektedir.
+Bu doküman, `ResidualMap` projesinde tespit edilen saldırı yollarının (attack paths) kantitatif (sayısal) olarak risk puanlanmasının yapılabilmesi için seçilen metodolojiyi, alternatiflerin karşılaştırmasını ve örnek hesaplamaları içermektedir.
 
 ---
 
-## 1. Yöntem Karşılaştırması
+## 1. Yöntem Alternatiflerinin Karşılaştırılması
 
-Saldırı yollarını skorlamak amacıyla iki temel yaklaşım incelenmiştir:
+Saldırı grafiğindeki her bir yolun tek bir risk skoruyla ifade edilebilmesi için iki farklı yaklaşım incelenmiştir:
 
-### Yöntem A: Yoldaki En Yüksek CVSS Skoru (Max CVSS)
-* **Açıklama:** Yol üzerindeki adımlardan (zafiyetlerden) CVSS taban puanı en yüksek olan değer, doğrudan o yolun risk skoru olarak kabul edilir.
-* **Formül:** $\text{Risk} = \max(\text{CVSS}_{v_1}, \text{CVSS}_{v_2}, \dots, \text{CVSS}_{v_n})$
+### a) Yoldaki En Yüksek CVSS Skoru (Maximum CVSS Approach)
+* **Tanım:** Yol üzerinde bulunan zafiyetlerin en yüksek CVSS taban puanını doğrudan yolun risk skoru olarak kabul eder.
+* **Avantajları:** Hesaplaması basittir ve bilinen standart metriklere (CVSS) dayanır.
+* **Dezavantajları:** Saldırı yolunun uzunluğunu (adım sayısını) dikkate almaz. Çok uzun ve başarılı olma ihtimali düşük bir zincir ile tek adımlık kritik bir zafiyete aynı puanı verebilir. Ayrıca hedefin iş açısından kritiklik değerini (business impact) hesaba katmaz.
+
+### b) Sömürülme Olasılıklarının Çarpımı × Hedef Kritikliği (Multiplicative Probability-Criticality Model) - *SEÇİLEN*
+* **Tanım:** Zincir üzerindeki her bir zafiyetin sömürülme olasılığı ($P_i$) birbiriyle çarpılır (zincirleme başarı olasılığı) ve varış noktasındaki hedefin kritiklik katsayısı ($C_{\text{target}}$) ile ölçeklenir.
+* **Formül:** 
+  $$\text{Risk} = \left(\prod_{i=1}^{n} P_i\right) \times C_{\text{target}}$$
 * **Avantajları:** 
-  * Hesaplanması çok basittir.
-  * Sistemdeki en kritik tekil zafiyeti anında öne çıkarır.
-* **Dezavantajları:** 
-  * Saldırı zincirinin uzunluğunu veya adımların gerçekleşme olasılığını (zorluğunu) hesaba katmaz. 
-  * Çok uzun, karmaşık ve sömürülmesi düşük ihtimalli bir yolla, çok kısa ve kolay bir yolu aynı riske sahip gösterebilir.
-
-### Yöntem B: Sömürülme Olasılıklarının Çarpımı $\times$ Hedef Kritikliği ($Probability \times Criticality$)
-* **Açıklama:** Bir saldırı yolunun başarıyla tamamlanabilmesi, zincir üzerindeki tüm adımların sırasıyla ve başarıyla sömürülmesine bağlıdır (bağımlı olaylar zinciri). Bu yöntem, her adımın sömürülme olasılığının ($P_i$, örn. EPSS veya kestirimsel olasılık) kümülatif çarpımını, hedefin iş/varlık kritiklik skoru ($C_{\text{target}}$) ile çarpar.
-* **Formül:** $\text{Risk} = \left(\prod_{i=1}^{n} P_i\right) \times C_{\text{target}}$
-* **Avantajları:** 
-  * Zincir mantığına uygundur; adım sayısı arttıkça başarı olasılığının istatistiksel olarak düşmesini gerçekçi bir şekilde modeller.
-  * Hedefin kritiklik derecesini hesaba katarak iş etkisi (business impact) odaklı kararlar alınmasını sağlar.
-* **Dezavantajları:** 
-  * Doğru olasılık verilerine (örn. EPSS skorları) erişim gerektirir.
+  * Çok adımlı saldırıların doğasındaki kümülatif başarı zorluğunu (adım sayısı arttıkça toplam olasılığın düşmesini) doğru şekilde yansıtır.
+  * Kurumsal etkiyi göz önüne alarak admin paneli veya RCE gibi kritik hedeflere öncelik verir.
 
 ---
 
 ## 2. Yöntem Seçimi ve Gerekçesi
 
-Karşılaştırma sonucunda **Yöntem B (Sömürülme Olasılıklarının Çarpımı $\times$ Hedef Kritikliği)** seçilmiştir.
+Karşılaştırma sonucunda **(b) Sömürülme Olasılıklarının Çarpımı × Hedef Kritikliği** modeli seçilmiştir. 
 
-* **Neden Seçildi?** 
-  Saldırı grafiği analizinde amaç yalnızca teorik en yüksek zafiyeti bulmak değil, bir saldırganın sistemin kritik bileşenine (örn. `node_target_admin` veya `node_target_leak`) gerçekte ne kadar rahat ve olası bir yolla ulaşabileceğini saptamaktır. Yöntem B, olasılık zincirini hesaba katarak güvenlik ekiplerine gerçekçi bir önceliklendirme sunar.
-
----
-
-## 3. paths.json Verilerine Göre Örnek Yollar Üzerinde Elle Hesaplama
-
-Varsayılan parametreler:
-* **Hedef Kritiklik Skoru ($C_{\text{target}}$):** 10.0 (En yüksek kritiklik)
-* **Olasılık Değerleri ($P_i$):** 0.0 ile 1.0 arasında normalize edilmiş sömürü olasılığı.
-
-### Örnek Yol 1 (Kısa Yol - Uzunluk: 2)
-* **Path Verisi:** `["node_entry_login", "V001", "node_target_admin"]`
-* **Adım / Zafiyet:** `V001`
-* **Varsayılan Sömürü Olasılığı:** $P_{\text{V001}} = 0.70$
-* **Hesaplama:**
-  $$\text{Risk} = (0.70) \times 10.0 = \mathbf{7.00}$$
-
-### Örnek Yol 2 (Çok Adımlı Zincirleme Yol - Uzunluk: 3)
-* **Path Verisi:** `["node_entry_api", "V002", "V025", "node_target_leak"]`
-* **Adımlar / Zafiyetler:** `V002` $\rightarrow$ `V025`
-* **Varsayılan Sömürü Olasılıkları:** $P_{\text{V002}} = 0.40$, $P_{\text{V025}} = 0.50$
-* **Hesaplama:**
-  $$\text{Risk} = (0.40 \times 0.50) \times 10.0 = 0.20 \times 10.0 = \mathbf{2.00}$$
-
-### Örnek Yol 3 (Alternatif Kısa Yol - Uzunluk: 2)
-* **Path Verisi:** `["node_entry_search", "V012", "node_target_account_takeover"]`
-* **Adım / Zafiyet:** `V012`
-* **Varsayılan Sömürü Olasılığı:** $P_{\text{V012}} = 0.30$
-* **Hesaplama:**
-  $$\text{Risk} = (0.30) \times 10.0 = \mathbf{3.00}$$
+**Gerekçe:** Siber güvenlikte çok adımlı saldırı yolları (path exploitation), zincirdeki zayıf halkalar nedeniyle adım sayısı arttıkça zorlaşır. Olasılıkların çarpımı modeli bu gerçekçi siber risk matematiğini (`AND` bağıntısı mantığını) simüle eder. Ayrıca hedef varlığın iş süreçlerindeki önem derecesinin ($C_{\text{target}}$) hesaba katılması, güvenlik ekiplerinin gerçek iş etkisine (business impact) göre aksiyon almasını sağlar.
 
 ---
 
-## 4. Sonuç
-Bu metodoloji sayesinde `paths.json` içerisindeki tüm yollar sayısal olarak sıralanmakte; en yüksek riskli yollar güvenlik düzeltmeleri için öncelikli hedef haline getirilmektedir.
+## 3. Parametre Tanımları
+
+* **Zafiyet Olasılıkları ($P_i$):** 0.0 ile 1.0 arasında değişen sömürü edilebilirlik katsayıları (Örn: `V031` = 0.80, `V014` = 0.75, `V001` = 0.70).
+* **Hedef Kritiklik Skorları ($C_{\text{target}}$):**
+  * `node_target_admin`: 10.0
+  * `node_target_rce`: 10.0
+  * `node_target_account_takeover`: 9.0
+  * `node_target_leak`: 8.0
+  * `node_target_dos`: 6.0
+
+---
+
+## 4. `paths.json` Üzerinden 3 Örnek Yol ile Manuel Hesaplama
+
+### Örnek Yol 1: Doğrudan Admin Erişimi (Kısa Zincir)
+* **Yol Düğümleri:** `node_entry_login` $\rightarrow$ `V014` $\rightarrow$ `node_target_admin`
+* **Hesaplama:**
+  * $P(\text{V014}) = 0.75$
+  * $C_{\text{target}}(\text{node\_target\_admin}) = 10.0$
+  * $\text{Risk} = 0.75 \times 10.0 = \mathbf{7.50}$
+
+### Örnek Yol 2: RCE Hedefli Kritik Zafiyet
+* **Yol Düğümleri:** `node_entry_login` $\rightarrow$ `V031` $\rightarrow$ `node_target_rce`
+* **Hesaplama:**
+  * $P(\text{V031}) = 0.80$
+  * $C_{\text{target}}(\text{node\_target\_rce}) = 10.0$
+  * $\text{Risk} = 0.80 \times 10.0 = \mathbf{8.00}$
+
+### Örnek Yol 3: Çok Adımlı Admin Erişim Zinciri
+* **Yol Düğümleri:** `node_entry_api` $\rightarrow$ `V002` $\rightarrow$ `V025` $\rightarrow$ `node_target_admin`
+* **Hesaplama:**
+  * $P(\text{V002}) = 0.40$, $P(\text{V025}) = 0.50$
+  * $C_{\text{target}}(\text{node\_target\_admin}) = 10.0$
+  * Olasılıklar Çarpımı: $0.40 \times 0.50 = 0.20$
+  * $\text{Risk} = 0.20 \times 10.0 = \mathbf{2.00}$
