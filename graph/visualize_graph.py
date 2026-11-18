@@ -161,10 +161,7 @@ def create_visual_graph(edges_path=None, csv_path=None, output_path=None):
 
     net.save_graph(output_path)
     print(f"[BAŞARILI] Renkli yollar ve optimize dikey yerleşim uygulandı: {output_path}")
-<<<<<<< HEAD
-=======
     return output_path
->>>>>>> 3ade3d77585b20b4a76e18ae2caeaf63cc2591fb
 
 
 if __name__ == "__main__":
