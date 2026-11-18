@@ -1,0 +1,498 @@
+{
+  "uid": "residualmap-lab",
+  "title": "ResidualMap lab: savunma olayları",
+  "tags": [
+    "residualmap",
+    "s5-k5"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "refresh": "10s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "description": "WAF (ModSecurity), IDS (Suricata) ve IAM (oauth2-proxy, Keycloak) olayları. Kaynak: defense/siem/.",
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "WAF: engellenen istek (403)",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum(count_over_time({job=\"modsecurity\", status=\"403\"} |~ \"\\\"ruleId\\\":\\\"(949110|10100)\\\"\" [$__range]))",
+          "queryType": "instant",
+          "legendFormat": ""
+        }
+      ],
+      "description": "ModSecurity audit log: yanıt 403 VE engelleme kuralı (949110 anomali eşiği ya da 10100 SY-1). oauth2-proxy'nin rol 403'leri sayılmaz. Kaynak: defense/logs/modsecurity/audit.log",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#c0392b"
+          },
+          "unit": "none",
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Suricata: alarm",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum(count_over_time({job=\"suricata\", event_type=\"alert\"}[$__range]))",
+          "queryType": "instant",
+          "legendFormat": ""
+        }
+      ],
+      "description": "Suricata eve.json, event_type=alert (iki bacak toplam)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#16a085"
+          },
+          "unit": "none",
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "IAM: başarısız giriş / yetkisiz",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum(count_over_time({job=\"iam\"} |~ \"AuthFailure|LOGIN_ERROR\" [$__range]))",
+          "queryType": "instant",
+          "legendFormat": ""
+        }
+      ],
+      "description": "oauth2-proxy AuthFailure (rol yok) + Keycloak LOGIN_ERROR (yanlış şifre)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#8e44ad"
+          },
+          "unit": "none",
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "IAM: başarılı giriş",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum(count_over_time({job=\"iam\", container=\"oauth2-proxy\"} |= \"AuthSuccess\" [$__range]))",
+          "queryType": "instant",
+          "legendFormat": ""
+        }
+      ],
+      "description": "oauth2-proxy AuthSuccess (ops rolü)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#27ae60"
+          },
+          "unit": "none",
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "WAF: engellenen istekler, ATT&CK tekniğine göre",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 16,
+        "h": 13
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum by (teknik) (count_over_time({job=\"modsecurity\", status=\"403\"} |~ \"\\\"ruleId\\\":\\\"(949110|10100)\\\"\" [$__interval]))",
+          "queryType": "range",
+          "legendFormat": "{{teknik}}"
+        }
+      ],
+      "description": "Teknik etiketi tetiklenen CRS kural ailesinden atanır (docs/siem-kurulum.md, Bölüm 4).",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "stacking": {
+              "mode": "normal"
+            },
+            "barAlignment": 0,
+            "lineWidth": 1
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "interval": "15s"
+    },
+    {
+      "id": 6,
+      "type": "bargauge",
+      "title": "Tekniklere göre toplam",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 4,
+        "w": 8,
+        "h": 13
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum by (teknik) (count_over_time({job=\"modsecurity\", status=\"403\"} |~ \"\\\"ruleId\\\":\\\"(949110|10100)\\\"\" [$__range]))",
+          "queryType": "range",
+          "legendFormat": "{{teknik}}"
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "basic",
+        "showUnfilled": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "sizing": "auto",
+        "minVizHeight": 12,
+        "maxVizHeight": 40,
+        "namePlacement": "left",
+        "valueMode": "color",
+        "text": {
+          "titleSize": 13,
+          "valueSize": 16
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#c0392b"
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "type": "bargauge",
+      "title": "Suricata: bacağa göre HTTP trafiği ve alarm",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 9,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum by (bacak) (count_over_time({job=\"suricata\", event_type=\"http\"}[$__range]))",
+          "queryType": "range",
+          "legendFormat": "HTTP  {{bacak}}"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "sum by (bacak) (count_over_time({job=\"suricata\", event_type=\"alert\"}[$__range]))",
+          "queryType": "range",
+          "legendFormat": "ALARM {{bacak}}"
+        }
+      ],
+      "description": "istemci-waf = 172.30.1.x (frontend), waf-juiceshop = 172.30.2.x (backend). Bacak IP'den belirlenir. WAF'ın engellediği saldırılar waf-juiceshop bacağına ulaşmaz.",
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "basic",
+        "showUnfilled": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#16a085"
+          },
+          "unit": "none",
+          "noValue": "0"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 8,
+      "type": "logs",
+      "title": "Suricata alarmları",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 9,
+        "y": 17,
+        "w": 15,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{job=\"suricata\", event_type=\"alert\"} | json imza=\"alert.signature\", kaynak=\"src_ip\", hedef=\"dest_ip\" | line_format \"[{{.bacak}}] {{.imza}}  ({{.kaynak}} -> {{.hedef}})\"",
+          "queryType": "range",
+          "legendFormat": ""
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true
+      }
+    },
+    {
+      "id": 9,
+      "type": "logs",
+      "title": "WAF: son engellenen istekler (ilk kural, yöntem, adres, teknik)",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 26,
+        "w": 24,
+        "h": 10
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{job=\"modsecurity\", status=\"403\"} |~ \"\\\"ruleId\\\":\\\"(949110|10100)\\\"\" | json uri=\"transaction.request.uri\", yontem=\"transaction.request.method\", kural=\"transaction.messages[0].details.ruleId\", mesaj=\"transaction.messages[0].message\" | line_format \"{{.kural}}  {{.yontem}} {{.uri}}   [{{.teknik}}]   {{.mesaj}}\"",
+          "queryType": "range",
+          "legendFormat": ""
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true
+      }
+    },
+    {
+      "id": 10,
+      "type": "logs",
+      "title": "IAM olayları (oauth2-proxy, Keycloak)",
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 36,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "expr": "{job=\"iam\"} |~ \"Auth(Success|Failure)|LOGIN_ERROR\"",
+          "queryType": "range",
+          "legendFormat": ""
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "wrapLogMessage": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true
+      }
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  }
+}
