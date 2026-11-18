@@ -34,9 +34,11 @@ echo "== V001: giriş, JSON POST gövdesinde SQLi =="
 req "V001 kontrol: yanlış şifre"       401 -X POST "${JSON[@]}" --data '{"email":"ayse@ornek.com","password":"yanlis-sifre"}' "$BASE/rest/user/login"
 req "V001 SQLi (email alanı)"          403 -X POST "${JSON[@]}" --data "{\"email\":\"' OR 1=1--\",\"password\":\"x\"}" "$BASE/rest/user/login"
 
-echo "== V003: sipariş takibi, yol içinde NoSQL enjeksiyonu =="
+echo "== V003: sipariş takibi (envanter: reflected XSS, yol içinde) =="
 req "V003 kontrol: geçerli biçim"      200 "$BASE/rest/track-order/5267-f9cd5882f54c75a3"
-req "V003 NoSQLi (' || true || ')"     403 "$BASE/rest/track-order/%27%20%7C%7C%20true%20%7C%7C%20%27"
+req "V003 XSS (yol içinde iframe)"     403 "$BASE/rest/track-order/%3Ciframe%20src%3D%22javascript%3Aalert(1)%22%3E"
+# Aynı uç noktadaki ikinci açık (envanterde ayrı kayıt değil): $where NoSQL enjeksiyonu
+req "V003 yolu NoSQLi (' || true || ')" 403 "$BASE/rest/track-order/%27%20%7C%7C%20true%20%7C%7C%20%27"
 
 echo "== V005: PUT /api/Products (I-1 ile açılan yol), gövdede XSS =="
 # Var olmayan ürün (999999): WAF kapalı olsa bile lab verisi değişmez.

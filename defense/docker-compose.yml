@@ -1,21 +1,18 @@
-# S3-K5: WAF engelleme modu (ModSecurity + OWASP CRS, MODSEC_RULE_ENGINE=On)
-# Onceki adim: DetectionOnly ile ilk calistirma. Degisiklikler ve istisnalar: docs/waf-engelleme-notu.md
-# Calistirma: docker compose up -d --force-recreate waf suricata   |   Giris noktasi: http://localhost:8080
-# Dogrulama:  ./test-waf.sh  &&  python3 test-juice-flows.py   (ikisi de cikis kodu 0 vermeli)
+# S4-K5: Ag segmentasyonu + surum sabitleme. Ayrinti: docs/iam-segmentasyon-notu.md
+# Calistirma: docker compose down && docker compose up -d   |   Giris: http://localhost:8080
+# Dogrulama:  ./test-waf.sh && python3 test-juice-flows.py   (ikisi de cikis kodu 0)
 services:
   juice-shop:
-    image: bkimminich/juice-shop
+    # I-1 ve SY-1 bu surume bagli; yukseltmeden once testleri tekrar calistir
+    image: bkimminich/juice-shop:v20.2.0
     container_name: juice-shop
     restart: unless-stopped
     expose:
-      - "3000"          # host'a acilmaz, sadece WAF erisir
-    networks: [lab]
+      - "3000"
+    networks: [backend]
 
   waf:
-    # nginx + ModSecurity v3 + CRS bir arada. CRS surumu SABIT: istisnalar
-    # (modsecurity/REQUEST-900-...) kural ID'lerine bagli ve CRS 4.30.0 ile test
-    # edildi. Kayan "nginx" etiketi CRS'i sessizce yukseltebilir; yukseltme
-    # yapilacaksa once test-waf.sh ve test-juice-flows.py ile yeniden dogrulanmali.
+    # CRS 4.30.0'a sabit; istisnalar kural ID'lerine bagli
     image: owasp/modsecurity-crs:4.30.0-nginx-202610180210
     container_name: waf-nginx
     restart: unless-stopped
@@ -26,34 +23,33 @@ services:
       BACKEND: http://juice-shop:3000
       PORT: "8080"
       PROXY: "1"
-      # --- ModSecurity ---
-      MODSEC_RULE_ENGINE: "On"               # ENGELLEME: anomali skoru esigi asan istek 403 alir
-      MODSEC_AUDIT_ENGINE: RelevantOnly      # sadece kural tetikleyen istekler
+      MODSEC_RULE_ENGINE: "On"
+      MODSEC_AUDIT_ENGINE: RelevantOnly
       MODSEC_AUDIT_LOG_FORMAT: JSON
       MODSEC_AUDIT_LOG_TYPE: Serial
       MODSEC_AUDIT_LOG: /var/log/modsecurity/audit.log
-      # --- CRS ---
       PARANOIA: "1"
       BLOCKING_PARANOIA: "1"
       ANOMALY_INBOUND: "5"
       ANOMALY_OUTBOUND: "4"
-      ALLOWED_METHODS: "GET HEAD POST OPTIONS"   # CRS varsayilani; PUT/PATCH/DELETE sadece istisna dosyasindaki yollarda acik
-      # --- nginx loglari ---
+      ALLOWED_METHODS: "GET HEAD POST OPTIONS"   # PUT/PATCH/DELETE yalnizca istisna dosyasindaki yollarda
       ACCESSLOG: /var/log/nginx/access.log
       ERRORLOG: /var/log/nginx/error.log
       LOGLEVEL: warn
     volumes:
       - ./nginx/logging.conf.template:/etc/nginx/templates/conf.d/logging.conf.template:ro
-      # Juice Shop yanlis pozitif istisnalari (CRS'ten once yuklenir)
       - ./modsecurity/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:ro
-      # Sanal yamalar: CRS'in kacirdigi bilinen aciklar (SY-1 = V003)
       - ./modsecurity/REQUEST-900-VIRTUAL-PATCHES-JUICESHOP.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-VIRTUAL-PATCHES-JUICESHOP.conf:ro
       - ./logs/nginx:/var/log/nginx
       - ./logs/modsecurity:/var/log/modsecurity
-    networks: [lab]
+    networks:
+      frontend:
+        ipv4_address: 172.30.1.10   # istemci bacagi
+      backend:
+        ipv4_address: 172.30.2.10   # Juice Shop bacagi
 
   suricata:
-    image: jasonish/suricata:latest
+    image: jasonish/suricata:8.0.8   # lab surumu (suricata -V, 18.11.2026)
     container_name: lab-suricata
     restart: unless-stopped
     network_mode: "service:waf"
@@ -63,7 +59,8 @@ services:
       - NET_ADMIN
       - NET_RAW
       - SYS_NICE
-    command: ["-i", "eth0", "-k", "none"]
+    # WAF'in iki arayuzu de dinlenir (frontend + backend)
+    command: ["-i", "eth0", "-i", "eth1", "-k", "none"]
     volumes:
       - ./suricata/suricata.yaml:/etc/suricata/suricata.yaml
       - ./suricata/disable.conf:/etc/suricata/disable.conf
@@ -73,4 +70,12 @@ services:
       - ./suricata/logs:/var/log/suricata
 
 networks:
-  lab:
+  frontend:
+    ipam:
+      config:
+        - subnet: 172.30.1.0/24
+  backend:
+    internal: true   # disariya cikis yok
+    ipam:
+      config:
+        - subnet: 172.30.2.0/24
