@@ -8,6 +8,8 @@ RUNS_DIR = REPO_ROOT / "runs"                  # her çalıştırmanın klasör�
 RAW_DIR = REPO_ROOT / "inventory" / "raw"      # mevcut ham tarama dosyaları
 FROZEN_INVENTORY = REPO_ROOT / "inventory" / "inventory_v1.0.csv"   # dondurulmuş envanter
 GRAPH_DIR = REPO_ROOT / "graph"                # generate_edges / find_paths / visualize_graph
+FETCH_SCORES = REPO_ROOT / "ai" / "fetch_scores.py"          # NVD / FIRST EPSS sorguları
+SCORES_CACHE = REPO_ROOT / "ai" / "cvss_epss_scores.csv"     # fetch_scores.py'nin çıktısı (önbellek)
 
 # --- İzin verilen hedefler ---
 # Uygulama YALNIZCA bu listedeki hedefleri tarar. Arayüzde serbest adres girme
@@ -19,7 +21,7 @@ TARGETS = {
         "aciklama": "Kasıtlı olarak açıklı eğitim uygulaması. "
                     "Lab ortamında WAF (nginx + ModSecurity) arkasında çalışıyor.",
         "konteyner": "juice-shop",                      # docker-compose.yml: container_name
-        "imaj": "bkimminich/juice-shop",                # Trivy imaj taraması
+        "imaj": "bkimminich/juice-shop:v20.2.0",        # Trivy imaj taraması (compose ile aynı sürüm)
         "zap_url": "http://host.docker.internal:8080",  # ZAP konteynerinden erişilen adres
         "tarayici_url": "http://localhost:8080",        # tarayıcıdan erişilen adres
     },
