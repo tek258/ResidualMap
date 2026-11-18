@@ -1,428 +1,65 @@
 [
     {
         "source": "node_entry_login",
-        "target": "node_target_rce",
-        "target_name": "node_target_rce",
-        "path": [
-            "node_entry_login",
-            "V031",
-            "node_target_rce"
-        ],
-        "length": 2,
-        "path_risk": 8.0
-    },
-    {
-        "source": "node_entry_login",
         "target": "node_target_admin",
         "target_name": "node_target_admin",
-        "path": [
-            "node_entry_login",
-            "V014",
-            "node_target_admin"
-        ],
-        "length": 2,
-        "path_risk": 7.5
-    },
-    {
-        "source": "node_entry_login",
-        "target": "node_target_admin",
-        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
         "path": [
             "node_entry_login",
             "V001",
             "node_target_admin"
         ],
         "length": 2,
-        "path_risk": 7.0
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_admin",
-        "target_name": "node_target_admin",
-        "path": [
-            "node_entry_api",
-            "V028",
-            "node_target_admin"
-        ],
-        "length": 2,
-        "path_risk": 7.0
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
     },
     {
         "source": "node_entry_login",
         "target": "node_target_admin",
         "target_name": "node_target_admin",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_login",
+            "V014",
+            "node_target_admin"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
+        "target": "node_target_admin",
+        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
         "path": [
             "node_entry_login",
             "V022",
             "node_target_admin"
         ],
         "length": 2,
-        "path_risk": 6.5
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_login",
+            "V031",
+            "node_target_rce"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
     },
     {
         "source": "node_entry_api",
         "target": "node_target_admin",
         "target_name": "node_target_admin",
-        "path": [
-            "node_entry_api",
-            "V008",
-            "node_target_admin"
-        ],
-        "length": 2,
-        "path_risk": 6.5
-    },
-    {
-        "source": "node_entry_search",
-        "target": "node_target_admin",
-        "target_name": "node_target_admin",
-        "path": [
-            "node_entry_search",
-            "V030",
-            "node_target_admin"
-        ],
-        "length": 2,
-        "path_risk": 6.0
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_rce",
-        "target_name": "node_target_rce",
-        "path": [
-            "node_entry_api",
-            "V023",
-            "node_target_rce"
-        ],
-        "length": 2,
-        "path_risk": 5.5
-    },
-    {
-        "source": "node_entry_login",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "path": [
-            "node_entry_login",
-            "V004",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 5.4
-    },
-    {
-        "source": "node_entry_login",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "path": [
-            "node_entry_login",
-            "V013",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 5.4
-    },
-    {
-        "source": "node_entry_login",
-        "target": "node_target_admin",
-        "target_name": "node_target_admin",
-        "path": [
-            "node_entry_login",
-            "V015",
-            "node_target_admin"
-        ],
-        "length": 2,
-        "path_risk": 5.0
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_rce",
-        "target_name": "node_target_rce",
-        "path": [
-            "node_entry_api",
-            "V029",
-            "node_target_rce"
-        ],
-        "length": 2,
-        "path_risk": 5.0
-    },
-    {
-        "source": "node_entry_login",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "path": [
-            "node_entry_login",
-            "V007",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 4.95
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "path": [
-            "node_entry_api",
-            "V011",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 4.5
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_rce",
-        "target_name": "node_target_rce",
-        "path": [
-            "node_entry_api",
-            "V035",
-            "node_target_rce"
-        ],
-        "length": 2,
-        "path_risk": 4.5
-    },
-    {
-        "source": "node_entry_search",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "path": [
-            "node_entry_search",
-            "V003",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 4.5
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "path": [
-            "node_entry_api",
-            "V005",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 4.05
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "path": [
-            "node_entry_api",
-            "V017",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 4.05
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "path": [
-            "node_entry_api",
-            "V026",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 4.05
-    },
-    {
-        "source": "node_entry_login",
-        "target": "node_target_leak",
-        "target_name": "node_target_leak",
-        "path": [
-            "node_entry_login",
-            "V019",
-            "node_target_leak"
-        ],
-        "length": 2,
-        "path_risk": 4.0
-    },
-    {
-        "source": "node_entry_search",
-        "target": "node_target_rce",
-        "target_name": "node_target_rce",
-        "path": [
-            "node_entry_search",
-            "V024",
-            "node_target_rce"
-        ],
-        "length": 2,
-        "path_risk": 4.0
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "path": [
-            "node_entry_api",
-            "V020",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 3.6
-    },
-    {
-        "source": "node_entry_search",
-        "target": "node_target_rce",
-        "target_name": "node_target_rce",
-        "path": [
-            "node_entry_search",
-            "V027",
-            "node_target_rce"
-        ],
-        "length": 2,
-        "path_risk": 3.5
-    },
-    {
-        "source": "node_entry_login",
-        "target": "node_target_leak",
-        "target_name": "node_target_leak",
-        "path": [
-            "node_entry_login",
-            "V010",
-            "node_target_leak"
-        ],
-        "length": 2,
-        "path_risk": 3.2
-    },
-    {
-        "source": "node_entry_login",
-        "target": "node_target_leak",
-        "target_name": "node_target_leak",
-        "path": [
-            "node_entry_login",
-            "V016",
-            "node_target_leak"
-        ],
-        "length": 2,
-        "path_risk": 3.2
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_leak",
-        "target_name": "node_target_leak",
-        "path": [
-            "node_entry_api",
-            "V002",
-            "node_target_leak"
-        ],
-        "length": 2,
-        "path_risk": 3.2
-    },
-    {
-        "source": "node_entry_search",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "path": [
-            "node_entry_search",
-            "V006",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 3.15
-    },
-    {
-        "source": "node_entry_login",
-        "target": "node_target_dos",
-        "target_name": "node_target_dos",
-        "path": [
-            "node_entry_login",
-            "V034",
-            "node_target_dos"
-        ],
-        "length": 2,
-        "path_risk": 3.0
-    },
-    {
-        "source": "node_entry_search",
-        "target": "node_target_rce",
-        "target_name": "node_target_rce",
-        "path": [
-            "node_entry_search",
-            "V036",
-            "node_target_rce"
-        ],
-        "length": 2,
-        "path_risk": 3.0
-    },
-    {
-        "source": "node_entry_search",
-        "target": "node_target_leak",
-        "target_name": "node_target_leak",
-        "path": [
-            "node_entry_search",
-            "V018",
-            "node_target_leak"
-        ],
-        "length": 2,
-        "path_risk": 2.8
-    },
-    {
-        "source": "node_entry_search",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "path": [
-            "node_entry_search",
-            "V012",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 2.7
-    },
-    {
-        "source": "node_entry_search",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "path": [
-            "node_entry_search",
-            "V021",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 2.7
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_dos",
-        "target_name": "node_target_dos",
-        "path": [
-            "node_entry_api",
-            "V032",
-            "node_target_dos"
-        ],
-        "length": 2,
-        "path_risk": 2.4
-    },
-    {
-        "source": "node_entry_search",
-        "target": "node_target_leak",
-        "target_name": "node_target_leak",
-        "path": [
-            "node_entry_search",
-            "V009",
-            "node_target_leak"
-        ],
-        "length": 2,
-        "path_risk": 2.4
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_dos",
-        "target_name": "node_target_dos",
-        "path": [
-            "node_entry_api",
-            "V033",
-            "node_target_dos"
-        ],
-        "length": 2,
-        "path_risk": 2.1
-    },
-    {
-        "source": "node_entry_api",
-        "target": "node_target_admin",
-        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
         "path": [
             "node_entry_api",
             "V002",
@@ -430,6 +67,441 @@
             "node_target_admin"
         ],
         "length": 3,
-        "path_risk": 2.0
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_admin",
+        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_api",
+            "V008",
+            "node_target_admin"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_admin",
+        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_api",
+            "V028",
+            "node_target_admin"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_api",
+            "V023",
+            "node_target_rce"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_api",
+            "V035",
+            "node_target_rce"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_search",
+            "V027",
+            "node_target_rce"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_search",
+            "V036",
+            "node_target_rce"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_api",
+            "V029",
+            "node_target_rce"
+        ],
+        "length": 2,
+        "path_risk": 7.294,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
+        "target": "node_target_leak",
+        "target_name": "node_target_leak",
+        "target_criticality": 7.0,
+        "path": [
+            "node_entry_login",
+            "V016",
+            "node_target_leak"
+        ],
+        "length": 2,
+        "path_risk": 7.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
+        "target": "node_target_leak",
+        "target_name": "node_target_leak",
+        "target_criticality": 7.0,
+        "path": [
+            "node_entry_login",
+            "V019",
+            "node_target_leak"
+        ],
+        "length": 2,
+        "path_risk": 7.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_leak",
+        "target_name": "node_target_leak",
+        "target_criticality": 7.0,
+        "path": [
+            "node_entry_api",
+            "V002",
+            "node_target_leak"
+        ],
+        "length": 2,
+        "path_risk": 7.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_leak",
+        "target_name": "node_target_leak",
+        "target_criticality": 7.0,
+        "path": [
+            "node_entry_search",
+            "V009",
+            "node_target_leak"
+        ],
+        "length": 2,
+        "path_risk": 7.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
+        "target": "node_target_dos",
+        "target_name": "node_target_dos",
+        "target_criticality": 6.0,
+        "path": [
+            "node_entry_login",
+            "V034",
+            "node_target_dos"
+        ],
+        "length": 2,
+        "path_risk": 6.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_dos",
+        "target_name": "node_target_dos",
+        "target_criticality": 6.0,
+        "path": [
+            "node_entry_api",
+            "V032",
+            "node_target_dos"
+        ],
+        "length": 2,
+        "path_risk": 6.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_dos",
+        "target_name": "node_target_dos",
+        "target_criticality": 6.0,
+        "path": [
+            "node_entry_api",
+            "V033",
+            "node_target_dos"
+        ],
+        "length": 2,
+        "path_risk": 6.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_login",
+            "V004",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 5.8352,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_login",
+            "V007",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 5.8352,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_login",
+            "V013",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 5.8352,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_api",
+            "V005",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 5.8352,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_search",
+            "V003",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 5.8352,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_search",
+            "V006",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 5.8352,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_search",
+            "V012",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 5.8352,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
+        "target": "node_target_admin",
+        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_login",
+            "V015",
+            "node_target_admin"
+        ],
+        "length": 2,
+        "path_risk": 5.714,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
+        "target": "node_target_leak",
+        "target_name": "node_target_leak",
+        "target_criticality": 7.0,
+        "path": [
+            "node_entry_login",
+            "V010",
+            "node_target_leak"
+        ],
+        "length": 2,
+        "path_risk": 5.1058,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_api",
+            "V011",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 4.5712,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_api",
+            "V026",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 4.5712,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_api",
+            "V017",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 3.3344,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_api",
+            "V020",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 3.3344,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_search",
+            "V021",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 3.3344,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_admin",
+        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_search",
+            "V030",
+            "node_target_admin"
+        ],
+        "length": 2,
+        "path_risk": 3.334,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_search",
+            "V024",
+            "node_target_rce"
+        ],
+        "length": 2,
+        "path_risk": 3.177,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_leak",
+        "target_name": "node_target_leak",
+        "target_criticality": 7.0,
+        "path": [
+            "node_entry_search",
+            "V018",
+            "node_target_leak"
+        ],
+        "length": 2,
+        "path_risk": 2.9176,
+        "secondary_v2_score": 0.0
     }
 ]
