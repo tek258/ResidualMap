@@ -1,4 +1,4 @@
-# Günlük Git Akışı (PyCharm Terminali)
+-# Günlük Git Akışı (PyCharm Terminali)
 
 Bu akışı her görev için tekrarlayın. `main`'e doğrudan yazmıyoruz, her iş kendi branch'inde yapılıyor.
 

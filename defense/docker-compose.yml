@@ -1,21 +1,18 @@
-# S3-K5: WAF engelleme modu (ModSecurity + OWASP CRS, MODSEC_RULE_ENGINE=On)
-# Onceki adim: DetectionOnly ile ilk calistirma. Degisiklikler ve istisnalar: docs/waf-engelleme-notu.md
-# Calistirma: docker compose up -d --force-recreate waf suricata   |   Giris noktasi: http://localhost:8080
-# Dogrulama:  ./test-waf.sh  &&  python3 test-juice-flows.py   (ikisi de cikis kodu 0 vermeli)
+# S4-K5: Ag segmentasyonu + surum sabitleme. Ayrinti: docs/iam-segmentasyon-notu.md
+# Calistirma: docker compose down && docker compose up -d   |   Giris: http://localhost:8080
+# Dogrulama:  ./test-waf.sh && python3 test-juice-flows.py   (ikisi de cikis kodu 0)
 services:
   juice-shop:
-    image: bkimminich/juice-shop
+    # I-1 ve SY-1 bu surume bagli; yukseltmeden once testleri tekrar calistir
+    image: bkimminich/juice-shop:v20.2.0
     container_name: juice-shop
     restart: unless-stopped
     expose:
-      - "3000"          # host'a acilmaz, sadece WAF erisir
-    networks: [lab]
+      - "3000"
+    networks: [backend]
 
   waf:
-    # nginx + ModSecurity v3 + CRS bir arada. CRS surumu SABIT: istisnalar
-    # (modsecurity/REQUEST-900-...) kural ID'lerine bagli ve CRS 4.30.0 ile test
-    # edildi. Kayan "nginx" etiketi CRS'i sessizce yukseltebilir; yukseltme
-    # yapilacaksa once test-waf.sh ve test-juice-flows.py ile yeniden dogrulanmali.
+    # CRS 4.30.0'a sabit; istisnalar kural ID'lerine bagli
     image: owasp/modsecurity-crs:4.30.0-nginx-202610180210
     container_name: waf-nginx
     restart: unless-stopped
@@ -26,34 +23,35 @@ services:
       BACKEND: http://juice-shop:3000
       PORT: "8080"
       PROXY: "1"
-      # --- ModSecurity ---
-      MODSEC_RULE_ENGINE: "On"               # ENGELLEME: anomali skoru esigi asan istek 403 alir
-      MODSEC_AUDIT_ENGINE: RelevantOnly      # sadece kural tetikleyen istekler
+      MODSEC_RULE_ENGINE: "On"
+      MODSEC_AUDIT_ENGINE: RelevantOnly
       MODSEC_AUDIT_LOG_FORMAT: JSON
       MODSEC_AUDIT_LOG_TYPE: Serial
       MODSEC_AUDIT_LOG: /var/log/modsecurity/audit.log
-      # --- CRS ---
       PARANOIA: "1"
       BLOCKING_PARANOIA: "1"
       ANOMALY_INBOUND: "5"
       ANOMALY_OUTBOUND: "4"
-      ALLOWED_METHODS: "GET HEAD POST OPTIONS"   # CRS varsayilani; PUT/PATCH/DELETE sadece istisna dosyasindaki yollarda acik
-      # --- nginx loglari ---
+      ALLOWED_METHODS: "GET HEAD POST OPTIONS"   # PUT/PATCH/DELETE yalnizca istisna dosyasindaki yollarda
       ACCESSLOG: /var/log/nginx/access.log
       ERRORLOG: /var/log/nginx/error.log
       LOGLEVEL: warn
     volumes:
       - ./nginx/logging.conf.template:/etc/nginx/templates/conf.d/logging.conf.template:ro
-      # Juice Shop yanlis pozitif istisnalari (CRS'ten once yuklenir)
+      # Imajin sablonu + IAM bolumu (/oauth2/, /ftp, /metrics)
+      - ./nginx/default.conf.template:/etc/nginx/templates/conf.d/default.conf.template:ro
       - ./modsecurity/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:ro
-      # Sanal yamalar: CRS'in kacirdigi bilinen aciklar (SY-1 = V003)
       - ./modsecurity/REQUEST-900-VIRTUAL-PATCHES-JUICESHOP.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-VIRTUAL-PATCHES-JUICESHOP.conf:ro
       - ./logs/nginx:/var/log/nginx
       - ./logs/modsecurity:/var/log/modsecurity
-    networks: [lab]
+    networks:
+      frontend:
+        ipv4_address: 172.30.1.10   # istemci bacagi
+      backend:
+        ipv4_address: 172.30.2.10   # Juice Shop bacagi
 
   suricata:
-    image: jasonish/suricata:latest
+    image: jasonish/suricata:8.0.8   # lab surumu (suricata -V, 18.11.2026)
     container_name: lab-suricata
     restart: unless-stopped
     network_mode: "service:waf"
@@ -63,7 +61,8 @@ services:
       - NET_ADMIN
       - NET_RAW
       - SYS_NICE
-    command: ["-i", "eth0", "-k", "none"]
+    # WAF'in iki arayuzu de dinlenir (frontend + backend)
+    command: ["-i", "eth0", "-i", "eth1", "-k", "none"]
     volumes:
       - ./suricata/suricata.yaml:/etc/suricata/suricata.yaml
       - ./suricata/disable.conf:/etc/suricata/disable.conf
@@ -72,5 +71,63 @@ services:
       - ./suricata/lib:/var/lib/suricata
       - ./suricata/logs:/var/log/suricata
 
+  # --- IAM: Keycloak (kimlik saglayici) + oauth2-proxy (WAF'in sordugu kapi) ---
+  # Sifreler ve gizli anahtarlar YALNIZCA bu izole lab icindir.
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    restart: unless-stopped
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: Admin-Lab-2026!
+      KC_HOSTNAME: http://localhost:8081          # tarayicinin gordugu adres = token'daki issuer
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"     # oauth2-proxy ic adresten (keycloak:8080) konusabilsin
+      KC_HTTP_ENABLED: "true"
+    ports:
+      - "8081:8080"   # giris sayfasi ve yonetim arayuzu
+    volumes:
+      - ./iam/realm-lab.json:/opt/keycloak/data/import/realm-lab.json:ro
+    networks: [frontend]
+
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.7.1
+    container_name: oauth2-proxy
+    restart: unless-stopped
+    depends_on: [keycloak]
+    command:
+      - --provider=keycloak-oidc
+      - --client-id=juice-ops
+      - --client-secret=kRCZ1CV98Yjb3pZZKLuJJiuTfj2Mk39P   # realm-lab.json ile ayni
+      - --cookie-secret=S9zgNsXu0Q3Mx0PzpIH7fhGzjfpxFPMD
+      - --cookie-secure=false          # lab HTTP
+      - --email-domain=*
+      - --allowed-role=ops             # yalnizca ops rolu (realm rolu); digerleri 403
+      - --http-address=0.0.0.0:4180
+      - --reverse-proxy=true
+      - --upstream=static://202        # yalnizca kimlik kontrolu yapar, trafigi nginx tasir
+      - --skip-provider-button=true
+      - --code-challenge-method=S256
+      - --redirect-url=http://localhost:8080/oauth2/callback
+      # Tarayici Keycloak'a localhost:8081'den, oauth2-proxy ise ic agdan ulasir;
+      # bu yuzden otomatik kesif yerine adresler tek tek verilir.
+      - --oidc-issuer-url=http://localhost:8081/realms/lab
+      - --skip-oidc-discovery=true
+      - --login-url=http://localhost:8081/realms/lab/protocol/openid-connect/auth
+      - --redeem-url=http://keycloak:8080/realms/lab/protocol/openid-connect/token
+      - --oidc-jwks-url=http://keycloak:8080/realms/lab/protocol/openid-connect/certs
+      - --validate-url=http://keycloak:8080/realms/lab/protocol/openid-connect/userinfo
+    expose:
+      - "4180"        # host'a acilmaz, yalnizca WAF erisir
+    networks: [frontend]
+
 networks:
-  lab:
+  frontend:
+    ipam:
+      config:
+        - subnet: 172.30.1.0/24
+  backend:
+    internal: true   # disariya cikis yok
+    ipam:
+      config:
+        - subnet: 172.30.2.0/24
