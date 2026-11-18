@@ -8,7 +8,6 @@ RESULTS_PATH = "ai/results_v1_llm.csv"
 EXPERT_PATH = "ai/expert_labels.csv"
 OUTPUT_MD_PATH = "docs/model-v1-hata-analizi.md"
 
-# Tutarlılık testi için farklı kategorilerden seçilen 5 temsili kayıt
 CONSISTENCY_SAMPLES = ["V001", "V003", "V018", "V022", "V035"]
 REPEAT_COUNT = 3
 
@@ -83,7 +82,6 @@ def generate_error_report():
     res_df = pd.read_csv(RESULTS_PATH)
     exp_df = pd.read_csv(EXPERT_PATH)
 
-    # Tüm kayıtları (atlanan V014 dahil) sol birleştirme (left join) ile yan yana getir
     merged = (
         inv_df[["vuln_id", "name", "component", "cvss_score", "epss_score", "auth_required", "attack_complexity"]]
         .merge(exp_df, on="vuln_id", how="left")
@@ -99,17 +97,14 @@ def generate_error_report():
     valid_df = merged[merged["risk_score_llm"].notna()].copy()
     mismatches = merged[merged["durum"] == "Uyuşmadı"].copy()
 
-    # Ortak hata kalıpları istatistikleri
     exact_cvss_copy = (valid_df["risk_score_llm"] == valid_df["cvss_score"]).sum()
     score_counts = valid_df["risk_score_llm"].value_counts()
     repeated_scores = score_counts[score_counts > 1].to_dict()
     label_dist_llm = valid_df["risk_label_llm"].value_counts().to_dict()
     label_dist_exp = merged["label"].value_counts().to_dict()
 
-    # Tutarlılık testini çalıştır
     consistency_rows = run_consistency_test(inv_df)
 
-    # Markdown raporu oluştur
     lines = [
         "# Model v1 Hata Analizi Raporu (`phi3:mini`)",
         "",
