@@ -121,6 +121,55 @@ services:
       - "4180"        # host'a acilmaz, yalnizca WAF erisir
     networks: [frontend]
 
+  # --- Merkezi log ve alarm panosu (S5-K5). Yalnizca "--profile siem" ile baslar. ---
+  # Ayrinti: docs/siem-kurulum.md
+  loki:
+    image: grafana/loki:3.4.2
+    container_name: loki
+    restart: unless-stopped
+    profiles: [siem]
+    command: ["-config.file=/etc/loki/config.yaml"]
+    volumes:
+      - ./siem/loki-config.yaml:/etc/loki/config.yaml:ro
+      - loki-veri:/loki
+    networks: [siem]
+
+  alloy:
+    image: grafana/alloy:v1.7.1
+    container_name: alloy
+    restart: unless-stopped
+    profiles: [siem]
+    depends_on: [loki]
+    command: ["run", "/etc/alloy/config.alloy", "--storage.path=/var/lib/alloy/data"]
+    volumes:
+      - ./siem/config.alloy:/etc/alloy/config.alloy:ro
+      - ./logs/modsecurity:/logs/modsecurity:ro
+      - ./logs/nginx:/logs/nginx:ro
+      - ./suricata/logs:/logs/suricata:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro   # oauth2-proxy ve Keycloak ciktilari
+      - alloy-veri:/var/lib/alloy/data
+    networks: [siem]
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    container_name: grafana
+    restart: unless-stopped
+    profiles: [siem]
+    depends_on: [loki]
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: Admin-Lab-2026!   # yalnizca lab
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/residualmap-lab.json
+    ports:
+      - "3001:3000"   # pano: http://localhost:3001
+    volumes:
+      - ./siem/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./siem/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-veri:/var/lib/grafana
+    networks: [siem]
+
 networks:
   frontend:
     ipam:
@@ -131,3 +180,10 @@ networks:
     ipam:
       config:
         - subnet: 172.30.2.0/24
+  siem:
+    # Log toplama agi. WAF/Juice Shop aglarindan ayri; Alloy loglari dosyadan okur.
+
+volumes:
+  loki-veri:
+  alloy-veri:
+  grafana-veri:
