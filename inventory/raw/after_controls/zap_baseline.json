@@ -1,0 +1,785 @@
+﻿{
+    "@programName":  "ZAP",
+    "@version":  "2.17.0",
+    "@generated":  "Wed, 18 Nov 2026 22:30:00",
+    "created":  "2026-11-18T22:30:00.000000000Z",
+    "insights":  [
+                     {
+                         "level":  "Low",
+                         "reason":  "Warning",
+                         "site":  "",
+                         "key":  "insight.log.warn",
+                         "description":  "ZAP warnings logged - see the zap.log file for details",
+                         "statistic":  "2"
+                     },
+                     {
+                         "level":  "Info",
+                         "reason":  "Informational",
+                         "site":  "http://host.docker.internal:8080",
+                         "key":  "insight.code.2xx",
+                         "description":  "Percentage of responses with status code 2xx",
+                         "statistic":  "91"
+                     },
+                     {
+                         "level":  "Info",
+                         "reason":  "Informational",
+                         "site":  "http://host.docker.internal:8080",
+                         "key":  "insight.code.4xx",
+                         "description":  "Percentage of responses with status code 4xx",
+                         "statistic":  "8"
+                     },
+                     {
+                         "level":  "Info",
+                         "reason":  "Informational",
+                         "site":  "http://host.docker.internal:8080",
+                         "key":  "insight.endpoint.ctype.application/javascript",
+                         "description":  "Percentage of endpoints with content type application/javascript",
+                         "statistic":  "4"
+                     },
+                     {
+                         "level":  "Info",
+                         "reason":  "Informational",
+                         "site":  "http://host.docker.internal:8080",
+                         "key":  "insight.endpoint.ctype.application/octet-stream",
+                         "description":  "Percentage of endpoints with content type application/octet-stream",
+                         "statistic":  "7"
+                     },
+                     {
+                         "level":  "Info",
+                         "reason":  "Informational",
+                         "site":  "http://host.docker.internal:8080",
+                         "key":  "insight.endpoint.ctype.image/x-icon",
+                         "description":  "Percentage of endpoints with content type image/x-icon",
+                         "statistic":  "1"
+                     },
+                     {
+                         "level":  "Info",
+                         "reason":  "Informational",
+                         "site":  "http://host.docker.internal:8080",
+                         "key":  "insight.endpoint.ctype.text/css",
+                         "description":  "Percentage of endpoints with content type text/css",
+                         "statistic":  "1"
+                     },
+                     {
+                         "level":  "Info",
+                         "reason":  "Informational",
+                         "site":  "http://host.docker.internal:8080",
+                         "key":  "insight.endpoint.ctype.text/html",
+                         "description":  "Percentage of endpoints with content type text/html",
+                         "statistic":  "78"
+                     },
+                     {
+                         "level":  "Info",
+                         "reason":  "Informational",
+                         "site":  "http://host.docker.internal:8080",
+                         "key":  "insight.endpoint.ctype.text/markdown",
+                         "description":  "Percentage of endpoints with content type text/markdown",
+                         "statistic":  "4"
+                     },
+                     {
+                         "level":  "Info",
+                         "reason":  "Informational",
+                         "site":  "http://host.docker.internal:8080",
+                         "key":  "insight.endpoint.ctype.text/plain",
+                         "description":  "Percentage of endpoints with content type text/plain",
+                         "statistic":  "1"
+                     },
+                     {
+                         "level":  "Info",
+                         "reason":  "Informational",
+                         "site":  "http://host.docker.internal:8080",
+                         "key":  "insight.endpoint.method.GET",
+                         "description":  "Percentage of endpoints with method GET",
+                         "statistic":  "100"
+                     },
+                     {
+                         "level":  "Info",
+                         "reason":  "Informational",
+                         "site":  "http://host.docker.internal:8080",
+                         "key":  "insight.endpoint.total",
+                         "description":  "Count of total endpoints",
+                         "statistic":  "65"
+                     },
+                     {
+                         "level":  "Info",
+                         "reason":  "Informational",
+                         "site":  "http://host.docker.internal:8080",
+                         "key":  "insight.response.slow",
+                         "description":  "Percentage of slow responses",
+                         "statistic":  "23"
+                     }
+                 ],
+    "site":  [
+                 {
+                     "@name":  "http://host.docker.internal:8080",
+                     "@host":  "host.docker.internal",
+                     "@port":  "8080",
+                     "@ssl":  "false",
+                     "alerts":  [
+                                    {
+                                        "pluginid":  "10038",
+                                        "alertRef":  "10038-1",
+                                        "alert":  "Content Security Policy (CSP) Header Not Set",
+                                        "name":  "Content Security Policy (CSP) Header Not Set",
+                                        "riskcode":  "2",
+                                        "confidence":  "3",
+                                        "riskdesc":  "Medium (High)",
+                                        "desc":  "\u003cp\u003eContent Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks. These attacks are used for everything from data theft to site defacement or distribution of malware. CSP provides a set of standard HTTP headers that allow website owners to declare approved sources of content that browsers should be allowed to load on that page — covered types are JavaScript, CSS, HTML frames, fonts, images and embeddable objects such as Java applets, ActiveX, audio and video files.\u003c/p\u003e",
+                                        "instances":  [
+                                                          {
+                                                              "id":  "5",
+                                                              "uri":  "http://host.docker.internal:8080",
+                                                              "nodeName":  "http://host.docker.internal:8080",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "73",
+                                                              "uri":  "http://host.docker.internal:8080/ftp/coupons_2013.md.bak",
+                                                              "nodeName":  "http://host.docker.internal:8080/ftp/coupons_2013.md.bak",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "74",
+                                                              "uri":  "http://host.docker.internal:8080/ftp/encrypt.pyc",
+                                                              "nodeName":  "http://host.docker.internal:8080/ftp/encrypt.pyc",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "77",
+                                                              "uri":  "http://host.docker.internal:8080/ftp/package-lock.json.bak",
+                                                              "nodeName":  "http://host.docker.internal:8080/ftp/package-lock.json.bak",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "11",
+                                                              "uri":  "http://host.docker.internal:8080/sitemap.xml",
+                                                              "nodeName":  "http://host.docker.internal:8080/sitemap.xml",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          }
+                                                      ],
+                                        "count":  "5",
+                                        "systemic":  true,
+                                        "solution":  "\u003cp\u003eEnsure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header.\u003c/p\u003e",
+                                        "otherinfo":  "",
+                                        "reference":  "\u003cp\u003ehttps://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP\u003c/p\u003e\u003cp\u003ehttps://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html\u003c/p\u003e\u003cp\u003ehttps://www.w3.org/TR/CSP/\u003c/p\u003e\u003cp\u003ehttps://w3c.github.io/webappsec-csp/\u003c/p\u003e\u003cp\u003ehttps://web.dev/articles/csp\u003c/p\u003e\u003cp\u003ehttps://caniuse.com/#feat=contentsecuritypolicy\u003c/p\u003e\u003cp\u003ehttps://content-security-policy.com/\u003c/p\u003e",
+                                        "cweid":  "693",
+                                        "wascid":  "15",
+                                        "sourceid":  "1"
+                                    },
+                                    {
+                                        "pluginid":  "10098",
+                                        "alertRef":  "10098",
+                                        "alert":  "Cross-Domain Misconfiguration",
+                                        "name":  "Cross-Domain Misconfiguration",
+                                        "riskcode":  "2",
+                                        "confidence":  "2",
+                                        "riskdesc":  "Medium (Medium)",
+                                        "desc":  "\u003cp\u003eWeb browser data loading may be possible, due to a Cross Origin Resource Sharing (CORS) misconfiguration on the web server.\u003c/p\u003e",
+                                        "instances":  [
+                                                          {
+                                                              "id":  "6",
+                                                              "uri":  "http://host.docker.internal:8080",
+                                                              "nodeName":  "http://host.docker.internal:8080",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "Access-Control-Allow-Origin: *",
+                                                              "otherinfo":  "The CORS misconfiguration on the web server permits cross-domain read requests from arbitrary third party domains, using unauthenticated APIs on this domain. Web browser implementations do not permit arbitrary third parties to read the response from authenticated APIs, however. This reduces the risk somewhat. This misconfiguration could be used by an attacker to access data that is available in an unauthenticated manner, but which uses some other form of security, such as IP address white-listing."
+                                                          },
+                                                          {
+                                                              "id":  "0",
+                                                              "uri":  "http://host.docker.internal:8080/assets/public/favicon_js.ico",
+                                                              "nodeName":  "http://host.docker.internal:8080/assets/public/favicon_js.ico",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "Access-Control-Allow-Origin: *",
+                                                              "otherinfo":  "The CORS misconfiguration on the web server permits cross-domain read requests from arbitrary third party domains, using unauthenticated APIs on this domain. Web browser implementations do not permit arbitrary third parties to read the response from authenticated APIs, however. This reduces the risk somewhat. This misconfiguration could be used by an attacker to access data that is available in an unauthenticated manner, but which uses some other form of security, such as IP address white-listing."
+                                                          },
+                                                          {
+                                                              "id":  "3",
+                                                              "uri":  "http://host.docker.internal:8080/robots.txt",
+                                                              "nodeName":  "http://host.docker.internal:8080/robots.txt",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "Access-Control-Allow-Origin: *",
+                                                              "otherinfo":  "The CORS misconfiguration on the web server permits cross-domain read requests from arbitrary third party domains, using unauthenticated APIs on this domain. Web browser implementations do not permit arbitrary third parties to read the response from authenticated APIs, however. This reduces the risk somewhat. This misconfiguration could be used by an attacker to access data that is available in an unauthenticated manner, but which uses some other form of security, such as IP address white-listing."
+                                                          },
+                                                          {
+                                                              "id":  "10",
+                                                              "uri":  "http://host.docker.internal:8080/scripts.js",
+                                                              "nodeName":  "http://host.docker.internal:8080/scripts.js",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "Access-Control-Allow-Origin: *",
+                                                              "otherinfo":  "The CORS misconfiguration on the web server permits cross-domain read requests from arbitrary third party domains, using unauthenticated APIs on this domain. Web browser implementations do not permit arbitrary third parties to read the response from authenticated APIs, however. This reduces the risk somewhat. This misconfiguration could be used by an attacker to access data that is available in an unauthenticated manner, but which uses some other form of security, such as IP address white-listing."
+                                                          }
+                                                      ],
+                                        "count":  "4",
+                                        "systemic":  true,
+                                        "solution":  "\u003cp\u003eEnsure that sensitive data is not available in an unauthenticated manner (using IP address white-listing, for instance).\u003c/p\u003e\u003cp\u003eConfigure the \"Access-Control-Allow-Origin\" HTTP header to a more restrictive set of domains, or remove all CORS headers entirely, to allow the web browser to enforce the Same Origin Policy (SOP) in a more restrictive manner.\u003c/p\u003e",
+                                        "otherinfo":  "\u003cp\u003eThe CORS misconfiguration on the web server permits cross-domain read requests from arbitrary third party domains, using unauthenticated APIs on this domain. Web browser implementations do not permit arbitrary third parties to read the response from authenticated APIs, however. This reduces the risk somewhat. This misconfiguration could be used by an attacker to access data that is available in an unauthenticated manner, but which uses some other form of security, such as IP address white-listing.\u003c/p\u003e",
+                                        "reference":  "\u003cp\u003ehttps://vulncat.fortify.com/en/detail?category=HTML5\u0026subcategory=Overly%20Permissive%20CORS%20Policy\u003c/p\u003e",
+                                        "cweid":  "264",
+                                        "wascid":  "14",
+                                        "sourceid":  "1"
+                                    },
+                                    {
+                                        "pluginid":  "90004",
+                                        "alertRef":  "90004-2",
+                                        "alert":  "Cross-Origin-Embedder-Policy Header Missing or Invalid",
+                                        "name":  "Cross-Origin-Embedder-Policy Header Missing or Invalid",
+                                        "riskcode":  "1",
+                                        "confidence":  "2",
+                                        "riskdesc":  "Low (Medium)",
+                                        "desc":  "\u003cp\u003eCross-Origin-Embedder-Policy header is a response header that prevents a document from loading any cross-origin resources that don\u0027t explicitly grant the document permission (using CORP or CORS).\u003c/p\u003e",
+                                        "instances":  [
+                                                          {
+                                                              "id":  "60",
+                                                              "uri":  "http://host.docker.internal:8080",
+                                                              "nodeName":  "http://host.docker.internal:8080",
+                                                              "method":  "GET",
+                                                              "param":  "Cross-Origin-Embedder-Policy",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "105",
+                                                              "uri":  "http://host.docker.internal:8080/",
+                                                              "nodeName":  "http://host.docker.internal:8080/",
+                                                              "method":  "GET",
+                                                              "param":  "Cross-Origin-Embedder-Policy",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "102",
+                                                              "uri":  "http://host.docker.internal:8080/ftp",
+                                                              "nodeName":  "http://host.docker.internal:8080/ftp",
+                                                              "method":  "GET",
+                                                              "param":  "Cross-Origin-Embedder-Policy",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "109",
+                                                              "uri":  "http://host.docker.internal:8080/juice-shop/node_modules/express/lib/router/layer.js:95:5",
+                                                              "nodeName":  "http://host.docker.internal:8080/juice-shop/node_modules/express/lib/router/layer.js:95:5",
+                                                              "method":  "GET",
+                                                              "param":  "Cross-Origin-Embedder-Policy",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "59",
+                                                              "uri":  "http://host.docker.internal:8080/sitemap.xml",
+                                                              "nodeName":  "http://host.docker.internal:8080/sitemap.xml",
+                                                              "method":  "GET",
+                                                              "param":  "Cross-Origin-Embedder-Policy",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          }
+                                                      ],
+                                        "count":  "5",
+                                        "systemic":  true,
+                                        "solution":  "\u003cp\u003eEnsure that the application/web server sets the Cross-Origin-Embedder-Policy header appropriately, and that it sets the Cross-Origin-Embedder-Policy header to \u0027require-corp\u0027 for documents.\u003c/p\u003e\u003cp\u003eIf possible, ensure that the end user uses a standards-compliant and modern web browser that supports the Cross-Origin-Embedder-Policy header (https://caniuse.com/mdn-http_headers_cross-origin-embedder-policy).\u003c/p\u003e",
+                                        "otherinfo":  "",
+                                        "reference":  "\u003cp\u003ehttps://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Embedder-Policy\u003c/p\u003e",
+                                        "cweid":  "693",
+                                        "wascid":  "14",
+                                        "sourceid":  "1"
+                                    },
+                                    {
+                                        "pluginid":  "90004",
+                                        "alertRef":  "90004-3",
+                                        "alert":  "Cross-Origin-Opener-Policy Header Missing or Invalid",
+                                        "name":  "Cross-Origin-Opener-Policy Header Missing or Invalid",
+                                        "riskcode":  "1",
+                                        "confidence":  "2",
+                                        "riskdesc":  "Low (Medium)",
+                                        "desc":  "\u003cp\u003eCross-Origin-Opener-Policy header is a response header that allows a site to control if others included documents share the same browsing context. Sharing the same browsing context with untrusted documents might lead to data leak.\u003c/p\u003e",
+                                        "instances":  [
+                                                          {
+                                                              "id":  "64",
+                                                              "uri":  "http://host.docker.internal:8080",
+                                                              "nodeName":  "http://host.docker.internal:8080",
+                                                              "method":  "GET",
+                                                              "param":  "Cross-Origin-Opener-Policy",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "106",
+                                                              "uri":  "http://host.docker.internal:8080/",
+                                                              "nodeName":  "http://host.docker.internal:8080/",
+                                                              "method":  "GET",
+                                                              "param":  "Cross-Origin-Opener-Policy",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "103",
+                                                              "uri":  "http://host.docker.internal:8080/ftp",
+                                                              "nodeName":  "http://host.docker.internal:8080/ftp",
+                                                              "method":  "GET",
+                                                              "param":  "Cross-Origin-Opener-Policy",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "111",
+                                                              "uri":  "http://host.docker.internal:8080/juice-shop/node_modules/express/lib/router/layer.js:95:5",
+                                                              "nodeName":  "http://host.docker.internal:8080/juice-shop/node_modules/express/lib/router/layer.js:95:5",
+                                                              "method":  "GET",
+                                                              "param":  "Cross-Origin-Opener-Policy",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "62",
+                                                              "uri":  "http://host.docker.internal:8080/sitemap.xml",
+                                                              "nodeName":  "http://host.docker.internal:8080/sitemap.xml",
+                                                              "method":  "GET",
+                                                              "param":  "Cross-Origin-Opener-Policy",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  ""
+                                                          }
+                                                      ],
+                                        "count":  "5",
+                                        "systemic":  true,
+                                        "solution":  "\u003cp\u003eEnsure that the application/web server sets the Cross-Origin-Opener-Policy header appropriately, and that it sets the Cross-Origin-Opener-Policy header to \u0027same-origin\u0027 for documents.\u003c/p\u003e\u003cp\u003e\u0027same-origin-allow-popups\u0027 is considered as less secured and should be avoided.\u003c/p\u003e\u003cp\u003eIf possible, ensure that the end user uses a standards-compliant and modern web browser that supports the Cross-Origin-Opener-Policy header (https://caniuse.com/mdn-http_headers_cross-origin-opener-policy).\u003c/p\u003e",
+                                        "otherinfo":  "",
+                                        "reference":  "\u003cp\u003ehttps://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Opener-Policy\u003c/p\u003e",
+                                        "cweid":  "693",
+                                        "wascid":  "14",
+                                        "sourceid":  "1"
+                                    },
+                                    {
+                                        "pluginid":  "10110",
+                                        "alertRef":  "10110",
+                                        "alert":  "Dangerous JS Functions",
+                                        "name":  "Dangerous JS Functions",
+                                        "riskcode":  "1",
+                                        "confidence":  "1",
+                                        "riskdesc":  "Low (Low)",
+                                        "desc":  "\u003cp\u003eA dangerous JS function seems to be in use that would leave the site vulnerable.\u003c/p\u003e",
+                                        "instances":  [
+                                                          {
+                                                              "id":  "71",
+                                                              "uri":  "http://host.docker.internal:8080/main.js",
+                                                              "nodeName":  "http://host.docker.internal:8080/main.js",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "bypassSecurityTrustHtml(",
+                                                              "otherinfo":  ""
+                                                          }
+                                                      ],
+                                        "count":  "1",
+                                        "systemic":  false,
+                                        "solution":  "\u003cp\u003eSee the references for security advice on the use of these functions.\u003c/p\u003e",
+                                        "otherinfo":  "",
+                                        "reference":  "\u003cp\u003ehttps://v17.angular.io/guide/security\u003c/p\u003e",
+                                        "cweid":  "749",
+                                        "wascid":  "-1",
+                                        "sourceid":  "21"
+                                    },
+                                    {
+                                        "pluginid":  "10063",
+                                        "alertRef":  "10063-2",
+                                        "alert":  "Deprecated Feature Policy Header Set",
+                                        "name":  "Deprecated Feature Policy Header Set",
+                                        "riskcode":  "1",
+                                        "confidence":  "2",
+                                        "riskdesc":  "Low (Medium)",
+                                        "desc":  "\u003cp\u003eThe header has now been renamed to Permissions-Policy.\u003c/p\u003e",
+                                        "instances":  [
+                                                          {
+                                                              "id":  "57",
+                                                              "uri":  "http://host.docker.internal:8080",
+                                                              "nodeName":  "http://host.docker.internal:8080",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "Feature-Policy",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "72",
+                                                              "uri":  "http://host.docker.internal:8080/main.js",
+                                                              "nodeName":  "http://host.docker.internal:8080/main.js",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "Feature-Policy",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "53",
+                                                              "uri":  "http://host.docker.internal:8080/polyfills.js",
+                                                              "nodeName":  "http://host.docker.internal:8080/polyfills.js",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "Feature-Policy",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "68",
+                                                              "uri":  "http://host.docker.internal:8080/scripts.js",
+                                                              "nodeName":  "http://host.docker.internal:8080/scripts.js",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "Feature-Policy",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "58",
+                                                              "uri":  "http://host.docker.internal:8080/sitemap.xml",
+                                                              "nodeName":  "http://host.docker.internal:8080/sitemap.xml",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "Feature-Policy",
+                                                              "otherinfo":  ""
+                                                          }
+                                                      ],
+                                        "count":  "5",
+                                        "systemic":  true,
+                                        "solution":  "\u003cp\u003eEnsure that your web server, application server, load balancer, etc. is configured to set the Permissions-Policy header instead of the Feature-Policy header.\u003c/p\u003e",
+                                        "otherinfo":  "",
+                                        "reference":  "\u003cp\u003ehttps://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Permissions-Policy\u003c/p\u003e\u003cp\u003ehttps://scotthelme.co.uk/goodbye-feature-policy-and-hello-permissions-policy/\u003c/p\u003e",
+                                        "cweid":  "16",
+                                        "wascid":  "15",
+                                        "sourceid":  "1"
+                                    },
+                                    {
+                                        "pluginid":  "10096",
+                                        "alertRef":  "10096",
+                                        "alert":  "Timestamp Disclosure - Unix",
+                                        "name":  "Timestamp Disclosure - Unix",
+                                        "riskcode":  "1",
+                                        "confidence":  "1",
+                                        "riskdesc":  "Low (Low)",
+                                        "desc":  "\u003cp\u003eA timestamp was disclosed by the application/web server. - Unix\u003c/p\u003e",
+                                        "instances":  [
+                                                          {
+                                                              "id":  "16",
+                                                              "uri":  "http://host.docker.internal:8080/styles.css",
+                                                              "nodeName":  "http://host.docker.internal:8080/styles.css",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "1528301887",
+                                                              "otherinfo":  "1528301887, which evaluates to: 2018-06-06 16:18:07."
+                                                          },
+                                                          {
+                                                              "id":  "17",
+                                                              "uri":  "http://host.docker.internal:8080/styles.css",
+                                                              "nodeName":  "http://host.docker.internal:8080/styles.css",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "1578947368",
+                                                              "otherinfo":  "1578947368, which evaluates to: 2020-01-13 20:29:28."
+                                                          },
+                                                          {
+                                                              "id":  "19",
+                                                              "uri":  "http://host.docker.internal:8080/styles.css",
+                                                              "nodeName":  "http://host.docker.internal:8080/styles.css",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "1602209945",
+                                                              "otherinfo":  "1602209945, which evaluates to: 2020-10-09 02:19:05."
+                                                          },
+                                                          {
+                                                              "id":  "22",
+                                                              "uri":  "http://host.docker.internal:8080/styles.css",
+                                                              "nodeName":  "http://host.docker.internal:8080/styles.css",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "1636363636",
+                                                              "otherinfo":  "1636363636, which evaluates to: 2021-11-08 09:27:16."
+                                                          },
+                                                          {
+                                                              "id":  "23",
+                                                              "uri":  "http://host.docker.internal:8080/styles.css",
+                                                              "nodeName":  "http://host.docker.internal:8080/styles.css",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "1818181818",
+                                                              "otherinfo":  "1818181818, which evaluates to: 2027-08-13 18:30:18."
+                                                          }
+                                                      ],
+                                        "count":  "5",
+                                        "systemic":  true,
+                                        "solution":  "\u003cp\u003eManually confirm that the timestamp data is not sensitive, and that the data cannot be aggregated to disclose exploitable patterns.\u003c/p\u003e",
+                                        "otherinfo":  "\u003cp\u003e1528301887, which evaluates to: 2018-06-06 16:18:07.\u003c/p\u003e",
+                                        "reference":  "\u003cp\u003ehttps://cwe.mitre.org/data/definitions/200.html\u003c/p\u003e",
+                                        "cweid":  "497",
+                                        "wascid":  "13",
+                                        "sourceid":  "20"
+                                    },
+                                    {
+                                        "pluginid":  "10109",
+                                        "alertRef":  "10109",
+                                        "alert":  "Modern Web Application",
+                                        "name":  "Modern Web Application",
+                                        "riskcode":  "0",
+                                        "confidence":  "2",
+                                        "riskdesc":  "Informational (Medium)",
+                                        "desc":  "\u003cp\u003eThe application appears to be a modern web application. If you need to explore it automatically then the Client Spider may well be more effective than the standard one.\u003c/p\u003e",
+                                        "instances":  [
+                                                          {
+                                                              "id":  "29",
+                                                              "uri":  "http://host.docker.internal:8080",
+                                                              "nodeName":  "http://host.docker.internal:8080",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "\u003cscript\u003e\n    window.addEventListener(\"load\", function(){\n      window.cookieconsent.initialise({\n        \"palette\": {\n          \"popup\": { \"background\": \"var(--theme-primary)\", \"text\": \"var(--theme-text)\" },\n          \"button\": { \"background\": \"var(--theme-accent)\", \"text\": \"var(--theme-text)\" }\n        },\n        \"theme\": \"classic\",\n        \"position\": \"bottom-right\",\n        \"content\": { \"message\": \"This website uses fruit cookies to ensure you get the juiciest tracking experience.\", \"dismiss\": \"Me want it!\", \"link\": \"But me wait!\", \"href\": \"https://www.youtube.com/watch?v=9PnbKL3wuH4\" }\n      })});\n  \u003c/script\u003e",
+                                                              "otherinfo":  "No links have been found while there are scripts, which is an indication that this is a modern web application."
+                                                          },
+                                                          {
+                                                              "id":  "101",
+                                                              "uri":  "http://host.docker.internal:8080/",
+                                                              "nodeName":  "http://host.docker.internal:8080/",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "\u003cscript\u003e\n    window.addEventListener(\"load\", function(){\n      window.cookieconsent.initialise({\n        \"palette\": {\n          \"popup\": { \"background\": \"var(--theme-primary)\", \"text\": \"var(--theme-text)\" },\n          \"button\": { \"background\": \"var(--theme-accent)\", \"text\": \"var(--theme-text)\" }\n        },\n        \"theme\": \"classic\",\n        \"position\": \"bottom-right\",\n        \"content\": { \"message\": \"This website uses fruit cookies to ensure you get the juiciest tracking experience.\", \"dismiss\": \"Me want it!\", \"link\": \"But me wait!\", \"href\": \"https://www.youtube.com/watch?v=9PnbKL3wuH4\" }\n      })});\n  \u003c/script\u003e",
+                                                              "otherinfo":  "No links have been found while there are scripts, which is an indication that this is a modern web application."
+                                                          },
+                                                          {
+                                                              "id":  "104",
+                                                              "uri":  "http://host.docker.internal:8080/juice-shop/build/routes/fileServer.js:52:13",
+                                                              "nodeName":  "http://host.docker.internal:8080/juice-shop/build/routes/fileServer.js:52:13",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "\u003cscript\u003e\n    window.addEventListener(\"load\", function(){\n      window.cookieconsent.initialise({\n        \"palette\": {\n          \"popup\": { \"background\": \"var(--theme-primary)\", \"text\": \"var(--theme-text)\" },\n          \"button\": { \"background\": \"var(--theme-accent)\", \"text\": \"var(--theme-text)\" }\n        },\n        \"theme\": \"classic\",\n        \"position\": \"bottom-right\",\n        \"content\": { \"message\": \"This website uses fruit cookies to ensure you get the juiciest tracking experience.\", \"dismiss\": \"Me want it!\", \"link\": \"But me wait!\", \"href\": \"https://www.youtube.com/watch?v=9PnbKL3wuH4\" }\n      })});\n  \u003c/script\u003e",
+                                                              "otherinfo":  "No links have been found while there are scripts, which is an indication that this is a modern web application."
+                                                          },
+                                                          {
+                                                              "id":  "107",
+                                                              "uri":  "http://host.docker.internal:8080/juice-shop/node_modules/express/lib/router/layer.js:95:5",
+                                                              "nodeName":  "http://host.docker.internal:8080/juice-shop/node_modules/express/lib/router/layer.js:95:5",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "\u003cscript\u003e\n    window.addEventListener(\"load\", function(){\n      window.cookieconsent.initialise({\n        \"palette\": {\n          \"popup\": { \"background\": \"var(--theme-primary)\", \"text\": \"var(--theme-text)\" },\n          \"button\": { \"background\": \"var(--theme-accent)\", \"text\": \"var(--theme-text)\" }\n        },\n        \"theme\": \"classic\",\n        \"position\": \"bottom-right\",\n        \"content\": { \"message\": \"This website uses fruit cookies to ensure you get the juiciest tracking experience.\", \"dismiss\": \"Me want it!\", \"link\": \"But me wait!\", \"href\": \"https://www.youtube.com/watch?v=9PnbKL3wuH4\" }\n      })});\n  \u003c/script\u003e",
+                                                              "otherinfo":  "No links have been found while there are scripts, which is an indication that this is a modern web application."
+                                                          },
+                                                          {
+                                                              "id":  "28",
+                                                              "uri":  "http://host.docker.internal:8080/sitemap.xml",
+                                                              "nodeName":  "http://host.docker.internal:8080/sitemap.xml",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "\u003cscript\u003e\n    window.addEventListener(\"load\", function(){\n      window.cookieconsent.initialise({\n        \"palette\": {\n          \"popup\": { \"background\": \"var(--theme-primary)\", \"text\": \"var(--theme-text)\" },\n          \"button\": { \"background\": \"var(--theme-accent)\", \"text\": \"var(--theme-text)\" }\n        },\n        \"theme\": \"classic\",\n        \"position\": \"bottom-right\",\n        \"content\": { \"message\": \"This website uses fruit cookies to ensure you get the juiciest tracking experience.\", \"dismiss\": \"Me want it!\", \"link\": \"But me wait!\", \"href\": \"https://www.youtube.com/watch?v=9PnbKL3wuH4\" }\n      })});\n  \u003c/script\u003e",
+                                                              "otherinfo":  "No links have been found while there are scripts, which is an indication that this is a modern web application."
+                                                          }
+                                                      ],
+                                        "count":  "5",
+                                        "systemic":  true,
+                                        "solution":  "\u003cp\u003eThis is an informational alert and so no changes are required.\u003c/p\u003e",
+                                        "otherinfo":  "\u003cp\u003eNo links have been found while there are scripts, which is an indication that this is a modern web application.\u003c/p\u003e",
+                                        "reference":  "",
+                                        "cweid":  "-1",
+                                        "wascid":  "-1",
+                                        "sourceid":  "7"
+                                    },
+                                    {
+                                        "pluginid":  "10049",
+                                        "alertRef":  "10049-1",
+                                        "alert":  "Non-Storable Content",
+                                        "name":  "Non-Storable Content",
+                                        "riskcode":  "0",
+                                        "confidence":  "2",
+                                        "riskdesc":  "Informational (Medium)",
+                                        "desc":  "\u003cp\u003eThe response contents are not storable by caching components such as proxy servers. If the response does not contain sensitive, personal or user-specific information, it may benefit from being stored and cached, to improve performance.\u003c/p\u003e",
+                                        "instances":  [
+                                                          {
+                                                              "id":  "83",
+                                                              "uri":  "http://host.docker.internal:8080/ftp/coupons_2013.md.bak",
+                                                              "nodeName":  "http://host.docker.internal:8080/ftp/coupons_2013.md.bak",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "403",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "86",
+                                                              "uri":  "http://host.docker.internal:8080/ftp/encrypt.pyc",
+                                                              "nodeName":  "http://host.docker.internal:8080/ftp/encrypt.pyc",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "403",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "90",
+                                                              "uri":  "http://host.docker.internal:8080/ftp/package-lock.json.bak",
+                                                              "nodeName":  "http://host.docker.internal:8080/ftp/package-lock.json.bak",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "403",
+                                                              "otherinfo":  ""
+                                                          }
+                                                      ],
+                                        "count":  "3",
+                                        "systemic":  false,
+                                        "solution":  "\u003cp\u003eThe content may be marked as storable by ensuring that the following conditions are satisfied:\u003c/p\u003e\u003cp\u003eThe request method must be understood by the cache and defined as being cacheable (\"GET\", \"HEAD\", and \"POST\" are currently defined as cacheable)\u003c/p\u003e\u003cp\u003eThe response status code must be understood by the cache (one of the 1XX, 2XX, 3XX, 4XX, or 5XX response classes are generally understood)\u003c/p\u003e\u003cp\u003eThe \"no-store\" cache directive must not appear in the request or response header fields\u003c/p\u003e\u003cp\u003eFor caching by \"shared\" caches such as \"proxy\" caches, the \"private\" response directive must not appear in the response\u003c/p\u003e\u003cp\u003eFor caching by \"shared\" caches such as \"proxy\" caches, the \"Authorization\" header field must not appear in the request, unless the response explicitly allows it (using one of the \"must-revalidate\", \"public\", or \"s-maxage\" Cache-Control response directives)\u003c/p\u003e\u003cp\u003eIn addition to the conditions above, at least one of the following conditions must also be satisfied by the response:\u003c/p\u003e\u003cp\u003eIt must contain an \"Expires\" header field\u003c/p\u003e\u003cp\u003eIt must contain a \"max-age\" response directive\u003c/p\u003e\u003cp\u003eFor \"shared\" caches such as \"proxy\" caches, it must contain a \"s-maxage\" response directive\u003c/p\u003e\u003cp\u003eIt must contain a \"Cache Control Extension\" that allows it to be cached\u003c/p\u003e\u003cp\u003eIt must have a status code that is defined as cacheable by default (200, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501).\u003c/p\u003e",
+                                        "otherinfo":  "",
+                                        "reference":  "\u003cp\u003ehttps://datatracker.ietf.org/doc/html/rfc7234\u003c/p\u003e\u003cp\u003ehttps://datatracker.ietf.org/doc/html/rfc7231\u003c/p\u003e\u003cp\u003ehttps://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html\u003c/p\u003e",
+                                        "cweid":  "524",
+                                        "wascid":  "13",
+                                        "sourceid":  "38"
+                                    },
+                                    {
+                                        "pluginid":  "10049",
+                                        "alertRef":  "10049-3",
+                                        "alert":  "Storable and Cacheable Content",
+                                        "name":  "Storable and Cacheable Content",
+                                        "riskcode":  "0",
+                                        "confidence":  "2",
+                                        "riskdesc":  "Informational (Medium)",
+                                        "desc":  "\u003cp\u003eThe response contents are storable by caching components such as proxy servers, and may be retrieved directly from the cache, rather than from the origin server by the caching servers, in response to similar requests from other users. If the response data is sensitive, personal or user-specific, this may result in sensitive information being leaked. In some cases, this may even result in a user gaining complete control of the session of another user, depending on the configuration of the caching components in use in their environment. This is primarily an issue where \"shared\" caching servers such as \"proxy\" caches are configured on the local network. This configuration is typically found in corporate or educational environments, for instance.\u003c/p\u003e",
+                                        "instances":  [
+                                                          {
+                                                              "id":  "51",
+                                                              "uri":  "http://host.docker.internal:8080/robots.txt",
+                                                              "nodeName":  "http://host.docker.internal:8080/robots.txt",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "",
+                                                              "otherinfo":  "In the absence of an explicitly specified caching lifetime directive in the response, a liberal lifetime heuristic of 1 year was assumed. This is permitted by rfc7234."
+                                                          }
+                                                      ],
+                                        "count":  "1",
+                                        "systemic":  false,
+                                        "solution":  "\u003cp\u003eValidate that the response does not contain sensitive, personal or user-specific information. If it does, consider the use of the following HTTP response headers, to limit, or prevent the content being stored and retrieved from the cache by another user:\u003c/p\u003e\u003cp\u003eCache-Control: no-cache, no-store, must-revalidate, private\u003c/p\u003e\u003cp\u003ePragma: no-cache\u003c/p\u003e\u003cp\u003eExpires: 0\u003c/p\u003e\u003cp\u003eThis configuration directs both HTTP 1.0 and HTTP 1.1 compliant caching servers to not store the response, and to not retrieve the response (without validation) from the cache, in response to a similar request.\u003c/p\u003e",
+                                        "otherinfo":  "\u003cp\u003eIn the absence of an explicitly specified caching lifetime directive in the response, a liberal lifetime heuristic of 1 year was assumed. This is permitted by rfc7234.\u003c/p\u003e",
+                                        "reference":  "\u003cp\u003ehttps://datatracker.ietf.org/doc/html/rfc7234\u003c/p\u003e\u003cp\u003ehttps://datatracker.ietf.org/doc/html/rfc7231\u003c/p\u003e\u003cp\u003ehttps://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html\u003c/p\u003e",
+                                        "cweid":  "524",
+                                        "wascid":  "13",
+                                        "sourceid":  "6"
+                                    },
+                                    {
+                                        "pluginid":  "10049",
+                                        "alertRef":  "10049-2",
+                                        "alert":  "Storable but Non-Cacheable Content",
+                                        "name":  "Storable but Non-Cacheable Content",
+                                        "riskcode":  "0",
+                                        "confidence":  "2",
+                                        "riskdesc":  "Informational (Medium)",
+                                        "desc":  "\u003cp\u003eThe response contents are storable by caching components such as proxy servers, but will not be retrieved directly from the cache, without validating the request upstream, in response to similar requests from other users.\u003c/p\u003e",
+                                        "instances":  [
+                                                          {
+                                                              "id":  "54",
+                                                              "uri":  "http://host.docker.internal:8080",
+                                                              "nodeName":  "http://host.docker.internal:8080",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "max-age=0",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "9",
+                                                              "uri":  "http://host.docker.internal:8080/assets/public/favicon_js.ico",
+                                                              "nodeName":  "http://host.docker.internal:8080/assets/public/favicon_js.ico",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "max-age=0",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "52",
+                                                              "uri":  "http://host.docker.internal:8080/polyfills.js",
+                                                              "nodeName":  "http://host.docker.internal:8080/polyfills.js",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "max-age=0",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "55",
+                                                              "uri":  "http://host.docker.internal:8080/sitemap.xml",
+                                                              "nodeName":  "http://host.docker.internal:8080/sitemap.xml",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "max-age=0",
+                                                              "otherinfo":  ""
+                                                          },
+                                                          {
+                                                              "id":  "66",
+                                                              "uri":  "http://host.docker.internal:8080/styles.css",
+                                                              "nodeName":  "http://host.docker.internal:8080/styles.css",
+                                                              "method":  "GET",
+                                                              "param":  "",
+                                                              "attack":  "",
+                                                              "evidence":  "max-age=0",
+                                                              "otherinfo":  ""
+                                                          }
+                                                      ],
+                                        "count":  "5",
+                                        "systemic":  true,
+                                        "solution":  "",
+                                        "otherinfo":  "",
+                                        "reference":  "\u003cp\u003ehttps://datatracker.ietf.org/doc/html/rfc7234\u003c/p\u003e\u003cp\u003ehttps://datatracker.ietf.org/doc/html/rfc7231\u003c/p\u003e\u003cp\u003ehttps://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html\u003c/p\u003e",
+                                        "cweid":  "524",
+                                        "wascid":  "13",
+                                        "sourceid":  "1"
+                                    }
+                                ]
+                 }
+             ],
+    "sequences":  [
+
+                  ]
+}
