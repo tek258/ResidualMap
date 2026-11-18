@@ -1,37 +1,37 @@
-vuln_id,waf,ids,iam,segmentasyon,yama,dayanak,gerekce,emin_degil
-V001,engeller,tespit eder,etkisiz,etkisiz,etkisiz,kural seti,CRS 942 SQLi kuralı mevcuttur ancak WAF DetectionOnly modunda olduğundan S3K5'ten sonra test edilecek,evet
-V002,engeller,tespit eder,etkisiz,etkisiz,etkisiz,kural seti,CRS 942 SQLi kuralı mevcuttur ancak engelleme modu aktif olmadığından S3K5'ten sonra test edilecek,evet
-V003,engeller,tespit eder,etkisiz,etkisiz,etkisiz,kural seti,CRS 941 XSS kural seti mevcuttur ancak WAF DetectionOnly modunda olduğundan S3K5'ten sonra test edilecek,
-V004,azaltır,tespit eder,etkisiz,etkisiz,etkisiz,kural seti,DOM XSS istemci tarafında çalıştığından WAF engellemeyebilir veya yalnızca azaltır; S3K5'ten sonra test edilecek,evet
-V005,engeller,tespit eder,azaltır,etkisiz,etkisiz,kural seti,CRS 941 kural seti mevcuttur ancak API gövdesi engellemesi henüz test edilmediğinden S3K5'ten sonra test edilecek,evet
-V006,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,varsayım,IDOR mantıksal bir yetkilendirme kusurudur; WAF ve IDS meşru istekten ayıramaz,evet
-V007,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,varsayım,Sepet manipülasyonu mantıksal yetki hatası olduğundan ağ ve kimlik kontrolleri nesne bazlı erişimi engelleyemez,evet
-V008,etkisiz,etkisiz,engeller,etkisiz,etkisiz,varsayım,Keycloak kayıt sürecini devralırsa rol ataması engellenebilir ancak planda bu devir henüz kesinleşmemiştir,evet
-V009,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,varsayım,/ftp dizin listeleme meşru bir HTTP GET isteği olduğundan WAF ve IDS tarafından engellenemez,
-V010,azaltır,tespit eder,azaltır,etkisiz,etkisiz,kural seti,CRS 934 kuralı geneldir ve XXE'ye özel değildir; dosya yükleme içeriğinin incelenmesi şüpheli olup S3K5'ten sonra test edilecek,evet
-V011,etkisiz,etkisiz,engeller,etkisiz,etkisiz,varsayım,Keycloak parola sıfırlamayı devralırsa güvenlik sorusu kalkar ancak mevcut planda bu devir kesinleşmemiştir,evet
-V012,azaltır,etkisiz,azaltır,etkisiz,etkisiz,varsayım,WAF ve Keycloak Bearer token yapısı klasik CSRF isteklerini zorlaştırabilir ancak uygulama seviyesinde koruma gereklidir,evet
-V013,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,varsayım,Uygulamanın kendi allowlist mantığı zayıf olduğundan ağ ve kimlik katmanları geçerli parametreli yönlendirmeyi engelleyemez,
-V014,etkisiz,etkisiz,engeller,etkisiz,etkisiz,varsayım,Keycloak merkezi doğrulamayı devralırsa sabit hesaplar geçersiz kalabilir ancak entegrasyon kapsamı netleşmemiştir,evet
-V015,azaltır,tespit eder,engeller,etkisiz,etkisiz,varsayım,Keycloak hesap kilitleme brute force'u engeller ancak login devri planda henüz netleşmemiştir,evet
-V016,azaltır,etkisiz,etkisiz,etkisiz,etkisiz,kural seti,Nginx ters vekili ve WAF yanıt filtreleri sunucu hatalarını yakalayıp genel hata sayfası dönerek stack trace sızıntısını azaltır,
-V017,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,test,4 Kasım WAF arkası taramasında CSP başlığının eklenmediği ve zafiyetin devam ettiği görüldü,
-V018,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,test,4 Kasım WAF arkası taramasında CORS başlıklarının yapılandırılmadığı ve bulgunun devam ettiği tespit edildi,
-V019,engeller,etkisiz,etkisiz,etkisiz,etkisiz,test,WAF kurulunca sunucu sürüm bilgisi kayboldu (4 Kasım taraması),
-V020,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,varsayım,İstemci tarafında çalışan derlenmiş JavaScript kodundaki güvensiz fonksiyonlara ağ ve kimlik kontrolleri etki edemez,
-V021,etkisiz,etkisiz,etkisiz,etkisiz,etkisiz,test,4 Kasım WAF arkası taramasında COOP/COEP başlıklarının eklenmediği ve bulgunun sürdüğü görüldü,
-V022,etkisiz,etkisiz,azaltır,etkisiz,engeller,varsayım,WAF JWT kriptografik algoritmasını denetlemez; Keycloak entegrasyonu riski azaltabilir ve yama zafiyeti engeller,evet
-V023,azaltır,etkisiz,etkisiz,etkisiz,engeller,kural seti,CRS kuralları gelen isteklerdeki __proto__ kalıplarını kısmen filtreler; kesin çözüm kütüphanenin güncellenmesidir,evet
-V024,azaltır,tespit eder,azaltır,etkisiz,engeller,kural seti,CRS 932 RCE kuralları mevcuttur ancak kütüphaneye giden kod yolunun erişilebilirliği doğrulanmadığından en fazla azaltır; S3K5'ten sonra test edilecek,evet
-V025,etkisiz,etkisiz,azaltır,etkisiz,engeller,varsayım,Kriptografik algoritma zayıflığına ağ kontrolleri etki edemez; Keycloak kullanımı riski azaltabilir ve yama açığı engeller,evet
-V026,etkisiz,etkisiz,azaltır,etkisiz,engeller,varsayım,Zayıf rastgelelik uygulama içi bir kusurdur; Keycloak riski azaltabilir ve kesin çözüm kütüphanenin güncellenmesidir,evet
-V027,etkisiz,etkisiz,etkisiz,etkisiz,engeller,varsayım,Dizin geçişi yolu arşiv dosyasının içinde yer aldığından WAF ve IDS göremez; yalnızca kütüphane yaması engeller,
-V028,azaltır,etkisiz,etkisiz,etkisiz,engeller,kural seti,Nginx ters vekili X-Forwarded-For başlıklarını yöneterek IP taklit riskini azaltır; yama kütüphane açığını engeller,
-V029,etkisiz,etkisiz,etkisiz,etkisiz,engeller,varsayım,Arşiv dosyası içindeki Unicode normalizasyon hatasına ağ kontrolleri erişemez; yalnızca kütüphanenin güncellenmesi çözer,
-V030,etkisiz,etkisiz,azaltır,etkisiz,engeller,varsayım,Keycloak merkezi kimlik denetimi yetki kontrolünü devralırsa express-jwt riski azalır; kütüphane güncellemesi engeller,evet
-V031,azaltır,tespit eder,etkisiz,etkisiz,engeller,kural seti,CRS 930 LFI kuralları mevcuttur ancak moment kod yolunun erişilebilirliği doğrulanmadığından en fazla azaltır; S3K5'ten sonra test edilecek,evet
-V032,azaltır,etkisiz,etkisiz,etkisiz,engeller,varsayım,WAF istek boyutu sınırları ile ReDoS saldırılarını kısmen zorlaştırır; kesin çözüm kütüphanenin güncellenmesidir,
-V033,engeller,etkisiz,etkisiz,etkisiz,engeller,kural seti,Nginx ters vekili HTTP başlık boyutu ve sayısı sınırları ile aşırı başlık DoS paketlerini backend'e ulaşmadan engeller,
-V034,azaltır,etkisiz,azaltır,etkisiz,engeller,kural seti,CRS multipart istek gövdesi denetimleri hatalı paketleri filtreleyerek DoS riskini azaltır; yama kütüphane hatasını engeller,evet
-V035,etkisiz,etkisiz,etkisiz,etkisiz,engeller,varsayım,Kütüphane zafiyeti; WAF ve IDS erişemez sadece güncelleme çözer,
-V036,etkisiz,etkisiz,etkisiz,etkisiz,engeller,varsayım,İşletim sistemi libc kütüphanesi bellek zafiyetine ağ kontrolleri etki edemez; paket güncellemesi ile engellenir,
+vuln_id,waf,sanal_yama,ids,iam,segmentasyon,yama,dayanak,kanit
+V001,azaltir,etkisiz,tespit eder,kurulmadi,kurulmadi,etkisiz,test,test-waf.sh:35 (V001 SQLi); CRS 942100 tek kuralla tam esikte (5 puan) engelliyor guvenlik payi olmadigindan etki azaltir
+V002,azaltir,etkisiz,tespit eder,kurulmadi,kurulmadi,etkisiz,test,test-waf.sh:28 (arama SQLi); CRS 942100 tek kuralla tam esikte (5 puan) engelliyor guvenlik payi olmadigindan etki azaltir
+V003,etkisiz,engeller,etkisiz,kurulmadi,kurulmadi,etkisiz,test,test-waf.sh:39 (V003 NoSQLi); CRS tek basina yakalamiyor sanal yama SY-1 (kural 10100) ile 403 aliyor
+V004,azaltir,etkisiz,tespit eder,kurulmadi,kurulmadi,etkisiz,gerekce,test-waf.sh:29 arama parametresini engeller fakat istemci tarafi DOM manipulasyonunu WAF goremez bu yuzden etki azaltir
+V005,engeller,etkisiz,tespit eder,kurulmadi,kurulmadi,etkisiz,test,test-waf.sh:44 (V005 XSS); I-1 altindaki PUT /api/Products govdesinde XSS 5 kural ve 25 puanla 403 aliyor
+V006,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,Mantıksal yetkilendirme acigi; istek gecerli HTTP GET formatinda oldugundan WAF ve IDS tarafindan engellenemez
+V007,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,Sepet manipulasyonu mantiksal yetki hatasidir; ag filtreleri nesne bazli yetki kontrolu yapamaz
+V008,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,Kayit JSON govdesindeki role parametresi gecerli veri formatinda oldugundan WAF sema denetimi yapmaz
+V009,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,/ftp dizin listeleme mesru bir HTTP GET istegidir; WAF ve IDS kurallarinca engellenmez
+V010,azaltir,etkisiz,tespit eder,kurulmadi,kurulmadi,etkisiz,gerekce,CRS 934 genel kurallardir ve dosya yukleme (B2B XML) govdesi WAF tarafindan tam denetlenmeyebilir; etkisi en fazla azaltir
+V011,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,Guvenlik sorusu yaniti uygulama ici is mantigidir; Keycloak kurulmadigindan mevcut savunma katmanlari etkisizdir
+V012,azaltir,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,WAF Origin/Referer anomalilerini kismen sinirlandirabilir ancak tam koruma icin uygulama ici CSRF tokeni gerekir
+V013,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,Yonlendirme adresi gecerli URL parametresi bicimindedir; WAF hedef URL allowlist denetimi yapmaz
+V014,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,Istemci tarafi JavaScript dosyasina gomulu statik kimlik bilgilerine ag kontrolleri etki edemez
+V015,azaltir,etkisiz,tespit eder,kurulmadi,kurulmadi,etkisiz,gerekce,WAF IP bazli hiz sinirlandirmasiyla brute force saldirisini zorlastirir ancak hesap kilitleme mekanizmasi yoktur
+V016,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,docs/waf-engelleme-notu.md Bolum 10; JSON yanitlar WAF tarafindan denetlenmediginden hata sizintisina etkisi yoktur
+V017,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,test,zap_baseline.json karsilastirmasi; 4 Kasim WAF arkasi taramasinda CSP basligi eklenmediginden bulgu suruyor
+V018,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,test,zap_baseline.json karsilastirmasi; 4 Kasim WAF arkasi taramasinda CORS basligi kisitlanmadigindan bulgu suruyor
+V019,engeller,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,test,zap_baseline.json karsilastirmasi; WAF ters vekili devreye girince Server surum bilgisi kayboldu (4 Kasim)
+V020,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,Istemci tarafinda tarayicida calisan JavaScript koduna sunucu onundeki WAF ve IDS mudahale edemez
+V021,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,test,zap_baseline.json karsilastirmasi; 4 Kasim WAF arkasi taramasinda COOP/COEP basliklari eklenmediginden bulgu suruyor
+V022,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Kutuphane zafiyeti; WAF token kriptografik imzasini denetlemez dogrudan HTTP erisim yolu varsayimsaldir
+V023,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Kutuphane zafiyeti; WAF dahili nesne prototip birlestirmesini goremez kod yolu erisilebilirligi varsayimsaldir
+V024,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Kutuphane zafiyeti; sablon komut enjeksiyonunun HTTP uzerinden tetiklenebilirligi dogrulanmamistir
+V025,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Kutuphane ici kriptografik algoritma zayifligi; ag kontrolleri etkisizdir kutuphane yamasi engeller
+V026,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Kutuphane ici rastgelelik kusuru; ag kontrolleri etkisizdir yalnizca kutuphanenin guncellenmesi cozer
+V027,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,gerekce,Dizin gecisi yolu yuklenen arsiv dosyasinin icinde kaldigindan WAF ve IDS goremez; yalnizca kutuphane yamasi cozer
+V028,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,gerekce,proxy-addr kutuphane guven zinciri hatasidir; Nginx arkasinda uygulama seviyesinde kalir ve yama gerektirir
+V029,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Arsiv dosyasi icindeki Unicode normalizasyon hatasina ag kontrolleri erisemez; yalnizca kutuphane guncellemesi cozer
+V030,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,express-jwt middleware yetkilendirme atlatmasi; WAF mantiksal yetki kontrolunu devralamaz yama ile giderilir
+V031,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Moment kutuphanesi zafiyeti; disaridan HTTP ile tetiklenebilirligi dogrulanmadigindan etkisi WAF icin etkisizdir
+V032,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Moment ReDoS zafiyeti; kutuphane ici regex hatasidir ve WAF kural setinden bagimsizdir
+V033,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,gerekce,docs/waf-engelleme-notu.md Bolum 10; WAF WebSocket ve socket.io mesaj icerigini denetleyemez yama gerekir
+V034,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Multer kutuphane ici multipart hata yonetimi zafiyeti; kutuphane seviyesinde duzeltilmelidir
+V035,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,docs/waf-engelleme-notu.md; isletim sistemi libc6 zafiyeti olup WAF ve IDS erisemez yalnizca yama cozer
+V036,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Isletim sistemi libc6 bellek zafiyetine ag kontrolleri etki edemez; yalnizca paket guncellemesi cozer
