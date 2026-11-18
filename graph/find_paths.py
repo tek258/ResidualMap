@@ -3,16 +3,33 @@ import networkx as nx
 import os
 
 
+<<<<<<< HEAD
 def find_attack_paths():
     # Betiğin bulunduğu konum
     base_dir = os.path.dirname(os.path.abspath(__file__))
     edges_file = os.path.join(base_dir, 'edges.json')
     output_file = os.path.join(base_dir, 'paths.json')
+=======
+def find_attack_paths(edges_file=None, output_file=None):
+    """Yolları bulup output_file'a yazar ve döndürür.
+
+    Parametreler verilmezse graph/edges.json ve graph/paths.json kullanılır
+    (komut satırından çalıştırma). Uygulama kendi çalıştırma klasörünü verir.
+    """
+    # Betiğin bulunduğu konum
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    edges_file = edges_file or os.path.join(base_dir, 'edges.json')
+    output_file = output_file or os.path.join(base_dir, 'paths.json')
+>>>>>>> 3ade3d77585b20b4a76e18ae2caeaf63cc2591fb
 
     # 1. edges.json dosyasının var olup olmadığını kontrol ediyoruz
     if not os.path.exists(edges_file):
         print(f"Hata: {edges_file} dosyası bulunamadı!")
+<<<<<<< HEAD
         return
+=======
+        return None
+>>>>>>> 3ade3d77585b20b4a76e18ae2caeaf63cc2591fb
 
     # 2. Dosyanın belleğe yüklenmesi
     with open(edges_file, 'r', encoding='utf-8') as f:
@@ -59,6 +76,10 @@ def find_attack_paths():
         json.dump(paths_data, f, indent=4, ensure_ascii=False)
 
     print(f"Başarılı! Toplam {len(paths_data)} saldırı yolu bulundu ve '{output_file}' dosyasına kaydedildi.")
+<<<<<<< HEAD
+=======
+    return paths_data
+>>>>>>> 3ade3d77585b20b4a76e18ae2caeaf63cc2591fb
 
 
 if __name__ == '__main__':

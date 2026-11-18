@@ -54,7 +54,7 @@ Aşağıdaki tablo mevcut `inventory_v1.0.csv`'deki CWE ve notlara göre öneril
 | V011 | none | none | Zayıf güvenlik sorusu (yalnızca "Jim" hesabı) |
 | V012 | none | none | CSRF |
 | V013 | none | none | Açık yönlendirme |
-| V014 | none | admin_credentials * | Açıkta kalan kimlik bilgileri — kime ait olduğu [EMİN DEĞİL], K2 doğrulamalı |
+| V014 | none | none | İstemci tarafında sabitlenmiş test hesabı kimlik bilgileri; challenge verisi kullanıcıyı veya admin olup olmadığını belirtmiyor |
 | V015 | none | admin_session | Zayıf admin parolası, brute force |
 | V016 | none | none | Ayrıntılı hata mesajı |
 | V017 | none | none | CSP başlığı yok (enabler, kendi başına kazanım değil) |
@@ -86,4 +86,4 @@ Bu değerlerle `generate_edges.py` çalıştırıldığında ortaya çıkan **te
 V002 (UNION SQLi → password_hashes) → V025 (zayıf PBKDF2, password_hashes gerektirir)
 ```
 
-Bu az sayıda gibi görünse de doğru olan budur: 36 zafiyetin geri kalanı bağımsız giriş→zafiyet→hedef yolları olarak kalır, bu da gerçek bir saldırı yüzeyinde beklenen bir durumdur. V014 doğrulanıp admin'e ait olduğu kesinleşirse, `node_target_admin`'e doğrudan `Leads To` olarak da düşünülebilir (ayrı bir zincir değil, çünkü düz metin parola biliniyorsa doğrudan giriş yapılır — ara adım gerekmez).
+Bu az sayıda gibi görünse de doğru olan budur: 36 zafiyetin geri kalanı bağımsız giriş→zafiyet→hedef yolları olarak kalır, bu da gerçek bir saldırı yüzeyinde beklenen bir durumdur. V014'ün kaynağı yalnızca kimlik bilgilerinin istemci tarafında sabitlenmiş, geçerli bir test hesabına ait olduğunu söylüyor; hangi kullanıcıya ait olduğunu veya hesabın admin olduğunu doğrulamıyor. Bu nedenle V014'e `admin_credentials` atanmadı. Hesap aidiyeti güvenilir kanıtla doğrulanırsa envanter ve bu eşleme yeniden değerlendirilmelidir.

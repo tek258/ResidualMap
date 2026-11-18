@@ -37,6 +37,10 @@ katmanlı bir savunma tasarlar ve savunma öncesi/sonrası artık riski ölçer.
     ├── defense/ → WAF, IDS, SIEM, ağ segmentasyonu yapılandırmaları
     └── report/ → teknik rapor ve görseller
 
+## Veri Akış Şekli
+![Veri akışı](docs/veri-akisi.png)
+Düz oklar scriptlerle otomatik, kesikli oklar elle yapılan adımları gösterir. Tüm tablolar vuln_id ile birleşir.
+
 ## Lisans
 
 Bu proje eğitim amaçlıdır. Hedef uygulama olan OWASP Juice Shop MIT lisansı ile dağıtılmaktadır.

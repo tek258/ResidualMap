@@ -1,0 +1,102 @@
+{
+  "realm": "lab",
+  "displayName": "ResidualMap Lab",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": false,
+  "bruteForceProtected": true,
+  "failureFactor": 5,
+  "roles": {
+    "realm": [
+      {
+        "name": "ops",
+        "description": "Operasyon personeli: /ftp ve /metrics erisimi"
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "personel",
+      "enabled": true,
+      "email": "personel@lab.local",
+      "emailVerified": true,
+      "firstName": "Lab",
+      "lastName": "Personel",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Personel-Lab-2026!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ops"
+      ]
+    },
+    {
+      "username": "misafir",
+      "enabled": true,
+      "email": "misafir@lab.local",
+      "emailVerified": true,
+      "firstName": "Lab",
+      "lastName": "Misafir",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Misafir-Lab-2026!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": []
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "juice-ops",
+      "name": "Juice Shop operasyon yollari (oauth2-proxy)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "kRCZ1CV98Yjb3pZZKLuJJiuTfj2Mk39P",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "defaultClientScopes": [
+        "basic",
+        "profile",
+        "email",
+        "roles",
+        "web-origins",
+        "acr"
+      ],
+      "optionalClientScopes": [
+        "offline_access"
+      ],
+      "redirectUris": [
+        "http://localhost:8080/oauth2/callback"
+      ],
+      "webOrigins": [
+        "http://localhost:8080"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:8080/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "juice-ops",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ]
+}
