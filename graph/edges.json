@@ -2,433 +2,577 @@
     {
         "source": "node_entry_login",
         "target": "V001",
-        "relation": "Entry Point",
-        "technique_name": "Initial Access via Authentication & Session"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via login",
+        "vuln_id": "V001",
+        "basis": "rule"
     },
     {
         "source": "V001",
         "target": "node_target_admin",
-        "relation": "Leads To",
-        "technique_name": "Unauthorized Administrator Access"
-    },
-    {
-        "source": "node_entry_api",
-        "target": "V002",
-        "relation": "Entry Point",
-        "technique_name": "Vector via API"
-    },
-    {
-        "source": "V002",
-        "target": "node_target_leak",
-        "relation": "Leads To",
-        "technique_name": "Sensitive Data Exfiltration & Database Exposure"
+        "relation": "vuln_to_target",
+        "technique_name": "SQL Injection - login formu (Login Admin)",
+        "vuln_id": "V001",
+        "basis": "rule"
     },
     {
         "source": "node_entry_search",
+        "target": "V002",
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via search",
+        "vuln_id": "V002",
+        "basis": "rule"
+    },
+    {
+        "source": "V002",
+        "target": "node_target_admin",
+        "relation": "vuln_to_target",
+        "technique_name": "UNION SQL Injection - urun arama (Database Schema)",
+        "vuln_id": "V002",
+        "basis": "rule"
+    },
+    {
+        "source": "node_entry_web",
         "target": "V003",
-        "relation": "Entry Point",
-        "technique_name": "Vector via SEARCH"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V003",
+        "basis": "rule"
     },
     {
         "source": "V003",
         "target": "node_target_account_takeover",
-        "relation": "Leads To",
-        "technique_name": "Account Takeover via Client-Side Attack"
+        "relation": "vuln_to_target",
+        "technique_name": "Reflected XSS - siparis takip",
+        "vuln_id": "V003",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_login",
+        "source": "node_entry_search",
         "target": "V004",
-        "relation": "Entry Point",
-        "technique_name": "Vector via LOGIN"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via search",
+        "vuln_id": "V004",
+        "basis": "rule"
     },
     {
         "source": "V004",
         "target": "node_target_account_takeover",
-        "relation": "Leads To",
-        "technique_name": "Account Takeover via Client-Side Attack"
+        "relation": "vuln_to_target",
+        "technique_name": "DOM XSS - arama kutusu",
+        "vuln_id": "V004",
+        "basis": "rule"
     },
     {
         "source": "node_entry_api",
         "target": "V005",
-        "relation": "Entry Point",
-        "technique_name": "API Interface & Service Exposure"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via api",
+        "vuln_id": "V005",
+        "basis": "rule"
     },
     {
         "source": "V005",
         "target": "node_target_account_takeover",
-        "relation": "Leads To",
-        "technique_name": "Account Takeover via Client-Side Attack"
+        "relation": "vuln_to_target",
+        "technique_name": "API-only (Stored) XSS",
+        "vuln_id": "V005",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_search",
+        "source": "node_entry_api",
         "target": "V006",
-        "relation": "Entry Point",
-        "technique_name": "Vector via SEARCH"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via api",
+        "vuln_id": "V006",
+        "basis": "rule"
     },
     {
         "source": "V006",
         "target": "node_target_account_takeover",
-        "relation": "Leads To",
-        "technique_name": "Account Takeover via Client-Side Attack"
+        "relation": "vuln_to_target",
+        "technique_name": "IDOR - baska kullanicinin sepetini gorme (View Basket)",
+        "vuln_id": "V006",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_login",
+        "source": "node_entry_api",
         "target": "V007",
-        "relation": "Entry Point",
-        "technique_name": "Vector via LOGIN"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via api",
+        "vuln_id": "V007",
+        "basis": "rule"
     },
     {
         "source": "V007",
         "target": "node_target_account_takeover",
-        "relation": "Leads To",
-        "technique_name": "Account Takeover via Client-Side Attack"
+        "relation": "vuln_to_target",
+        "technique_name": "IDOR - baska kullanicinin sepetini degistirme (Manipulate Basket)",
+        "vuln_id": "V007",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_web",
         "target": "V008",
-        "relation": "Entry Point",
-        "technique_name": "Vector via API"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V008",
+        "basis": "rule"
     },
     {
         "source": "V008",
         "target": "node_target_admin",
-        "relation": "Leads To",
-        "technique_name": "Unauthorized Administrator Access"
+        "relation": "vuln_to_target",
+        "technique_name": "Mass Assignment - admin kaydi (Admin Registration)",
+        "vuln_id": "V008",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_search",
+        "source": "node_entry_web",
         "target": "V009",
-        "relation": "Entry Point",
-        "technique_name": "Vector via SEARCH"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V009",
+        "basis": "rule"
     },
     {
         "source": "V009",
         "target": "node_target_leak",
-        "relation": "Leads To",
-        "technique_name": "Sensitive Data Exfiltration & Database Exposure"
+        "relation": "vuln_to_target",
+        "technique_name": "Dizin listeleme - /ftp gizli dokuman (Confidential Document)",
+        "vuln_id": "V009",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_login",
+        "source": "node_entry_api",
         "target": "V010",
-        "relation": "Entry Point",
-        "technique_name": "Vector via LOGIN"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via api",
+        "vuln_id": "V010",
+        "basis": "rule"
     },
     {
         "source": "V010",
         "target": "node_target_leak",
-        "relation": "Leads To",
-        "technique_name": "Sensitive Data Exfiltration & Database Exposure"
+        "relation": "vuln_to_target",
+        "technique_name": "XXE - dosya okuma (XXE Data Access)",
+        "vuln_id": "V010",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_web",
         "target": "V011",
-        "relation": "Entry Point",
-        "technique_name": "Vector via API"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V011",
+        "basis": "rule"
     },
     {
         "source": "V011",
         "target": "node_target_account_takeover",
-        "relation": "Leads To",
-        "technique_name": "Account Takeover via Client-Side Attack"
+        "relation": "vuln_to_target",
+        "technique_name": "Zayif guvenlik sorusu ile sifre sifirlama (Reset Jim's Password)",
+        "vuln_id": "V011",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_search",
+        "source": "node_entry_web",
         "target": "V012",
-        "relation": "Entry Point",
-        "technique_name": "Vector via SEARCH"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V012",
+        "basis": "rule"
     },
     {
         "source": "V012",
         "target": "node_target_account_takeover",
-        "relation": "Leads To",
-        "technique_name": "Account Takeover via Client-Side Attack"
+        "relation": "vuln_to_target",
+        "technique_name": "CSRF - profil islemi",
+        "vuln_id": "V012",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_login",
+        "source": "node_entry_web",
         "target": "V013",
-        "relation": "Entry Point",
-        "technique_name": "Vector via LOGIN"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V013",
+        "basis": "rule"
     },
     {
         "source": "V013",
         "target": "node_target_account_takeover",
-        "relation": "Leads To",
-        "technique_name": "Account Takeover via Client-Side Attack"
+        "relation": "vuln_to_target",
+        "technique_name": "Acik yonlendirme - eski allowlist (Outdated Allowlist)",
+        "vuln_id": "V013",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_login",
+        "source": "node_entry_web",
         "target": "V014",
-        "relation": "Entry Point",
-        "technique_name": "Initial Access via Authentication & Session"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V014",
+        "basis": "rule"
     },
     {
         "source": "V014",
         "target": "node_target_admin",
-        "relation": "Leads To",
-        "technique_name": "Unauthorized Administrator Access"
+        "relation": "vuln_to_target",
+        "technique_name": "Acikta kalan kimlik bilgileri (Exposed Credentials)",
+        "vuln_id": "V014",
+        "basis": "rule"
     },
     {
         "source": "node_entry_login",
         "target": "V015",
-        "relation": "Entry Point",
-        "technique_name": "Initial Access via Authentication & Session"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via login",
+        "vuln_id": "V015",
+        "basis": "rule"
     },
     {
         "source": "V015",
-        "target": "node_target_admin",
-        "relation": "Leads To",
-        "technique_name": "Unauthorized Administrator Access"
+        "target": "node_target_account_takeover",
+        "relation": "vuln_to_target",
+        "technique_name": "Zayif admin parolasi - brute force (Password Strength)",
+        "vuln_id": "V015",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_login",
+        "source": "node_entry_web",
         "target": "V016",
-        "relation": "Entry Point",
-        "technique_name": "Vector via LOGIN"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V016",
+        "basis": "rule"
     },
     {
         "source": "V016",
         "target": "node_target_leak",
-        "relation": "Leads To",
-        "technique_name": "Sensitive Data Exfiltration & Database Exposure"
+        "relation": "vuln_to_target",
+        "technique_name": "Ayrintili hata mesaji (Error Handling)",
+        "vuln_id": "V016",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_web",
         "target": "V017",
-        "relation": "Entry Point",
-        "technique_name": "Vector via API"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V017",
+        "basis": "rule"
     },
     {
         "source": "V017",
-        "target": "node_target_account_takeover",
-        "relation": "Leads To",
-        "technique_name": "Account Takeover via Client-Side Attack"
+        "target": "node_target_admin",
+        "relation": "vuln_to_target",
+        "technique_name": "CSP basligi yok",
+        "vuln_id": "V017",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_search",
+        "source": "node_entry_web",
         "target": "V018",
-        "relation": "Entry Point",
-        "technique_name": "Vector via SEARCH"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V018",
+        "basis": "rule"
     },
     {
         "source": "V018",
-        "target": "node_target_leak",
-        "relation": "Leads To",
-        "technique_name": "Sensitive Data Exfiltration & Database Exposure"
+        "target": "node_target_admin",
+        "relation": "vuln_to_target",
+        "technique_name": "Cross-Domain Misconfiguration (genis CORS)",
+        "vuln_id": "V018",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_login",
+        "source": "node_entry_web",
         "target": "V019",
-        "relation": "Entry Point",
-        "technique_name": "Vector via LOGIN"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V019",
+        "basis": "rule"
     },
     {
         "source": "V019",
         "target": "node_target_leak",
-        "relation": "Leads To",
-        "technique_name": "Sensitive Data Exfiltration & Database Exposure"
+        "relation": "vuln_to_target",
+        "technique_name": "Server basliginda surum bilgisi sizintisi",
+        "vuln_id": "V019",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_web",
         "target": "V020",
-        "relation": "Entry Point",
-        "technique_name": "Vector via API"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V020",
+        "basis": "rule"
     },
     {
         "source": "V020",
-        "target": "node_target_account_takeover",
-        "relation": "Leads To",
-        "technique_name": "Account Takeover via Client-Side Attack"
+        "target": "node_target_rce",
+        "relation": "vuln_to_target",
+        "technique_name": "Tehlikeli JS fonksiyonlari",
+        "vuln_id": "V020",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_search",
+        "source": "node_entry_web",
         "target": "V021",
-        "relation": "Entry Point",
-        "technique_name": "Vector via SEARCH"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via web",
+        "vuln_id": "V021",
+        "basis": "rule"
     },
     {
         "source": "V021",
-        "target": "node_target_account_takeover",
-        "relation": "Leads To",
-        "technique_name": "Account Takeover via Client-Side Attack"
+        "target": "node_target_admin",
+        "relation": "vuln_to_target",
+        "technique_name": "COOP/COEP basliklari eksik",
+        "vuln_id": "V021",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_login",
+        "source": "node_entry_dependency",
         "target": "V022",
-        "relation": "Entry Point",
-        "technique_name": "Vector via LOGIN"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V022",
+        "basis": "rule"
     },
     {
         "source": "V022",
-        "target": "node_target_admin",
-        "relation": "Leads To",
-        "technique_name": "Unauthorized Administrator Access"
+        "target": "node_target_account_takeover",
+        "relation": "vuln_to_target",
+        "technique_name": "jsonwebtoken 0.1.0 / 0.4.0 - CVE-2015-9235",
+        "vuln_id": "V022",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_dependency",
         "target": "V023",
-        "relation": "Entry Point",
-        "technique_name": "Vector via API"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V023",
+        "basis": "rule"
     },
     {
         "source": "V023",
         "target": "node_target_rce",
-        "relation": "Leads To",
-        "technique_name": "Remote Code Execution & System Compromise"
+        "relation": "vuln_to_target",
+        "technique_name": "lodash 2.4.2 - CVE-2019-10744",
+        "vuln_id": "V023",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_search",
+        "source": "node_entry_dependency",
         "target": "V024",
-        "relation": "Entry Point",
-        "technique_name": "Vector via SEARCH"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V024",
+        "basis": "rule"
     },
     {
         "source": "V024",
         "target": "node_target_rce",
-        "relation": "Leads To",
-        "technique_name": "Remote Code Execution & System Compromise"
+        "relation": "vuln_to_target",
+        "technique_name": "lodash 2.4.2 - CVE-2021-23337",
+        "vuln_id": "V024",
+        "basis": "rule"
+    },
+    {
+        "source": "node_entry_dependency",
+        "target": "V025",
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V025",
+        "basis": "rule"
     },
     {
         "source": "V025",
-        "target": "node_target_admin",
-        "relation": "Leads To",
-        "technique_name": "Unauthorized Administrator Access"
+        "target": "node_target_leak",
+        "relation": "vuln_to_target",
+        "technique_name": "crypto-js 3.3.0 - CVE-2023-46233",
+        "vuln_id": "V025",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_dependency",
         "target": "V026",
-        "relation": "Entry Point",
-        "technique_name": "Vector via API"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V026",
+        "basis": "rule"
     },
     {
         "source": "V026",
-        "target": "node_target_account_takeover",
-        "relation": "Leads To",
-        "technique_name": "Account Takeover via Client-Side Attack"
+        "target": "node_target_leak",
+        "relation": "vuln_to_target",
+        "technique_name": "crypto-js 3.3.0 - CVE-2026-71851",
+        "vuln_id": "V026",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_search",
+        "source": "node_entry_dependency",
         "target": "V027",
-        "relation": "Entry Point",
-        "technique_name": "Vector via SEARCH"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V027",
+        "basis": "rule"
     },
     {
         "source": "V027",
-        "target": "node_target_rce",
-        "relation": "Leads To",
-        "technique_name": "Remote Code Execution & System Compromise"
+        "target": "node_target_leak",
+        "relation": "vuln_to_target",
+        "technique_name": "decompress 4.2.1 - CVE-2026-101894",
+        "vuln_id": "V027",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_dependency",
         "target": "V028",
-        "relation": "Entry Point",
-        "technique_name": "API Interface & Service Exposure"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V028",
+        "basis": "rule"
     },
     {
         "source": "V028",
-        "target": "node_target_admin",
-        "relation": "Leads To",
-        "technique_name": "Unauthorized Administrator Access"
+        "target": "node_target_account_takeover",
+        "relation": "vuln_to_target",
+        "technique_name": "proxy-addr 2.0.7 - CVE-2026-90711",
+        "vuln_id": "V028",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_dependency",
         "target": "V029",
-        "relation": "Entry Point",
-        "technique_name": "Vector via API"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V029",
+        "basis": "rule"
     },
     {
         "source": "V029",
-        "target": "node_target_rce",
-        "relation": "Leads To",
-        "technique_name": "Remote Code Execution & System Compromise"
+        "target": "node_target_leak",
+        "relation": "vuln_to_target",
+        "technique_name": "tar 6.2.1 - CVE-2026-23950",
+        "vuln_id": "V029",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_search",
+        "source": "node_entry_dependency",
         "target": "V030",
-        "relation": "Entry Point",
-        "technique_name": "Vector via SEARCH"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V030",
+        "basis": "rule"
     },
     {
         "source": "V030",
         "target": "node_target_admin",
-        "relation": "Leads To",
-        "technique_name": "Unauthorized Administrator Access"
+        "relation": "vuln_to_target",
+        "technique_name": "express-jwt 0.1.3 - CVE-2020-15084",
+        "vuln_id": "V030",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_login",
+        "source": "node_entry_dependency",
         "target": "V031",
-        "relation": "Entry Point",
-        "technique_name": "Vector via LOGIN"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V031",
+        "basis": "rule"
     },
     {
         "source": "V031",
-        "target": "node_target_rce",
-        "relation": "Leads To",
-        "technique_name": "Remote Code Execution & System Compromise"
+        "target": "node_target_leak",
+        "relation": "vuln_to_target",
+        "technique_name": "moment 2.0.0 - CVE-2022-24785",
+        "vuln_id": "V031",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_dependency",
         "target": "V032",
-        "relation": "Entry Point",
-        "technique_name": "Vector via API"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V032",
+        "basis": "rule"
     },
     {
         "source": "V032",
         "target": "node_target_dos",
-        "relation": "Leads To",
-        "technique_name": "Denial of Service & Resource Exhaustion"
+        "relation": "vuln_to_target",
+        "technique_name": "moment 2.0.0 - CVE-2017-18214",
+        "vuln_id": "V032",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_dependency",
         "target": "V033",
-        "relation": "Entry Point",
-        "technique_name": "API Interface & Service Exposure"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V033",
+        "basis": "rule"
     },
     {
         "source": "V033",
         "target": "node_target_dos",
-        "relation": "Leads To",
-        "technique_name": "Denial of Service & Resource Exhaustion"
+        "relation": "vuln_to_target",
+        "technique_name": "ws 7.4.6 - CVE-2024-37890",
+        "vuln_id": "V033",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_login",
+        "source": "node_entry_dependency",
         "target": "V034",
-        "relation": "Entry Point",
-        "technique_name": "Vector via LOGIN"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V034",
+        "basis": "rule"
     },
     {
         "source": "V034",
         "target": "node_target_dos",
-        "relation": "Leads To",
-        "technique_name": "Denial of Service & Resource Exhaustion"
+        "relation": "vuln_to_target",
+        "technique_name": "multer 1.4.5-lts.2 - CVE-2025-47944",
+        "vuln_id": "V034",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_dependency",
         "target": "V035",
-        "relation": "Entry Point",
-        "technique_name": "Vector via API"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V035",
+        "basis": "rule"
     },
     {
         "source": "V035",
         "target": "node_target_rce",
-        "relation": "Leads To",
-        "technique_name": "Remote Code Execution & System Compromise"
+        "relation": "vuln_to_target",
+        "technique_name": "libc6 2.41-12+deb13u3 - CVE-2026-5450",
+        "vuln_id": "V035",
+        "basis": "rule"
     },
     {
-        "source": "node_entry_search",
+        "source": "node_entry_dependency",
         "target": "V036",
-        "relation": "Entry Point",
-        "technique_name": "Vector via SEARCH"
+        "relation": "entry_to_vuln",
+        "technique_name": "Access via dependency",
+        "vuln_id": "V036",
+        "basis": "rule"
     },
     {
         "source": "V036",
         "target": "node_target_rce",
-        "relation": "Leads To",
-        "technique_name": "Remote Code Execution & System Compromise"
-    },
-    {
-        "source": "V002",
-        "target": "V025",
-        "relation": "Chains To",
-        "technique_name": "password_hashes elde edilince mümkün olur"
+        "relation": "vuln_to_target",
+        "technique_name": "libc6 2.41-12+deb13u3 - CVE-2019-1010022",
+        "vuln_id": "V036",
+        "basis": "rule"
     }
 ]

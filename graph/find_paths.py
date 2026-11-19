@@ -3,7 +3,6 @@ import os
 import csv
 import math
 import logging
-import networkx as nx
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
@@ -12,12 +11,19 @@ AC_VALS = {"L": 0.77, "H": 0.44}
 PR_U = {"N": 0.85, "L": 0.62, "H": 0.27}
 PR_C = {"N": 0.85, "L": 0.68, "H": 0.5}
 UI_VALS = {"N": 0.85, "R": 0.62}
-CIA_VALS = {"H": 0.56, "L": 0.22, "N": 0.0}
+
+TARGET_CRITICALITIES = {
+    "node_target_admin": 10.0,
+    "node_target_rce": 10.0,
+    "node_target_account_takeover": 8.0,
+    "node_target_leak": 7.0,
+    "node_target_dos": 6.0
+}
 
 
 def hesapla_cvss_probabilities(cvss_vector):
     try:
-        if not cvss_vector or not cvss_vector.startswith("CVSS:3.1"):
+        if not cvss_vector or not isinstance(cvss_vector, str) or not cvss_vector.startswith("CVSS:3.1"):
             return None
         parcalar = dict(p.split(":") for p in cvss_vector.strip().split("/")[1:])
         degisti = parcalar.get("S") == "C"
@@ -34,49 +40,35 @@ def hesapla_cvss_probabilities(cvss_vector):
         return None
 
 
-def load_inventory_and_v2(base_dir):
+def load_inventory_and_v2(csv_path=None):
     vuln_data = {}
-
-    # Envanter dosyasının olası yolları (inventory/ altında veya ana dizinde)
-    possible_inv_paths = [
-        os.path.join(base_dir, "..", "inventory", "inventory_v1.0.csv"),
-        os.path.join(base_dir, "inventory", "inventory_v1.0.csv"),
-        os.path.join(base_dir, "..", "inventory_v1.0.csv"),
-        os.path.abspath("inventory/inventory_v1.0.csv"),
-        os.path.abspath("inventory_v1.0.csv")
-    ]
-
-    inv_file = next((p for p in possible_inv_paths if os.path.exists(p)), None)
-
-    if inv_file:
-        with open(inv_file, mode="r", encoding="utf-8") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                vid = row.get("vuln_id")
-                if vid:
-                    vector = row.get("cvss_vector", "")
-                    p_score = hesapla_cvss_probabilities(vector)
-                    if p_score is None:
-                        logging.warning(f"[{vid}] için geçerli CVSS vektörü bulunamadı!")
-                        p_score = 0.5
-                    try:
-                        crit = float(row.get("asset_criticality", 5.0))
-                    except ValueError:
-                        crit = 5.0
-                    vuln_data[vid] = {"probability": p_score, "criticality": crit}
-    else:
-        logging.error("Envanter dosyası (inventory_v1.0.csv) hiçbir konumda bulunamadı!")
-
     v2_scores = {}
-    possible_v2_paths = [
-        os.path.join(base_dir, "..", "ai", "results_v2_llm.csv"),
-        os.path.join(base_dir, "ai", "results_v2_llm.csv"),
-        os.path.abspath("ai/results_v2_llm.csv")
-    ]
-    v2_file = next((p for p in possible_v2_paths if os.path.exists(p)), None)
 
-    if v2_file:
-        with open(v2_file, mode="r", encoding="utf-8") as f:
+    if not csv_path or not os.path.exists(csv_path):
+        logging.error(f"Envanter dosyası bulunamadı veya belirtilmedi: {csv_path}")
+        return vuln_data, v2_scores
+
+    with open(csv_path, mode="r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            vid = row.get("vuln_id")
+            if vid:
+                vector = row.get("cvss_vector", "")
+                p_score = hesapla_cvss_probabilities(vector)
+                if p_score is None:
+                    logging.warning(f"[{vid}] için geçerli CVSS vektörü bulunamadı!")
+                vuln_data[vid] = {
+                    "probability": p_score,
+                    "cvss_score": float(row.get("cvss_score", 0.0) or 0.0)
+                }
+
+    # Model V2 / V1 Skorları
+    v1_path = os.path.join(os.path.dirname(csv_path), "..", "ai", "results_v2_llm.csv")
+    if not os.path.exists(v1_path):
+        v1_path = "results_v1_llm.csv"
+
+    if os.path.exists(v1_path):
+        with open(v1_path, mode="r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 vid = row.get("vuln_id")
@@ -86,23 +78,25 @@ def load_inventory_and_v2(base_dir):
                         v2_scores[vid] = float(score)
                     except ValueError:
                         pass
+
     return vuln_data, v2_scores
 
 
-def find_attack_paths(edges_file=None, output_file=None):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    edges_file = edges_file or os.path.join(base_dir, 'edges.json')
-    output_file = output_file or os.path.join(base_dir, 'paths.json')
+def find_attack_paths(edges_file='edges.json', output_file='paths.json', csv_path=None):
+    if not csv_path:
+        logging.error("csv_path parametresi zorunludur!")
+        return None
 
     if not os.path.exists(edges_file):
-        print(f"Hata: {edges_file} dosyası bulunamadı!")
+        logging.error(f"Edges dosyası bulunamadı: {edges_file}")
         return None
 
     with open(edges_file, 'r', encoding='utf-8') as f:
         edges = json.load(f)
 
-    vuln_data, v2_scores = load_inventory_and_v2(base_dir)
+    vuln_data, v2_scores = load_inventory_and_v2(csv_path)
 
+    import networkx as nx
     G = nx.DiGraph()
     for edge in edges:
         src = edge.get('source')
@@ -122,43 +116,79 @@ def find_attack_paths(edges_file=None, output_file=None):
             if nx.has_path(G, source, target):
                 for path in nx.all_simple_paths(G, source, target):
                     probabilities = []
-                    target_criticality = 10.0
-                    for i in range(len(path) - 1):
-                        u, v = path[i], path[i + 1]
-                        edge_data = G.get_edge_data(u, v)
-                        v_id = edge_data.get('vuln_id') if edge_data else None
-                        if not v_id and v.startswith('V'):
-                            v_id = v
-                        elif not v_id and u.startswith('V'):
-                            v_id = u
-                        if v_id and v_id in vuln_data:
-                            probabilities.append(vuln_data[v_id]["probability"])
-                            target_criticality = max(target_criticality, vuln_data[v_id]["criticality"])
+                    has_missing_vector = False
 
-                    prod_p = math.prod(probabilities) if probabilities else 0.0
-                    path_risk = round(prod_p * target_criticality, 4)
-                    path_v2_scores = [v2_scores.get(node, 0.0) for node in path if node in v2_scores]
+                    # Yalnızca zafiyet düğümlerini (V ile başlayanlar) yol üzerinde bir kez ele al (Çift çarpım hatası önlendi)
+                    vuln_nodes_in_path = [node for node in path if node.startswith('V')]
+
+                    for v_id in vuln_nodes_in_path:
+                        if v_id in vuln_data:
+                            p = vuln_data[v_id]["probability"]
+                            if p is None:
+                                has_missing_vector = True
+                            else:
+                                probabilities.append(p)
+                        else:
+                            logging.warning(f"Zafiyet envanterde bulunamadı: {v_id}")
+                            has_missing_vector = True
+
+                    target_criticality = TARGET_CRITICALITIES.get(target, 5.0)
+
+                    if has_missing_vector:
+                        path_risk = None
+                    else:
+                        prod_p = math.prod(probabilities) if probabilities else 0.0
+                        path_risk = round(prod_p * target_criticality, 4)
+
+                    path_v2_scores = [v2_scores.get(node, 0.0) for node in vuln_nodes_in_path if node in v2_scores]
                     secondary_v2_score = max(path_v2_scores) if path_v2_scores else 0.0
 
                     paths_data.append({
                         "source": source,
                         "target": target,
                         "target_name": target,
+                        "target_criticality": target_criticality,
                         "path": path,
                         "length": len(path) - 1,
                         "path_risk": path_risk,
                         "secondary_v2_score": secondary_v2_score
                     })
 
-    paths_data.sort(key=lambda x: (x["path_risk"], x["secondary_v2_score"]), reverse=True)
+    # Sıralama: path_risk değeri None olanlar sona, diğerleri büyükten küçüğe
+    paths_data.sort(key=lambda x: (x["path_risk"] is not None, x["path_risk"] if x["path_risk"] is not None else 0,
+                                   x["secondary_v2_score"]), reverse=True)
 
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    os.makedirs(os.path.dirname(output_file) if os.path.dirname(output_file) else '.', exist_ok=True)
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(paths_data, f, indent=4, ensure_ascii=False)
 
-    print(f"Başarılı! Toplam {len(paths_data)} saldırı yolu hesaplandı ve kaydedildi.")
+    logging.info(f"Başarılı! Toplam {len(paths_data)} saldırı yolu hesaplandı ve kaydedildi.")
     return paths_data
 
 
+def main():
+    import os
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    edges_path = os.path.join(base_dir, 'edges.json')
+    output_path = os.path.join(base_dir, 'paths.json')
+
+    possible_paths = [
+        os.path.join(base_dir, '..', 'inventory', 'inventory_v1.0.csv'),
+        os.path.join(base_dir, '..', 'inventory_v1.0.csv'),
+        'inventory_v1.0.csv'
+    ]
+
+    default_csv = next((p for p in possible_paths if os.path.exists(p)), possible_paths[0])
+
+    print(f"Envanter dosyası aranıyor: {default_csv}")
+    paths = find_attack_paths(
+        edges_file=edges_path,
+        output_file=output_path,
+        csv_path=default_csv
+    )
+    if paths is not None:
+        print(f"Başarılı! Toplam {len(paths)} saldırı yolu hesaplandı ve kaydedildi.")
+
+
 if __name__ == '__main__':
-    find_attack_paths()
+    main()
