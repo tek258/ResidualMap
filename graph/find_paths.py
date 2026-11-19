@@ -182,29 +182,5 @@ def find_attack_paths(edges_file=None, output_file=None, csv_path=None):
     return paths_data
 
 
-def main():
-    import os
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    edges_path = os.path.join(base_dir, 'edges.json')
-    output_path = os.path.join(base_dir, 'paths.json')
-
-    possible_paths = [
-        os.path.join(base_dir, '..', 'inventory', 'inventory_v1.0.csv'),
-        os.path.join(base_dir, '..', 'inventory_v1.0.csv'),
-        'inventory_v1.0.csv'
-    ]
-
-    default_csv = next((p for p in possible_paths if os.path.exists(p)), possible_paths[0])
-
-    print(f"Envanter dosyası aranıyor: {default_csv}")
-    paths = find_attack_paths(
-        edges_file=edges_path,
-        output_file=output_path,
-        csv_path=default_csv
-    )
-    if paths is not None:
-        print(f"Başarılı! Toplam {len(paths)} saldırı yolu hesaplandı ve kaydedildi.")
-
-
 if __name__ == '__main__':
-    main()
+    find_attack_paths()
