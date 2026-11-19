@@ -1,0 +1,25 @@
+== Korumasiz yollar (etkilenmemeli) ==
+[OK ] 200  (beklenen 200)  ana sayfa
+[OK ] 200  (beklenen 200)  urun arama
+== Korumali yollar, girissiz ==
+[OK ] 302  (beklenen 302 -> Keycloak)  /ftp/ (V009)
+[OK ] 302  (beklenen 302 -> Keycloak)  /ftp
+[OK ] 302  (beklenen 302 -> Keycloak)  /ftp/legal.md
+[OK ] 302  (beklenen 302 -> Keycloak)  /metrics
+== Atlatma denemeleri (icerige ulasmamali) ==
+[OK ] 302  (beklenen 200 disi)  /FTP/ (buyuk harf)  Keycloak'a yonlendirdi
+[OK ] 302  (beklenen 200 disi)  /Ftp/legal.md  Keycloak'a yonlendirdi
+[OK ] 302  (beklenen 200 disi)  //ftp/ (cift egik cizgi)  Keycloak'a yonlendirdi
+[OK ] 302  (beklenen 200 disi)  /%66tp/ (kodlanmis)  Keycloak'a yonlendirdi
+[OK ] 302  (beklenen 200 disi)  /./ftp/  Keycloak'a yonlendirdi
+[OK ] 302  (beklenen 200 disi)  /METRICS  Keycloak'a yonlendirdi
+== Ic kontrol adresi ==
+[OK ] 404  (beklenen 404)  /oauth2/auth disaridan
+== I-4 istisnasinin siniri (WAF 934110 ile 403 beklenir) ==
+[OK ] 403  (beklenen 403)  callback, iss = bulut metadata adresi
+[OK ] 403  (beklenen 403)  callback, iki iss (bizimki + baska)
+== Giris akisi (Keycloak) ==
+[OK ] 200  (beklenen 200)  giris akisi: personel -> /ftp/
+[OK ] 403  (beklenen 403)  giris akisi: misafir -> /ftp/
+
+Toplam 17 kontrol, 0 beklenmeyen sonuc.

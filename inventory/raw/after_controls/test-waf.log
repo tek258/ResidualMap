@@ -1,0 +1,24 @@
+== Normal trafik ==
+ana sayfa                          -> HTTP 200  (beklenen 200) OK
+ürün listesi                       -> HTTP 200  (beklenen 200) OK
+
+== Test payload'ları (kendi lab'ımız) ==
+SQLi                               -> HTTP 403  (beklenen 403) OK
+XSS                                -> HTTP 403  (beklenen 403) OK
+Path traversal                     -> HTTP 403  (beklenen 403) OK
+Scanner UA                         -> HTTP 403  (beklenen 403) OK
+
+== V001: giriş, JSON POST gövdesinde SQLi ==
+V001 kontrol: yanlış şifre         -> HTTP 401  (beklenen 401) OK
+V001 SQLi (email alanı)            -> HTTP 403  (beklenen 403) OK
+
+== V003: sipariş takibi (envanter: reflected XSS, yol içinde) ==
+V003 kontrol: geçerli biçim        -> HTTP 200  (beklenen 200) OK
+V003 XSS (yol içinde iframe)       -> HTTP 403  (beklenen 403) OK
+V003 yolu NoSQLi (' || true || ')  -> HTTP 403  (beklenen 403) OK
+
+== V005: PUT /api/Products (I-1 ile açılan yol), gövdede XSS ==
+V005 kontrol: zararsız açıklama    -> HTTP 404  (beklenen 404) OK
+V005 XSS (description alanı)       -> HTTP 403  (beklenen 403) OK
+
+Toplam 13 istek, 0 beklenmeyen sonuç.
