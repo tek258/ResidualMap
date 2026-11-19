@@ -1,4 +1,4 @@
-"""[S5][K4] Artık risk hesaplama ve duyarlılık analizi scripti.
+"""[S5][K4] Artık risk hesaplama ve duyarlılık analizi betiği.
 
 Girdiler:
     - ai/results_v2_llm.csv (risk_score_llm -> risk_before)
@@ -17,6 +17,7 @@ import csv
 import math
 import os
 
+# Metodoloji Bölüm 2 sonuç tablosu (tek kaynak sözlük)
 ETKINLIK_SOZLUGU = {
     ("engeller", "test"): 0.90,
     ("engeller", "gerekce"): 0.63,
@@ -29,8 +30,9 @@ ETKINLIK_SOZLUGU = {
 }
 
 KONTROL_SUTUNLARI = ["waf", "sanal_yama", "ids", "iam", "segmentasyon", "yama"]
-GECERLI_ETKILER = {"engeller", "azaltir", "tespit_eder", "etkisiz", "kurulmadi"}
+GECERLI_ETKILER = {"engeller", "azaltir", "tespit_eder", "etkisiz", "kurulmadi", "uygulanmadi"}
 GECERLI_DAYANAKLAR = {"test", "gerekce", "varsayim"}
+ETKISIZ_DEGERLER = {"etkisiz", "kurulmadi", "uygulanmadi"}
 
 SCORES_PATH = "ai/results_v2_llm.csv"
 MAPPING_PATH = "inventory/control_mapping.csv"
@@ -80,7 +82,7 @@ def tek_kontrol_etkinligi(
     if dayanak_norm not in GECERLI_DAYANAKLAR:
         raise ValueError(f"[{vuln_id}] 'dayanak' sütununda tanınmayan değer: {dayanak!r}")
 
-    if dayanak_norm == "varsayim" or etki_norm in ("etkisiz", "kurulmadi"):
+    if dayanak_norm == "varsayim" or etki_norm in ETKISIZ_DEGERLER:
         return 0.0
 
     anahtar = (etki_norm, dayanak_norm)
@@ -107,7 +109,7 @@ def toplam_etkinlik_hesapla(
     for kontrol_adi in KONTROL_SUTUNLARI:
         ham_etki = kontrol_etkileri.get(kontrol_adi, "etkisiz")
         etki_norm = normalize_etki(ham_etki)
-        if etki_norm not in ("etkisiz", "kurulmadi"):
+        if etki_norm not in ETKISIZ_DEGERLER:
             aktif_kontroller.append(f"{kontrol_adi}:{etki_norm}")
             if dayanak_norm != "varsayim":
                 e = tek_kontrol_etkinligi(
