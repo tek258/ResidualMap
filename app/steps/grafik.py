@@ -184,3 +184,4 @@ def _ai_bolumu(run_id, rdir, inv, out, meta):
                "türetilir (≥9 Kritik, ≥7 Yüksek, ≥4 Orta, altı Düşük).")
     st.dataframe(pd.DataFrame(satirlar), hide_index=True, use_container_width=True,
                  column_config={"AI gerekçesi": st.column_config.TextColumn(width="large")})
+

@@ -9,11 +9,11 @@ import streamlit as st
 
 from config import GRAFANA_PANO, GRAFANA_URL, TARGETS
 from pipeline import runs
-from steps import bulgular, grafik, hedef, ortak, tarama
+from steps import bulgular, grafik, hedef, ortak, savunma, tarama
 
 st.set_page_config(page_title="ResidualMap", page_icon="🛡️", layout="wide")
 
-ADIMLAR = ["1. Hedef", "2. Tarama", "3. Bulgular", "4. Grafik"]
+ADIMLAR = ["1. Hedef", "2. Tarama", "3. Bulgular", "4. Grafik", "5. Savunma testi"]
 
 st.session_state.setdefault("run_id", None)
 st.session_state.setdefault("target", None)
@@ -49,5 +49,7 @@ elif adim == "2. Tarama":
     tarama.render()
 elif adim == "3. Bulgular":
     bulgular.render()
-else:
+elif adim == "4. Grafik":
     grafik.render()
+else:
+    savunma.render()
