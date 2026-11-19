@@ -20,6 +20,13 @@ TARGET_LABELS = {
     "node_target_dos": "Hizmet Engelleme (DoS)",
 }
 
+GRANTS_TARGET_CAPABILITIES = {
+    "admin_session",
+    "admin_credentials",
+    "forged_identity",
+    "stolen_session",
+}
+
 
 def _first_sentence(text):
     cleaned = " ".join((text or "").strip().split())
@@ -53,6 +60,24 @@ def _pick_field(row, candidates):
         if val is not None and str(val).strip() != "":
             return str(val).strip()
     return ""
+
+
+def _format_target_basis(grants_capability):
+    cap = (grants_capability or "").strip()
+    if cap in GRANTS_TARGET_CAPABILITIES:
+        return f"yetkinlik: {cap}"
+    return "CWE kümesi"
+
+
+def _derive_edge_vuln_id(edge, src, tgt):
+    explicit_vid = (edge.get("vuln_id") or "").strip()
+    if explicit_vid:
+        return explicit_vid
+    src_str = (src or "").strip()
+    tgt_str = (tgt or "").strip()
+    if src_str.startswith("node_entry_"):
+        return tgt_str if tgt_str and not tgt_str.startswith("node_target_") else "-"
+    return src_str if src_str and not src_str.startswith("node_target_") else "-"
 
 
 def load_epss_by_cve(epss_csv_path=None):
@@ -132,6 +157,7 @@ def load_inventory_details(csv_path=None, llm_csv_path=None, epss_csv_path=None)
 
                 name = _pick_field(row, ["name", "vuln_name", "title"])
                 notes = _pick_field(row, ["notes"])
+                grants_cap = _pick_field(row, ["grants_capability"])
                 cve_id = _extract_cve(f"{name} {notes}")
                 epss_val = epss_by_cve.get(cve_id, "-") if cve_id else "-"
 
@@ -153,15 +179,8 @@ def load_inventory_details(csv_path=None, llm_csv_path=None, epss_csv_path=None)
                     "ai_score": ai_score_display,
                     "ai_label": llm_info.get("ai_label") or "-",
                     "ai_first_sentence": reason_first,
-                    "target_basis": _pick_field(
-                        row,
-                        [
-                            "target_basis",
-                            "mapping_basis",
-                            "target_mapping_basis",
-                            "target_reason",
-                        ],
-                    ),
+                    "grants_capability": grants_cap,
+                    "target_basis": _format_target_basis(grants_cap),
                     "entry_point": _pick_field(row, ["entry_point"]),
                 }
 
@@ -179,7 +198,8 @@ def load_inventory_details(csv_path=None, llm_csv_path=None, epss_csv_path=None)
                 "ai_score": ai_score_display,
                 "ai_label": llm_info.get("ai_label") or "-",
                 "ai_first_sentence": _first_sentence(llm_info.get("llm_reason", "")),
-                "target_basis": "",
+                "grants_capability": "",
+                "target_basis": "CWE kümesi",
                 "entry_point": "-",
             }
 
@@ -257,27 +277,17 @@ def visualize_graph(
     inv_details = load_inventory_details(csv_path)
     epss_by_cve = load_epss_by_cve()
 
-    edge_basis_by_vuln = {}
     for edge in edges:
         src = (edge.get("source") or "").strip()
         tgt = (edge.get("target") or "").strip()
-        vuln_id = (edge.get("vuln_id") or "").strip()
-        basis = (edge.get("basis") or "").strip()
-        relation = (edge.get("relation") or "").strip()
         tech = (edge.get("technique_name") or "").strip()
+        vid = _derive_edge_vuln_id(edge, src, tgt)
 
-        vid = vuln_id or (src if not src.startswith("node_entry_") else "")
-        if vid:
+        if vid and vid != "-":
             cve_from_edge = _extract_cve(tech)
             if cve_from_edge and inv_details.get(vid, {}).get("epss") in ("", "-"):
                 if cve_from_edge in epss_by_cve:
                     inv_details.setdefault(vid, {})["epss"] = epss_by_cve[cve_from_edge]
-
-        if src and tgt and (relation == "vuln_to_target" or tgt.startswith("node_target_")):
-            if vid:
-                target_desc = TARGET_LABELS.get(tgt, tgt)
-                basis_text = basis or relation or "-"
-                edge_basis_by_vuln.setdefault(vid, f"{basis_text} -> {tgt} ({target_desc})")
 
     valid_paths = [p for p in paths_data if p.get("path_risk") is not None]
     top_paths = valid_paths[:top_n]
@@ -346,12 +356,9 @@ def visualize_graph(
             size = 20
             label = node_id
 
-            target_basis = (
-                edge_basis_by_vuln.get(node_id)
-                or info.get("target_basis")
-                or "-"
+            target_basis = info.get("target_basis") or _format_target_basis(
+                info.get("grants_capability")
             )
-
             ai_score_hover = ai_score_val if ai_score_val else "henüz yok"
 
             tooltip = (
@@ -388,7 +395,7 @@ def visualize_graph(
         relation = edge.get("relation", "")
         technique = edge.get("technique_name", "")
         basis = (edge.get("basis") or "").strip()
-        vuln_id = edge.get("vuln_id", "")
+        vuln_id = _derive_edge_vuln_id(edge, src, tgt)
 
         is_top = (src, tgt) in top_edges
         is_estimated_cvss = basis.lower() == "cvss"
