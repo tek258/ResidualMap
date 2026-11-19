@@ -1,0 +1,37 @@
+vuln_id,risk_score_llm,risk_label_llm,llm_reason,score_std,tekrar_skorlari,few_shot
+V001,9.7,Kritik,"Critical band: confirmed in application, no auth required, gives admin access.",,,False
+V002,8.3,Yüksek,"High band: confirmed in the application, severe impact on confidentiality, but no admin access or system compromise.",,,False
+V003,7.0,Yüksek,"High band: confirmed in the application, low user interaction required, and can impact beyond the vulnerable component.",,,False
+V004,7.0,Yüksek,"High band: confirmed in the application, low user interaction required, and can impact beyond the vulnerable component.",,,False
+V005,6.7,Orta,"High band: confirmed in the application, requires user interaction but has a significant impact on session theft.",,,False
+V006,5.8,Orta,"Medium band: confirmed in the application, but it needs a logged-in user and only exposes another user's basket.",,,True
+V007,5.8,Orta,"Medium band: confirmed in the application, but it needs a logged-in user and only affects another user's basket.",,,False
+V008,9.3,Kritik,"Critical band: confirmed in application, gives administrator access with no authentication or user interaction required.",,,False
+V009,5.5,Orta,"Medium band: confirmed in the application, but it needs a low level of user interaction and only exposes a confidential document.",,,False
+V010,7.0,Yüksek,"High band: confirmed in the application, low user interaction required, and high confidentiality impact.",,,False
+V011,7.0,Yüksek,"High band: confirmed in the application, high impact on confidentiality and integrity, but no privilege required.",,,False
+V012,5.5,Orta,"Medium band: confirmed in the application, low impact, and requires user interaction.",,,False
+V013,4.5,Orta,"Medium band: confirmed in the application, requires user interaction, and impacts multiple users.",,,False
+V014,7.0,Yüksek,"High band: confirmed in the application, severe impact on confidentiality, no authentication required.",,,False
+V015,9.2,Kritik,"Critical band: confirmed in application, gives administrator access without user interaction.",,,False
+V016,3.8,Düşük,"Low band: information disclosure with no demonstrated loss, confirmed in the application.",,,False
+V017,3.8,Düşük,Low band: version disclosure and missing CSP header help reconnaissance but cause no demonstrated loss.,,,False
+V018,3.8,Düşük,Low band: version disclosure and high attack complexity with no demonstrated loss.,,,False
+V019,2.5,Düşük,Low band: version disclosure helps reconnaissance but causes no demonstrated loss.,,,True
+V020,3.8,Düşük,Low band: version disclosure and uncertain evidence with no demonstrated loss.,,,False
+V021,2.3,Düşük,Low band: missing headers help reconnaissance but cause no demonstrated loss.,,,False
+V022,7.8,Yüksek,"High band: critical impact if reachable, but dependency version match and unverified reachability.",,,False
+V023,7.6,Yüksek,"High band: severe impact if reachable, but dependency version match and unverified reachability.",,,True
+V024,8.9,Yüksek,"High band: severe impact if reachable, confirmed dependency, high EPSS.",,,False
+V025,7.3,Yüksek,"High band: critical impact if reachable, but dependency version match and unverified reachability.",,,False
+V026,7.0,Yüksek,"High band: critical impact if reachable, but unverified and low EPSS.",,,False
+V027,7.0,Yüksek,"High band: critical impact if reachable, but unverified and only a dependency version match.",,,False
+V028,7.0,Yüksek,"High band: severe impact if reachable, but dependency version match and unverified reachability.",,,False
+V029,7.1,Yüksek,"High band: severe impact if reachable, but dependency version match and unverified reachability.",,,False
+V030,7.8,Yüksek,"High band: severe impact if reachable, dependency version match, and needs user interaction.",,,False
+V031,7.0,Yüksek,"High band: severe impact if reachable, but dependency version match and unverified reachability.",,,False
+V032,7.0,Yüksek,"High band: severe impact if reachable, but dependency version match and unverified reachability.",,,False
+V033,4.3,Orta,"Medium band: high impact if reachable, but dependency version match and unverified reachability.",,,False
+V034,4.3,Orta,"Medium band: high impact if reachable, but dependency version match and unverified reachability.",,,False
+V035,7.1,Yüksek,"High band: severe impact if reachable, but dependency version match and unverified reachability.",,,False
+V036,7.1,Yüksek,"High band: severe impact if reachable, but dependency version match and unverified reachability.",,,False
