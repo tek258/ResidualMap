@@ -18,7 +18,7 @@
 | **Ağ Segmentasyonu** | `frontend` (172.30.1.0/24) ve `backend` (172.30.2.0/24, `internal: true`) | Juice Shop yalnızca backend'de, dış çıkışı yok |
 | **IAM** | Keycloak 26.0 (`quay.io/keycloak/keycloak:26.0`) + oauth2-proxy v7.7.1 | `/ftp` ve `/metrics` yollarını koruyor |
 | **ZAP Scanner** | `ghcr.io/zaproxy/zaproxy:2.17.0` | ZAP 2.17.0 (Baseline pasif tarayıcı, sürüm sabitlendi) |
-| **Trivy Scanner** | `aquasec/trivy:0.75.0` | Trivy v0.75.0 (sürüm sabitlendi), DB Schema v2 (18.11.2026 güncel veritabanı) |
+| **Trivy Scanner** | `aquasec/trivy:0.75.0` | Trivy v0.75.0 (sürüm sabitlendi). `trivy --version`: `Vulnerability DB: Version: ⟪DOLDUR⟫, UpdatedAt: ⟪DOLDUR⟫`. Tarama zamanı (`trivy.json` → `CreatedAt`): 2026-11-18 22:35 |
 
 ---
 
@@ -51,11 +51,14 @@ docker run --rm \
 docker run --rm \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v residualmap-trivy-cache:/root/.cache/ \
+  -v "${PWD}/inventory/raw/after_controls:/out" \
   aquasec/trivy:0.75.0 image \
   --scanners vuln \
   --format json \
-  bkimminich/juice-shop:v20.2.0 > inventory/raw/after_controls/trivy.json
+  -o /out/trivy.json \
+  bkimminich/juice-shop@sha256:8739101ade29358abb5469ee66ae78e582c97ed0a5543a4ad102e5fa5193526b
 ```
+> Çıktıyı `>` ile değil `-o` ile yazın: PowerShell `>` dosyayı BOM'lu (ya da UTF-16) kaydeder ve JSON okuyucular hata verir. DB sürümü: `docker run --rm -v residualmap-trivy-cache:/root/.cache/ aquasec/trivy:0.75.0 --version`.
 
 ### 2.4 WAF, IAM ve Kullanıcı Akışları Testleri
 ```bash
@@ -88,7 +91,7 @@ ZAP baseline taraması pasif bir taramadır; enjeksiyon payload'ı göndermez, s
 ### 3.1 Kaybolan Bulgular (1 adet)
 * **`Server Leaks Version Information via "Server" HTTP Response Header Field` (Plugin ID: 10036, Risk: Low)**
   * **Envanter Karşılığı:** **V019**
-  * **Açıklama:** Referans taramadaki (`inventory/raw/zap_baseline.json`) 5 örneğin kanıtı `Server: nginx/1.31.6` idi; yani sürüm bilgisini sızdıran doğrudan Juice Shop (Express) değil, WAF katmanındaki Nginx ters vekilinin kendi başlığıydı. S3K5'te WAF imajı `owasp/modsecurity-crs:4.30.0-nginx-202610180210` olarak güncellenip yapılandırıldığında (`server_tokens off` devrede) bu başlık ortadan kalktı. Dolayısıyla kontrol türü WAF kuralı değil, **yapılandırma (WAF imajı)** olarak sınıflandırılmalıdır (`kontrol: yapilandirma`, `etki: engeller`, `dayanak: test`).
+  * **Açıklama:** Referans taramadaki (`inventory/raw/zap_baseline.json`) 5 örneğin kanıtı `Server: nginx/1.31.6` idi; yani sürüm bilgisini sızdıran doğrudan Juice Shop (Express) değil, WAF katmanındaki Nginx ters vekilinin kendi başlığıydı. Kontroller sonrası taramada (`after_controls/zap_baseline.json`) 10036 hiç yok: **5 örnek → 0**. Başlık, WAF imajının (`owasp/modsecurity-crs:4.30.0-nginx-202610180210`) varsayılan `server_tokens off` ayarıyla gizleniyor; `SERVER_TOKENS` ve `SERVER_HEADER` değişkenleri compose dosyasına taramalardan sonra açıkça eklendi. Eşlemede `waf: engeller`, `dayanak: test` (kanıt: ZAP önce/sonra).
 
 ### 3.2 Değişmeyen / Kalan Bulgular (11 adet)
 Aşağıdaki başlık ve yapılandırma eksiklikleri WAF ters vekilinde özel olarak eklenmediği için taramada varlığını sürdürmektedir:
@@ -104,7 +107,7 @@ Aşağıdaki başlık ve yapılandırma eksiklikleri WAF ters vekilinde özel ol
 10. `Storable and Cacheable Content` (Plugin ID: 10049, Risk: Info)
 11. `Storable but Non-Cacheable Content` (Plugin ID: 10049, Risk: Info)
 
-> **V016 Test Kanıtı:** Yeni ZAP tarama çıktısında (`inventory/raw/after_controls/zap_baseline.json`) taranan URL listesinde iç yığın izi yollarının (`layer.js:95:5` ve `fileServer.js:52:13`) yer alması, WAF'ın JSON ve arka uç hata yanıtlarını denetlemediğini ve hata sızıntılarının devam ettiğini somut bir test kanıtı olarak doğrulamaktadır (`dayanak: test`, `waf: etkisiz`).
+> **V016:** Kontroller sonrası ZAP taramasının URL listesinde iç yığın izi yolları (`layer.js:95:5`, `fileServer.js:52:13`) görünüyor; bu, hata sayfalarının WAF'tan geçtiğine dolaylı bir işaret. Hata yanıtının kendisi kaydedilmediği için dayanak `gerekce` (`waf: etkisiz`).
 
 ### 3.3 Yeni Çıkan Bulgular
 * **Yok (0 adet).** WAF veya Nginx yapılandırması yeni bir pasif tarama uyarısına sebep olmamıştır.
@@ -114,30 +117,31 @@ Aşağıdaki başlık ve yapılandırma eksiklikleri WAF ters vekilinde özel ol
 ## 4. Trivy İmaj Taraması Karşılaştırması
 
 * **Referans Tarama:** 08.10.2026, Trivy v0.75.0 → **175 zafiyet**
-* **Kontroller Sonrası Tarama:** 18.11.2026, Trivy v0.75.0 (DB: 18.11.2026, Schema v2) → **200 zafiyet**
+* **Kontroller Sonrası Tarama:** 18.11.2026, Trivy v0.75.0 (DB sürümü Bölüm 1'de) → **200 zafiyet**
 * **Neden Arttı?**
-  * Docker Desktop manifest dizin digest'i (`sha256:8739101ade2...`) ve yerel platform imaj katman digest'i (`sha256:73c53fbf...`) her iki taramada da birebir aynıdır; konteyner imaj katmanları ve paketleri değiştirilmemiştir.
-  * Artışın yegane sebebi, **Trivy güvenlik açığı veritabanının (Vulnerability DB) güncellenmesidir**. Ekim ve Kasım 2026 arasında upstream NVD ve GitHub Advisory veritabanlarına eklenen yeni CVE kayıtları (özellikle `brace-expansion` bağımlılığına ait LOW seviye açıklar) nedeniyle tespit edilen toplam zafiyet sayısı 175'ten 200'e çıkmıştır (+25 zafiyet).
-  * **Önemli Sonuç:** Savunma kontrolleri (WAF, Suricata, Ağ Segmentasyonu, IAM) konteyner imajının paketlerini güncellemez (yama uygulamaz). Dolayısıyla kütüphane zafiyetleri (V022–V036) imaj seviyesinde aynen mevcuttur (`yama: engeller`, `waf: etkisiz`).
+  * **Aynı imaj:** İki raporda da `Metadata.ImageID` = `sha256:73c53fbf442e8337b3ea3d98c7e8550308854701ebdfce4cc39768f36b75430e` ve `RepoDigests` aynı. (Compose'daki `sha256:8739101a…` çok platformlu manifest dizininin digest'i; `73c53fbf…` yerel platform imajı.)
+  * **Fark:** `(VulnerabilityID, paket, sürüm)` üçlüsüyle karşılaştırıldığında 25 bulgu eklenmiş, hiçbiri çıkmamış. Eklenen 25 bulgunun **hepsi `brace-expansion`** paketine ait.
+  * **Sonuç:** Paketler değişmediği için artış Trivy zafiyet veritabanının güncellenmesinden kaynaklanıyor.
+  * Savunma kontrolleri (WAF, Suricata, segmentasyon, IAM) imajdaki paketleri değiştirmez; hiçbir yama uygulanmadı. Kütüphane zafiyetleri (V022–V036) aynen duruyor (`yama: uygulanmadi`, `waf: etkisiz`).
 
 ---
 
 ## 5. Web ve Yetkilendirme Zafiyetleri Doğrulama Özeti
 
-| Vuln ID | Zafiyet Adı | İlgili Test / Kanıt | Durum (Önce / Sonra) | Sonuç ve Dayanak |
+| Vuln ID | Zafiyet Adı | İlgili Test / Kanıt | Beklenen önceki durum (S1 envanteri) → Sonra (bu klasördeki loglar) | Sonuç ve Dayanak |
 |---|---|---|---|---|
 | **V001** | Login SQL Injection | `test-waf.sh: "V001 SQLi (email alanı)"` | 200 OK (Admin token) → **403 Forbidden** | CRS 942100 tek kuralla, tam eşikte (5 puan) yakalıyor (`waf: azaltir`, `dayanak: test`) |
 | **V002** | Arama SQL Injection | `test-waf.sh: "SQLi"` | 500 Error → **403 Forbidden** | CRS 942100 tek kuralla, tam eşikte (5 puan) yakalıyor (`waf: azaltir`, `dayanak: test`) |
-| **V003** | Sipariş Takibi Reflected XSS & NoSQLi | `test-waf.sh: "V003 XSS (yol içinde iframe)"` ve `"V003 yolu NoSQLi (' \|\| true \|\| ')"` | 200 OK → **403 Forbidden** | CRS yakalamıyor; sanal yama SY-1 (kural 10100) regex doğrulamasıyla engelliyor (`sanal_yama: engeller`, `dayanak: test`) |
+| **V003** | Sipariş Takibi Reflected XSS & NoSQLi | `test-waf.sh: "V003 XSS (yol içinde iframe)"` ve `"V003 yolu NoSQLi (' \|\| true \|\| ')"` | 200 OK → **403 Forbidden** | 403 alıyor: sanal yama SY-1 (kural 10100) engelliyor; CRS'nin (941xxx) de tetiklenip tetiklenmediği audit log'da ayrıca doğrulanacak (`sanal_yama: engeller`, `dayanak: test`) |
 | **V004** | Arama DOM XSS | İstemci tarafı DOM manipülasyonu (`#/search`) | DOM XSS tarayıcıda çalışır → **WAF inceleyemez** | DOM XSS tarayıcıda çalıştığı ve yük sunucuya HTTP isteği olarak gitmediği için WAF engellemez (`waf: etkisiz`, `dayanak: gerekce`) |
 | **V005** | API-only Stored XSS | `test-waf.sh: "V005 XSS (description alanı)"` | 404 (İstek iletildi) → **403 Forbidden** | CRS 941xxx kuralları JSON gövdesinde XSS tespit ediyor (`waf: engeller`, 25 puan, `dayanak: test`) |
 | **V009** | /ftp Gizli Doküman İfşası | `test-iam.py`: `keycloaka_gider("/ftp/")` & `giris_akisi` | 200 OK (Doğrudan indirme) → **302 Redirect / 403 Forbidden** | Keycloak + oauth2-proxy kimliksiz erişimi 302 ile Keycloak'a yönlendiriyor, rolsüz misafire 403 veriyor (`iam: engeller`, `dayanak: test`) |
 | **V010** | XXE Dosya Okuma | `docs/iam-segmentasyon-notu.md` Bölüm 3.3 (ağ çıkış testi) | İstek geçer → **Bant dışı veri çıkışı engellendi** | `test-juice-flows.py` XXE'yi test etmez. Backend ağı `internal: true` olduğundan harici sunucuya veri sızdırılamaz (`segmentasyon: azaltir`, `dayanak: gerekce`) |
-| **V016** | Ayrıntılı Hata Mesajı | `zap_baseline.json` (`layer.js:95:5`, `fileServer.js:52:13`) & `docs/waf-engelleme-notu.md` | Hata sızıyor → **Hata sızıyor (Değişmedi)** | JSON ve hata yanıtları WAF tarafından denetlenmez; yığın izi yolları yeni ZAP taramasında doğrulanmıştır (`waf: etkisiz`, `dayanak: test`) |
-| **V019** | Sunucu Sürüm Sızıntısı | `zap_baseline.json` (Plugin ID: 10036) | 5 örnek (`Server: nginx/1.31.6`) → **0 örnek (Kayboldu)** | S3K5'te WAF Nginx imajı güncellenip `server_tokens off` devrede olduğundan sızıntı ortadan kalktı (`kontrol: yapilandirma`, `etki: engeller`, `dayanak: test`) |
+| **V016** | Ayrıntılı Hata Mesajı | `zap_baseline.json` (`layer.js:95:5`, `fileServer.js:52:13`) & `docs/waf-engelleme-notu.md` | Hata sızıyor → **Hata sızıyor (Değişmedi)** | JSON ve hata yanıtları WAF tarafından denetlenmez; ZAP'ın URL listesinde yığın izi yolları görünüyor, hata yanıtının kendisi kaydedilmedi (`waf: etkisiz`, `dayanak: gerekce`) |
+| **V019** | Sunucu Sürüm Sızıntısı | `zap_baseline.json` (Plugin ID: 10036) | 5 örnek (`Server: nginx/1.31.6`) → **0 örnek (Kayboldu)** | WAF imajının varsayılan `server_tokens off` ayarıyla başlık gizleniyor; kanıt ZAP önce/sonra karşılaştırması (`waf: engeller`, `dayanak: test`) |
 
 ### 5.1 Challenges Durumu (`challenges.json`)
-`challenges.json` dosyası, tüm test betikleri (`test-waf.sh`, `test-juice-flows.py`, `test-iam.py`) çalıştırıldıktan hemen sonra kaydedilmiştir. Toplam 116 challenge arasından çözülen sayısı **0**'dır (`solved: false`). Bu durum, gönderilen SQLi, XSS, yetki atlatma ve noSQLi saldırı yüklerinin hiçbirinin arka uç uygulamada başarıya ulaşmadığının ve kontrollerin saldırıları başarıyla durdurduğunun ek bir sistem kanıtıdır.
+`challenges.json` dosyası, tüm test betikleri (`test-waf.sh`, `test-juice-flows.py`, `test-iam.py`) çalıştırıldıktan hemen sonra kaydedilmiştir. Toplam 116 challenge arasından çözülen sayısı **0**'dır (`solved: false`). Test yüklerinin çoğu challenge çözüm yükü olmadığı için bu sayı tek başına "kontroller saldırıları durdurdu" anlamına gelmez. Anlamlı olan V001: `test-waf.sh`'taki `' OR 1=1--` girişi engellenmeseydi "Login Admin" challenge'ı çözülürdü; 403 aldığı için çözülmedi.
 
 ---
 

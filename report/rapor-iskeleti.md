@@ -30,12 +30,6 @@
 ## 5. Sonuç ve Değerlendirme
 [K1]
 
-### 5.1 Kontrollerin kanıtlanan etkisi
-
-Test yükleri Juice Shop challenge çözümü değildir; çoğunluğu tekil doğrulama istekleridir. Dolayısıyla "tüm challenge'lar çözüldü" ya da "kontroller challenge çözümlerini durdurdu" sonucu çıkarılmamalıdır.
-
-Yalnızca V001 için güçlü bir kanıt vardır: `test-waf.sh` altında `email=' OR 1=1--` isteği On modunda 403 alıyorsa, aynı yük DetectionOnly modunda yönetici oturumu veriyorsa paylaşılan Login Admin challenge'ı engellenmiş olur.
-
 ## 6. Sınırlılıklar ve Gelecek Çalışmalar
 [K1]
 
