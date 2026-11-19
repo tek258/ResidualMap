@@ -10,6 +10,8 @@ FROZEN_INVENTORY = REPO_ROOT / "inventory" / "inventory_v1.0.csv"   # dondurulmu
 GRAPH_DIR = REPO_ROOT / "graph"                # generate_edges / find_paths / visualize_graph
 FETCH_SCORES = REPO_ROOT / "ai" / "fetch_scores.py"          # NVD / FIRST EPSS sorguları
 SCORES_CACHE = REPO_ROOT / "ai" / "cvss_epss_scores.csv"     # fetch_scores.py'nin çıktısı (önbellek)
+AI_DIR = REPO_ROOT / "ai"                      # model_v2_local_llm.py, results_v2_llm.csv
+OLLAMA_URL = "http://localhost:11434"          # yerel LLM (model v2)
 
 # --- İzin verilen hedefler ---
 # Uygulama YALNIZCA bu listedeki hedefleri tarar. Arayüzde serbest adres girme
@@ -38,8 +40,9 @@ ALLOWED_HOSTS = {"localhost", "127.0.0.1", "host.docker.internal"}
 
 
 def _check_targets():
-    if urlparse(GRAFANA_URL).hostname not in ALLOWED_HOSTS:
-        raise ValueError(f"GRAFANA_URL yerel bir adres değil: {GRAFANA_URL}")
+    for ad, url in (("GRAFANA_URL", GRAFANA_URL), ("OLLAMA_URL", OLLAMA_URL)):
+        if urlparse(url).hostname not in ALLOWED_HOSTS:
+            raise ValueError(f"{ad} yerel bir adres değil: {url}")
     for key, target in TARGETS.items():
         for alan in ("zap_url", "tarayici_url"):
             host = urlparse(target[alan]).hostname

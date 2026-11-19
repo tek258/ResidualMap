@@ -14,3 +14,9 @@ def durumlar(konteyner):
 @st.cache_data(ttl=10, show_spinner=False)
 def grafana(url):
     return docker_check.grafana_durumu(url)
+
+
+@st.cache_data(ttl=10, show_spinner=False)
+def ollama():
+    from pipeline import ai_skor
+    return ai_skor.ollama_durumu()

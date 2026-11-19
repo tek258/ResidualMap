@@ -1,14 +1,18 @@
 """4. adım: seçilen bulgulardan saldırı grafiğinin üretilmesi."""
 
 import datetime
+import io
 import shutil
+import zipfile
+from collections import Counter
 
 import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
 from config import FROZEN_INVENTORY
-from pipeline import graf, runs
+from pipeline import ai_skor, graf, runs
+from steps import ortak
 
 
 def _ad(ozet, vid):
@@ -116,15 +120,67 @@ def render():
                "üzerine gelince ayrıntılar görünür. Grafik yakınlaştırılıp sürüklenebilir.")
     components.html(html.read_text(encoding="utf-8"), height=980, scrolling=True)
 
+    _ai_bolumu(run_id, rdir, inv, out, meta)
+
     # --- İndir ---
-    d = st.columns(3)
+    d = st.columns(4)
     for col, (k, etiket, mime) in zip(d, [("edges", "edges.json", "application/json"),
                                           ("paths", "paths.json", "application/json"),
                                           ("html", "Grafik (HTML)", "text/html")]):
         p = out / graf.CIKTILAR[k]
         col.download_button(f"İndir: {etiket}", p.read_bytes(), file_name=p.name, mime=mime)
+    d[3].download_button("Hepsini indir (zip)", _zip(run_id, rdir, out),
+                         file_name=f"residualmap-{run_id}.zip", mime="application/zip", type="primary")
 
     gunluk = meta["steps"].get("grafik", {}).get("gunluk")
     if gunluk:
         with st.expander("Script çıktısı"):
             st.code(gunluk, language=None)
+
+
+def _zip(run_id, rdir, out):
+    """Envanter, AI skorları, kenarlar, yollar ve grafik tek dosyada."""
+    tampon = io.BytesIO()
+    with zipfile.ZipFile(tampon, "w", zipfile.ZIP_DEFLATED) as z:
+        for p in [rdir / "inventory.csv", rdir / ai_skor.DOSYA, rdir / "meta.json",
+                  *(out / ad for ad in graf.CIKTILAR.values())]:
+            if p.exists():
+                z.write(p, arcname=p.relative_to(rdir).as_posix())
+    return tampon.getvalue()
+
+
+def _ai_bolumu(run_id, rdir, inv, out, meta):
+    st.markdown("**AI önceliklendirme (model v2)**")
+    satirlar = ai_skor.tablo(rdir)
+    kaynak = Counter(s["Kaynak"] for s in satirlar)
+    eksik = kaynak.get("yok", 0)
+    c = st.columns(3)
+    c[0].metric("Hazır sonuçtan", kaynak.get(ai_skor.HAZIR, 0),
+                help="Dondurulmuş envanterde de bulunan kayıtlar: skor ai/results_v2_llm.csv'den.")
+    c[1].metric("Bu çalıştırmada modelle", kaynak.get(ai_skor.MODEL, 0))
+    c[2].metric("AI skoru yok", eksik, help="Yeni kayıtlar. Grafikte renkleri CVSS'ten gelir.")
+
+    ok, mesaj, model = ortak.ollama()
+    (st.caption if ok else st.info)(mesaj)
+    hepsi = st.checkbox("Hazır skorları da yeniden hesapla (tüm kayıtlar)", value=False, disabled=not ok)
+    n = len(satirlar) if hepsi else eksik
+    if st.button(f"{n} kaydı modelle skorla (~{max(1, round(n * 3 / 60))} dk)",
+                 disabled=not ok or n == 0):
+        bar = st.progress(0.0, text="Başlıyor...")
+        sonuc = ai_skor.skorla(rdir, hepsi=hepsi, on_progress=lambda i, t, vid: bar.progress(
+            i / t if t else 1.0, text=f"{i}/{t} · {vid}"))
+        bar.empty()
+        with st.spinner("Grafik yeni skorlarla yeniden oluşturuluyor..."):
+            graf.uret(inv, out)
+        meta["steps"].setdefault("grafik", {})["ai"] = sonuc | {
+            "zaman": datetime.datetime.now().isoformat(timespec="seconds")}
+        runs.save_meta(run_id, meta)
+        if sonuc["basarisiz"]:
+            st.warning(f"Skorlanamayan kayıtlar (geçersiz yanıt): {', '.join(sonuc['basarisiz'])}")
+        st.success(f"{sonuc['skorlanan']} kayıt {sonuc['sure_sn']} sn'de skorlandı; grafik güncellendi.")
+        st.rerun()
+
+    st.caption("CVSS ve AI sıralaması yan yana. Eşit skorlar aynı sırayı alır. AI sınıfı skordan "
+               "türetilir (≥9 Kritik, ≥7 Yüksek, ≥4 Orta, altı Düşük).")
+    st.dataframe(pd.DataFrame(satirlar), hide_index=True, use_container_width=True,
+                 column_config={"AI gerekçesi": st.column_config.TextColumn(width="large")})

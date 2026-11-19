@@ -12,6 +12,7 @@ import json
 from collections import Counter
 
 from config import GRAPH_DIR
+from pipeline import ai_skor
 
 HEDEF_ADLARI = {
     "node_target_admin": "Yetkisiz Admin Erişimi",
@@ -34,6 +35,27 @@ def _yukle(ad):
     return mod
 
 
+def _ai_kaynagini_yonlendir(fp, vg, ai_csv):
+    """graph/ scriptleri AI skorlarını repodaki ai/results_v2_llm.csv'den okur. Uygulamada
+    her çalıştırmanın kendi skorları var; scriptlere dokunmadan, yüklenen modüllerdeki okuma
+    fonksiyonları bu çalıştırmanın skor dosyasına yönlendirilir."""
+    with open(ai_csv, encoding="utf-8", newline="") as f:
+        skorlar = {r["vuln_id"]: float(r["risk_score_llm"]) for r in csv.DictReader(f)}
+
+    asil_fp = getattr(fp, "load_inventory_and_v2", None)
+    if asil_fp:   # find_paths: yol sıralamasındaki eşitlik bozucu (secondary_v2_score)
+        def _fp(csv_path=None):
+            vuln_data, _ = asil_fp(csv_path)
+            return vuln_data, skorlar
+        fp.load_inventory_and_v2 = _fp
+
+    for ad in ("load_llm_results", "load_v2_results"):   # visualize_graph: renk ve hover
+        asil_vg = getattr(vg, ad, None)
+        if asil_vg:
+            setattr(vg, ad, lambda p=None, _a=asil_vg: _a(p or str(ai_csv)))
+    return skorlar
+
+
 def uret(inventory_csv, out_dir):
     """(ok, günlük metni) döndürür. Çıktılar out_dir altına yazılır."""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -41,15 +63,19 @@ def uret(inventory_csv, out_dir):
     gunluk = io.StringIO()
     try:
         with contextlib.redirect_stdout(gunluk):
+            fp, vg = _yukle("find_paths"), _yukle("visualize_graph")
+            ai_csv = ai_skor.hazirla(inventory_csv.parent)
+            skorlar = _ai_kaynagini_yonlendir(fp, vg, ai_csv)
+            print(f"[AI] {len(skorlar)} kaydın AI skoru var ({ai_csv.name}).")
             edges = _yukle("generate_edges").generate_attack_edges(str(inventory_csv), str(edges_p))
             if edges is None:
                 return False, gunluk.getvalue()
             # csv_path: yol olasılıkları bu çalıştırmanın envanterinden (repodakinden değil)
-            paths = _yukle("find_paths").find_attack_paths(str(edges_p), str(paths_p), str(inventory_csv))
+            paths = fp.find_attack_paths(str(edges_p), str(paths_p), str(inventory_csv))
             if paths is None:
                 return False, gunluk.getvalue()
             # paths_path: grafikte bu çalıştırmanın en riskli yolları vurgulanır
-            html = _yukle("visualize_graph").create_visual_graph(
+            html = vg.create_visual_graph(
                 str(edges_p), str(inventory_csv), str(html_p), str(paths_p))
             if html is None:
                 return False, gunluk.getvalue()
