@@ -1,4 +1,4 @@
-"""[S5][K4] Artık risk hesaplama ve duyarlılık analizi betiği.
+"""[S5][K4] Artık risk hesaplama ve duyarlılık analizi scripti.
 
 Girdiler:
     - ai/results_v2_llm.csv (risk_score_llm -> risk_before)
@@ -29,6 +29,8 @@ ETKINLIK_SOZLUGU = {
 }
 
 KONTROL_SUTUNLARI = ["waf", "sanal_yama", "ids", "iam", "segmentasyon", "yama"]
+GECERLI_ETKILER = {"engeller", "azaltir", "tespit_eder", "etkisiz", "kurulmadi"}
+GECERLI_DAYANAKLAR = {"test", "gerekce", "varsayim"}
 
 SCORES_PATH = "ai/results_v2_llm.csv"
 MAPPING_PATH = "inventory/control_mapping.csv"
@@ -40,34 +42,77 @@ def normalize_etki(deger: str) -> str:
     return (deger or "").strip().lower().replace(" ", "_")
 
 
-def tek_kontrol_etkinligi(etki: str, dayanak: str, sozluk: dict = None) -> float:
+def dogrula_satir(vuln_id: str, kontrol_etkileri: dict, dayanak: str) -> str:
+    """Etki ve dayanak değerlerini doğrular; bilinmeyen değerde kayıt+sütun+değer ile hata verir."""
+    dayanak_norm = (dayanak or "").strip().lower()
+    if dayanak_norm not in GECERLI_DAYANAKLAR:
+        raise ValueError(
+            f"[{vuln_id}] 'dayanak' sütununda tanınmayan değer: {dayanak!r} "
+            f"(beklenen: {sorted(GECERLI_DAYANAKLAR)})"
+        )
+
+    for sutun in KONTROL_SUTUNLARI:
+        ham = kontrol_etkileri[sutun] if sutun in kontrol_etkileri else "etkisiz"
+        etki_norm = normalize_etki(ham)
+        if etki_norm not in GECERLI_ETKILER:
+            raise ValueError(
+                f"[{vuln_id}] '{sutun}' sütununda tanınmayan etki değeri: {ham!r} "
+                f"(beklenen: {sorted(GECERLI_ETKILER)})"
+            )
+
+    return dayanak_norm
+
+
+def tek_kontrol_etkinligi(
+    etki: str,
+    dayanak: str,
+    sozluk: dict = None,
+    vuln_id: str = "?",
+    sutun: str = "?",
+) -> float:
     """Tek bir kontrolün (etki, dayanak) çiftine göre etkinliğini döndürür."""
     tablo = sozluk if sozluk is not None else ETKINLIK_SOZLUGU
     etki_norm = normalize_etki(etki)
     dayanak_norm = (dayanak or "").strip().lower()
 
-    if dayanak_norm == "varsayim" or etki_norm in ("", "etkisiz", "kurulmadi"):
+    if etki_norm not in GECERLI_ETKILER:
+        raise ValueError(f"[{vuln_id}] '{sutun}' sütununda tanınmayan etki değeri: {etki!r}")
+    if dayanak_norm not in GECERLI_DAYANAKLAR:
+        raise ValueError(f"[{vuln_id}] 'dayanak' sütununda tanınmayan değer: {dayanak!r}")
+
+    if dayanak_norm == "varsayim" or etki_norm in ("etkisiz", "kurulmadi"):
         return 0.0
 
-    return float(tablo.get((etki_norm, dayanak_norm), 0.0))
+    anahtar = (etki_norm, dayanak_norm)
+    if anahtar not in tablo:
+        raise ValueError(f"[{vuln_id}] '{sutun}' için sözlükte tanımlı olmayan çift: {anahtar}")
+
+    return float(tablo[anahtar])
 
 
-def toplam_etkinlik_hesapla(kontrol_etkileri: dict, dayanak: str, sozluk: dict = None) -> tuple[float, list[str], bool]:
+def toplam_etkinlik_hesapla(
+    kontrol_etkileri: dict,
+    dayanak: str,
+    sozluk: dict = None,
+    vuln_id: str = "?",
+) -> tuple[float, list[str], bool]:
     """Birden fazla kontrol için 1 - Π(1 - e_i) formülüyle toplam etkinliği hesaplar.
 
     Dönüş: (toplam_etkinlik, aktif_kontroller_listesi, hesaba_katildi_bayragi)
     """
-    dayanak_norm = (dayanak or "").strip().lower()
+    dayanak_norm = dogrula_satir(vuln_id, kontrol_etkileri, dayanak)
     aktif_kontroller = []
     etkinlikler = []
 
     for kontrol_adi in KONTROL_SUTUNLARI:
-        ham_etki = kontrol_etkileri.get(kontrol_adi, "")
+        ham_etki = kontrol_etkileri.get(kontrol_adi, "etkisiz")
         etki_norm = normalize_etki(ham_etki)
-        if etki_norm not in ("", "etkisiz", "kurulmadi"):
+        if etki_norm not in ("etkisiz", "kurulmadi"):
             aktif_kontroller.append(f"{kontrol_adi}:{etki_norm}")
             if dayanak_norm != "varsayim":
-                e = tek_kontrol_etkinligi(etki_norm, dayanak_norm, sozluk)
+                e = tek_kontrol_etkinligi(
+                    etki_norm, dayanak_norm, sozluk, vuln_id=vuln_id, sutun=kontrol_adi
+                )
                 if e > 0:
                     etkinlikler.append(e)
 
@@ -88,40 +133,64 @@ def artik_risk_hesapla(risk_before: float, toplam_etkinlik: float) -> float:
 
 
 def veri_yukle(scores_path: str = SCORES_PATH, mapping_path: str = MAPPING_PATH) -> list[dict]:
+    """Skorlar üzerinden döner; control_mapping.csv'de olmayanları 'eşleme yok' olarak tutar."""
     with open(scores_path, encoding="utf-8") as f:
-        skorlar = {r["vuln_id"].strip(): float(r["risk_score_llm"]) for r in csv.DictReader(f)}
+        skor_satirlari = list(csv.DictReader(f))
 
     with open(mapping_path, encoding="utf-8") as f:
-        eslemeler = list(csv.DictReader(f))
+        eslemeler = {r["vuln_id"].strip(): r for r in csv.DictReader(f)}
 
     kayitlar = []
-    for satir in eslemeler:
+    for satir in skor_satirlari:
         vid = satir["vuln_id"].strip()
-        if vid not in skorlar:
-            raise KeyError(f"{vid} kaydı {scores_path} içinde bulunamadı.")
-        kayitlar.append({
-            "vuln_id": vid,
-            "risk_before": skorlar[vid],
-            "kontroller_dict": {k: satir.get(k, "") for k in KONTROL_SUTUNLARI},
-            "dayanak": satir.get("dayanak", "").strip().lower(),
-        })
+        risk_before = float(satir["risk_score_llm"])
+        if vid not in eslemeler:
+            kayitlar.append({
+                "vuln_id": vid,
+                "risk_before": risk_before,
+                "esleme_var": False,
+                "kontroller_dict": {},
+                "dayanak": "eşleme yok",
+            })
+        else:
+            esleme = eslemeler[vid]
+            kayitlar.append({
+                "vuln_id": vid,
+                "risk_before": risk_before,
+                "esleme_var": True,
+                "kontroller_dict": {k: esleme.get(k, "") for k in KONTROL_SUTUNLARI},
+                "dayanak": esleme.get("dayanak", ""),
+            })
     return kayitlar
 
 
 def tablo_uret(kayitlar: list[dict], sozluk: dict = None) -> list[dict]:
     sonuclar = []
     for k in kayitlar:
+        if not k["esleme_var"]:
+            sonuclar.append({
+                "vuln_id": k["vuln_id"],
+                "risk_before": round(k["risk_before"], 4),
+                "kontroller": "yok",
+                "etkinlik": 0.0,
+                "risk_after": round(k["risk_before"], 4),
+                "dayanak": "eşleme yok",
+                "hesaba_katildi": "Hayır (eşleme yok)",
+            })
+            continue
+
         etkinlik, aktif_list, hesaba_katildi = toplam_etkinlik_hesapla(
-            k["kontroller_dict"], k["dayanak"], sozluk
+            k["kontroller_dict"], k["dayanak"], sozluk, vuln_id=k["vuln_id"]
         )
         risk_after = artik_risk_hesapla(k["risk_before"], etkinlik)
+        dayanak_norm = (k["dayanak"] or "").strip().lower()
         sonuclar.append({
             "vuln_id": k["vuln_id"],
             "risk_before": round(k["risk_before"], 4),
             "kontroller": ", ".join(aktif_list) if aktif_list else "yok",
             "etkinlik": round(etkinlik, 4),
             "risk_after": round(risk_after, 4),
-            "dayanak": k["dayanak"],
+            "dayanak": dayanak_norm,
             "hesaba_katildi": "Evet" if hesaba_katildi else "Hayır (varsayim)",
         })
     return sonuclar
@@ -148,34 +217,63 @@ def duyarlilik_analizi(kayitlar: list[dict]) -> None:
         return yeni
 
     senaryolar = [
-        ("Baz senaryo (0.9 / 0.5 / 0.2, gerekçe=0.7)", ETKINLIK_SOZLUGU),
-        ("Etki değerleri -0.1 (0.8 / 0.4 / 0.1)", senaryo_olustur(etki_delta=-0.1, gerekce_carpan=0.7)),
-        ("Etki değerleri +0.1 (1.0->0.99 / 0.6 / 0.3)", senaryo_olustur(etki_delta=+0.1, gerekce_carpan=0.7)),
+        ("Baz (0.9 / 0.5 / 0.2, gerekçe=0.7)", ETKINLIK_SOZLUGU),
+        ("Etki -0.1 (0.8 / 0.4 / 0.1)", senaryo_olustur(etki_delta=-0.1, gerekce_carpan=0.7)),
+        ("Etki +0.1 (0.99 / 0.6 / 0.3)", senaryo_olustur(etki_delta=+0.1, gerekce_carpan=0.7)),
         ("Güven çarpanı gerekçe = 0.5", senaryo_olustur(etki_delta=0.0, gerekce_carpan=0.5)),
         ("Güven çarpanı gerekçe = 0.9", senaryo_olustur(etki_delta=0.0, gerekce_carpan=0.9)),
     ]
 
     baz_sonuc = tablo_uret(kayitlar, ETKINLIK_SOZLUGU)
+    baz_map = {r["vuln_id"]: r["risk_after"] for r in baz_sonuc}
     baz_top10 = [
         r["vuln_id"]
         for r in sorted(baz_sonuc, key=lambda x: (-x["risk_after"], x["vuln_id"]))[:10]
     ]
+    aktif_ids = {r["vuln_id"] for r in baz_sonuc if r["etkinlik"] > 0}
+    baz_aktif_sira = [
+        r["vuln_id"]
+        for r in sorted(
+            (r for r in baz_sonuc if r["vuln_id"] in aktif_ids),
+            key=lambda x: (-x["risk_after"], x["vuln_id"]),
+        )
+    ]
 
     print("\n== Duyarlılık Analizi (Metodoloji Bölüm 7) ==")
-    print(f"Baz Top-10: {', '.join(baz_top10)}\n")
+    print(f"Genel Top-10 (tamamı etkinliği 0 kayıtlar): {', '.join(baz_top10)}")
+    print(f"Kontrolü aktif olan {len(baz_aktif_sira)} kaydın baz sırası: {', '.join(baz_aktif_sira)}\n")
+    print("| Senaryo | Toplam risk düşüşü | Genel Top-10 değişim | Aktif kontrollülerde sıra değişen kayıt | En büyük kayıt farkı (`risk_after`) |")
+    print("|---|---|---|---|---|")
+
     for ad, sozluk in senaryolar:
         sonuc = tablo_uret(kayitlar, sozluk)
         top_before = sum(r["risk_before"] for r in sonuc)
         top_after = sum(r["risk_after"] for r in sonuc)
         dusus_yuzde = (top_before - top_after) / top_before * 100
+
         top10 = [
             r["vuln_id"]
             for r in sorted(sonuc, key=lambda x: (-x["risk_after"], x["vuln_id"]))[:10]
         ]
-        farkli = len(set(top10) ^ set(baz_top10)) // 2
-        sira_degisti = top10 != baz_top10
-        print(f"- {ad}:")
-        print(f"    Toplam risk düşüşü: %{dusus_yuzde:.2f} | Top-10 giren/çıkan: {farkli} | Sıra değişti mi: {'Evet' if sira_degisti else 'Hayır'}")
+        top10_fark = len(set(top10) ^ set(baz_top10)) // 2
+
+        aktif_sira = [
+            r["vuln_id"]
+            for r in sorted(
+                (r for r in sonuc if r["vuln_id"] in aktif_ids),
+                key=lambda x: (-x["risk_after"], x["vuln_id"]),
+            )
+        ]
+        sira_degisen = sum(1 for a, b in zip(baz_aktif_sira, aktif_sira) if a != b)
+
+        en_buyuk_r = max(sonuc, key=lambda r: abs(r["risk_after"] - baz_map[r["vuln_id"]]))
+        max_fark = en_buyuk_r["risk_after"] - baz_map[en_buyuk_r["vuln_id"]]
+        fark_metni = "0.00" if abs(max_fark) < 1e-6 else f"{max_fark:+.2f} ({en_buyuk_r['vuln_id']})"
+
+        print(
+            f"| {ad} | %{dusus_yuzde:.2f} | {top10_fark}/10 | "
+            f"{sira_degisen}/{len(baz_aktif_sira)} | {fark_metni} |"
+        )
 
 
 def main():
@@ -188,9 +286,13 @@ def main():
     csv_yaz(sonuclar)
 
     varsayim_sayisi = sum(1 for r in sonuclar if r["dayanak"] == "varsayim")
+    esleme_yok_sayisi = sum(1 for r in sonuclar if r["dayanak"] == "eşleme yok")
     top_before = sum(r["risk_before"] for r in sonuclar)
     top_after = sum(r["risk_after"] for r in sonuclar)
-    print(f"Yazıldı: {OUTPUT_PATH} ({len(sonuclar)} kayıt, {varsayim_sayisi} varsayım hariç tutuldu)")
+    print(
+        f"Yazıldı: {OUTPUT_PATH} ({len(sonuclar)} kayıt, "
+        f"{varsayim_sayisi} varsayım hariç, {esleme_yok_sayisi} eşleme yok)"
+    )
     print(f"Toplam risk: {top_before:.2f} -> {top_after:.2f} (Düşüş: %{(top_before - top_after) / top_before * 100:.2f})")
 
     if args.duyarlilik:
