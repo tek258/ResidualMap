@@ -81,23 +81,31 @@ def load_llm_results(llm_csv_path=None):
     path = _resolve_file(
         llm_csv_path,
         [
-            os.path.join(base_dir, "..", "ai", "results_v1_llm.csv"),
-            os.path.join(base_dir, "results_v1_llm.csv"),
-            "results_v1_llm.csv",
+            os.path.join(base_dir, "..", "ai", "results_v2_llm.csv"),
+            os.path.join(base_dir, "results_v2_llm.csv"),
+            "results_v2_llm.csv",
         ],
     )
     llm_map = {}
-    if path:
+    v2_available = bool(path and os.path.exists(path))
+    if v2_available:
         with open(path, mode="r", encoding="utf-8") as f:
             for row in csv.DictReader(f):
-                vid = (row.get("vuln_id") or "").strip()
+                vid = _pick_field(row, ["vuln_id", "id", "cve_id"])
                 if vid:
                     llm_map[vid] = {
-                        "ai_score": (row.get("risk_score_llm") or "").strip(),
-                        "ai_label": (row.get("risk_label_llm") or "").strip(),
-                        "llm_reason": (row.get("llm_reason") or "").strip(),
+                        "ai_score": _pick_field(
+                            row, ["risk_score_llm", "ai_score", "ai_risk_score", "risk_score"]
+                        ),
+                        "ai_label": _pick_field(
+                            row, ["risk_label_llm", "ai_label", "risk_label"]
+                        ),
+                        "llm_reason": _pick_field(
+                            row,
+                            ["llm_reason", "ai_reason", "ai_rationale", "reason", "rationale"],
+                        ),
                     }
-    return llm_map
+    return llm_map, v2_available
 
 
 def load_inventory_details(csv_path=None, llm_csv_path=None, epss_csv_path=None):
@@ -113,7 +121,7 @@ def load_inventory_details(csv_path=None, llm_csv_path=None, epss_csv_path=None)
     )
 
     epss_by_cve = load_epss_by_cve(epss_csv_path)
-    llm_by_vid = load_llm_results(llm_csv_path)
+    llm_by_vid, _ = load_llm_results(llm_csv_path)
 
     if inv_path:
         with open(inv_path, mode="r", encoding="utf-8") as f:
@@ -128,27 +136,21 @@ def load_inventory_details(csv_path=None, llm_csv_path=None, epss_csv_path=None)
                 epss_val = epss_by_cve.get(cve_id, "-") if cve_id else "-"
 
                 llm_info = llm_by_vid.get(vid, {})
-                ai_reason_raw = llm_info.get("llm_reason") or _pick_field(
-                    row,
-                    [
-                        "ai_reason",
-                        "ai_rationale",
-                        "ai_justification",
-                        "ai_explanation",
-                        "rationale",
-                        "reason",
-                    ],
-                )
-                reason_first = _first_sentence(ai_reason_raw)
+                raw_ai_score = (llm_info.get("ai_score") or "").strip()
+                if raw_ai_score and raw_ai_score.lower() != "nan":
+                    ai_score_display = raw_ai_score
+                else:
+                    ai_score_display = "henüz yok"
+
+                ai_reason_raw = (llm_info.get("llm_reason") or "").strip()
+                reason_first = _first_sentence(ai_reason_raw) if ai_reason_raw else "-"
 
                 details[vid] = {
                     "name": name,
                     "cwe_id": _pick_field(row, ["cwe_id", "cwe"]),
                     "cvss_score": _pick_field(row, ["cvss_score", "cvss"]),
                     "epss": epss_val,
-                    "ai_score": llm_info.get("ai_score")
-                    or _pick_field(row, ["ai_score", "ai_risk_score", "ai_risk", "risk_score"])
-                    or "-",
+                    "ai_score": ai_score_display,
                     "ai_label": llm_info.get("ai_label") or "-",
                     "ai_first_sentence": reason_first,
                     "target_basis": _pick_field(
@@ -165,12 +167,16 @@ def load_inventory_details(csv_path=None, llm_csv_path=None, epss_csv_path=None)
 
     for vid, llm_info in llm_by_vid.items():
         if vid not in details:
+            raw_ai_score = (llm_info.get("ai_score") or "").strip()
+            ai_score_display = (
+                raw_ai_score if (raw_ai_score and raw_ai_score.lower() != "nan") else "henüz yok"
+            )
             details[vid] = {
                 "name": vid,
                 "cwe_id": "-",
                 "cvss_score": "-",
                 "epss": "-",
-                "ai_score": llm_info.get("ai_score") or "-",
+                "ai_score": ai_score_display,
                 "ai_label": llm_info.get("ai_label") or "-",
                 "ai_first_sentence": _first_sentence(llm_info.get("llm_reason", "")),
                 "target_basis": "",
@@ -180,19 +186,32 @@ def load_inventory_details(csv_path=None, llm_csv_path=None, epss_csv_path=None)
     return details
 
 
+def _strip_bootstrap_cdn(html_content):
+    cleaned_lines = []
+    for line in html_content.splitlines():
+        if "cdn.jsdelivr.net" in line.lower() and "bootstrap" in line.lower():
+            continue
+        cleaned_lines.append(line)
+    return "\n".join(cleaned_lines)
+
+
 def _write_html_utf8(net, output_html):
     if hasattr(net, "generate_html"):
-        html_str = net.generate_html(notebook=False)
+        html_str = _strip_bootstrap_cdn(net.generate_html(notebook=False))
         with open(output_html, "w", encoding="utf-8") as f:
             f.write(html_str)
         return
 
     try:
         net.write_html(output_html, notebook=False)
+        with open(output_html, "r", encoding="utf-8") as f:
+            html_str = _strip_bootstrap_cdn(f.read())
+        with open(output_html, "w", encoding="utf-8") as f:
+            f.write(html_str)
     except UnicodeEncodeError:
         if hasattr(net, "html") and isinstance(net.html, str):
             with open(output_html, "w", encoding="utf-8") as f:
-                f.write(net.html)
+                f.write(_strip_bootstrap_cdn(net.html))
         else:
             raise
 
@@ -219,7 +238,7 @@ def visualize_graph(
     base_dir = os.path.dirname(os.path.abspath(__file__))
     edges_file = edges_file or os.path.join(base_dir, "edges.json")
     paths_file = paths_file or os.path.join(base_dir, "paths.json")
-    output_html = output_html or os.path.join(base_dir, "attack_graph_v1.html")
+    output_html = output_html or os.path.join(base_dir, "attack_graph_v2.html")
 
     if not os.path.exists(edges_file):
         logging.error(f"Edges dosyası bulunamadı: {edges_file}")
@@ -279,7 +298,7 @@ def visualize_graph(
         directed=True,
         bgcolor="#141820",
         font_color="#f5f7fa",
-        cdn_resources="in_line",
+        cdn_resources="local",
     )
 
     net.barnes_hut(
@@ -317,11 +336,11 @@ def visualize_graph(
             size = style["size"]
         else:
             info = inv_details.get(node_id, {})
-            risk_metric = (
-                info.get("ai_score")
-                if (info.get("ai_score") and info.get("ai_score") != "-")
-                else info.get("cvss_score")
+            ai_score_val = (info.get("ai_score") or "").strip()
+            has_ai_score = bool(
+                ai_score_val and ai_score_val not in ("-", "henüz yok", "nan", "None")
             )
+            risk_metric = ai_score_val if has_ai_score else info.get("cvss_score")
             color, risk_label = _get_vuln_risk_style(risk_metric)
             shape = "dot"
             size = 20
@@ -333,11 +352,13 @@ def visualize_graph(
                 or "-"
             )
 
+            ai_score_hover = ai_score_val if ai_score_val else "henüz yok"
+
             tooltip = (
                 f"Zafiyet Adı: {info.get('name') or node_id}\n"
                 f"CVSS: {info.get('cvss_score') or '-'}\n"
                 f"EPSS: {info.get('epss') or '-'}\n"
-                f"AI Skoru: {info.get('ai_score') or '-'}\n"
+                f"AI Skoru: {ai_score_hover}\n"
                 f"AI Gerekçesi (İlk Cümle): {info.get('ai_first_sentence') or '-'}\n"
                 f"Hedef Eşleşmesi Dayanağı: {target_basis}\n"
                 f"Zafiyet ID: {node_id} | Risk Tonu: {risk_label}"
@@ -439,7 +460,7 @@ def visualize_graph(
             <div><span style="color:#9aa5b1; font-weight:bold;">┄</span> Tahmini Bağlantı (basis: cvss)</div>
         </div>
         <div style="border-top: 1px solid rgba(255,255,255,0.14); padding-top: 6px;">
-            <div style="font-weight: bold; margin-bottom: 4px;">Zafiyet Risk Tonu (dot)</div>
+            <div style="font-weight: bold; margin-bottom: 4px;">Zafiyet Risk Tonu (dot) &mdash; renk: AI skoru (yoksa CVSS)</div>
             <div style="margin: 2px 0;"><span style="color:#e74c3c; font-weight:bold;">●</span> Yüksek (&ge; 8.0)</div>
             <div style="margin: 2px 0;"><span style="color:#f39c12; font-weight:bold;">●</span> Orta (6.0 - 7.9)</div>
             <div style="margin: 2px 0;"><span style="color:#f9e79f; font-weight:bold;">●</span> Düşük (&lt; 6.0)</div>
@@ -476,22 +497,23 @@ def visualize_graph(
     extra_html += legend_html
 
     with open(output_html, "r", encoding="utf-8") as f:
-        html_content = f.read()
+        html_content = _strip_bootstrap_cdn(f.read())
     if "</body>" in html_content:
         html_content = html_content.replace("</body>", extra_html + "\n</body>")
-        with open(output_html, "w", encoding="utf-8") as f:
-            f.write(html_content)
+    with open(output_html, "w", encoding="utf-8") as f:
+        f.write(html_content)
 
     logging.info(f"Graf görselleştirmesi oluşturuldu: {output_html}")
     return output_html
 
 
-def create_visual_graph(edges_path=None, csv_path=None, output_path=None):
+def create_visual_graph(edges_path=None, csv_path=None, output_path=None, paths_path=None):
     base_dir = os.path.dirname(os.path.abspath(__file__))
+    resolved_paths = paths_path if paths_path else os.path.join(base_dir, "paths.json")
     return visualize_graph(
         edges_file=edges_path,
-        paths_file=os.path.join(base_dir, "paths.json"),
-        output_html=output_path or os.path.join(base_dir, "attack_graph_v1.html"),
+        paths_file=resolved_paths,
+        output_html=output_path or os.path.join(base_dir, "attack_graph_v2.html"),
         csv_path=csv_path,
     )
 

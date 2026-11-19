@@ -1,156 +1,194 @@
+import csv
 import json
 import os
-import csv
-import logging
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+# Proje dizin yapısına göre dosya yollarının dinamik olarak mutlak konumda tanımlanması
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+CSV_PATH = os.path.abspath(os.path.join(CURRENT_DIR, "../inventory/inventory_v1.0.csv"))
+OUTPUT_EDGES_PATH = os.path.abspath(os.path.join(CURRENT_DIR, "edges.json"))
 
-# 5 Hedef Tanımı
-TARGET_MAPPING = {
-    "admin": "node_target_admin",
-    "leak": "node_target_leak",
-    "rce": "node_target_rce",
-    "dos": "node_target_dos",
-    "account_takeover": "node_target_account_takeover"
+# CWE kümeleri: Zafiyetleri siber güvenlik hedeflerine deterministik olarak eşlemek için tanımlanan listeler
+ADMIN_CWES = {"cwe-798", "cwe-521", "cwe-20", "cwe-290", "cwe-285", "cwe-915"}
+LEAK_CWES = {"cwe-200", "cwe-548", "cwe-611", "cwe-209", "cwe-264", "cwe-497", "cwe-328"}
+ACCOUNT_CWES = {"cwe-79", "cwe-639", "cwe-640", "cwe-352", "cwe-601", "cwe-693", "cwe-749", "cwe-331"}
+RCE_CWES = {"cwe-1321", "cwe-94", "cwe-22", "cwe-176", "cwe-122", "cwe-119"}
+DOS_CWES = {"cwe-400", "cwe-476", "cwe-248"}
+
+# Geçerli giriş noktaları ve karşılık gelen düğümler
+ENTRY_POINT_NODES = {
+    "login": "node_entry_login",
+    "search": "node_entry_search",
+    "api": "node_entry_api",
+    "web": "node_entry_web",
+    "dependency": "node_entry_dependency",
 }
 
-# CWE Kural Tabanlı Eşlemeler (rule)
-CWE_RULE_TARGETS = {
-    "CWE-89": "node_target_admin",
-    "CWE-79": "node_target_account_takeover",
-    "CWE-78": "node_target_rce",
-    "CWE-22": "node_target_leak",
-    "CWE-400": "node_target_dos",
-    "CWE-639": "node_target_account_takeover",
-    "CWE-693": "node_target_admin",
-    "CWE-1321": "node_target_rce",
-    "CWE-122": "node_target_rce",
-    "CWE-248": "node_target_dos",
-    "CWE-476": "node_target_dos",
-    "CWE-285": "node_target_admin",
-    "CWE-176": "node_target_leak",
-    "CWE-290": "node_target_account_takeover",
-    "CWE-331": "node_target_leak",
-    "CWE-328": "node_target_leak",
-    "CWE-94": "node_target_rce",
-    "CWE-749": "node_target_rce",
-    "CWE-20": "node_target_account_takeover",
-    "CWE-497": "node_target_leak",
-    "CWE-264": "node_target_admin",
-    "CWE-209": "node_target_leak",
-    "CWE-521": "node_target_account_takeover",
-    "CWE-798": "node_target_admin",
-    "CWE-601": "node_target_account_takeover",
-    "CWE-352": "node_target_account_takeover",
-    "CWE-640": "node_target_account_takeover",
-    "CWE-611": "node_target_leak",
-    "CWE-548": "node_target_leak",
-    "CWE-915": "node_target_admin",
-    "CWE-119": "node_target_rce"
+
+# Kazanım (grants_capability) tabanlı hedefler: bir zafiyet bu yetkinlikleri
+# kazandırıyorsa, sonucu CWE'den bağımsız olarak bu hedeftir. Örn. V025 (zayıf
+# PBKDF2, CWE-328) CWE'ye göre sızıntı hedefine düşerdi, ama admin_credentials
+# kazandırdığı için admin hedefine gider. Kayıt numarasına bağlı değildir.
+GRANTS_TARGETS = {
+    "admin_session": "node_target_admin",
+    "admin_credentials": "node_target_admin",
+    "forged_identity": "node_target_admin",
+    "stolen_session": "node_target_account_takeover",
 }
 
-EXTRA_CWE_MAPPING = {}
+
+def map_to_target(v_id, name, cwe_id, grants="none"):
+    """
+    Zafiyetin nihai etki hedefini belirler: önce kazandırdığı yetkinliğe
+    (grants_capability), sonra CWE koduna ve adına bakar.
+    """
+    if grants in GRANTS_TARGETS:
+        return GRANTS_TARGETS[grants]
+
+    cwe = cwe_id.lower().strip()
+    name_lower = name.lower()
+
+    # CWE-89 (SQL Injection) özel durumu: bağlama göre admin veya leak hedefine yönlendirilir
+    if cwe == "cwe-89":
+        if "login" in name_lower or "admin" in name_lower:
+            return "node_target_admin"
+        return "node_target_leak"
+
+    # Standart CWE küme eşlemeleri
+    if cwe in ADMIN_CWES:
+        return "node_target_admin"
+    if cwe in LEAK_CWES:
+        return "node_target_leak"
+    if cwe in ACCOUNT_CWES:
+        return "node_target_account_takeover"
+    if cwe in RCE_CWES:
+        return "node_target_rce"
+    if cwe in DOS_CWES:
+        return "node_target_dos"
+
+    # Küme dışı kalsa bile isminde admin geçenler doğrudan admin hedefine bağlanır
+    if "admin" in name_lower:
+        return "node_target_admin"
+
+    return None
 
 
-def determine_target_and_basis(row):
-    cwe = row.get("cwe_id", "").strip()
-    notes = row.get("notes", "").lower()
-
-    if cwe in CWE_RULE_TARGETS:
-        return CWE_RULE_TARGETS[cwe], "rule"
-    if cwe in EXTRA_CWE_MAPPING:
-        return EXTRA_CWE_MAPPING[cwe], "extra-cwe"
-
-    if "admin" in notes or "auth" in notes:
-        return "node_target_admin", "cvss"
-    elif "rce" in notes or "command" in notes or "execution" in notes:
-        return "node_target_rce", "cvss"
-    elif "leak" in notes or "disclosure" in notes or "read" in notes:
-        return "node_target_leak", "cvss"
-    elif "dos" in notes or "denial" in notes:
-        return "node_target_dos", "cvss"
-    else:
-        return "node_target_account_takeover", "cvss"
+# Hedef düğümlerin teknik isim karşılıkları
+TARGET_TECHNIQUE_NAMES = {
+    "node_target_admin": "Unauthorized Administrator Access",
+    "node_target_leak": "Sensitive Data Exfiltration & Database Exposure",
+    "node_target_account_takeover": "Account Takeover via Client-Side Attack",
+    "node_target_rce": "Remote Code Execution & System Compromise",
+    "node_target_dos": "Denial of Service & Resource Exhaustion",
+}
 
 
-def generate_edges(inventory_file=None, output_file=None):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    output_file = output_file or os.path.join(base_dir, 'edges.json')
+def generate_attack_edges(csv_path=CSV_PATH, output_edges_path=OUTPUT_EDGES_PATH):
+    """Kenarları üretip output_edges_path'e yazar ve döndürür.
 
-    # Envanter dosyasının olası yolları
-    possible_inv_paths = [
-        os.path.join(base_dir, "..", "inventory", "inventory_v1.0.csv"),
-        os.path.join(base_dir, "inventory", "inventory_v1.0.csv"),
-        os.path.join(base_dir, "..", "inventory_v1.0.csv"),
-        os.path.abspath("inventory/inventory_v1.0.csv"),
-        os.path.abspath("inventory_v1.0.csv")
-    ]
-    inventory_file = inventory_file or next((p for p in possible_inv_paths if os.path.exists(p)), None)
-
-    if not inventory_file or not os.path.exists(inventory_file):
-        logging.error("Envanter dosyası (inventory_v1.0.csv) hiçbir konumda bulunamadı!")
-        return
-
+    Parametreler verilmezse repodaki envanter ve graph/edges.json kullanılır
+    (komut satırından çalıştırma). Uygulama kendi çalıştırma klasörünü verir.
+    """
     edges = []
-    basis_counts = {"rule": 0, "extra-cwe": 0, "cvss": 0}
 
-    entry_node_mapping = {
-        "login": "node_entry_login",
-        "search": "node_entry_search",
-        "api": "node_entry_api",
-        "web": "node_entry_web",
-        "dependency": "node_entry_dependency"
-    }
+    # Envanter dosyasının kontrolü
+    if not os.path.exists(csv_path):
+        print(f"[HATA] Envanter dosyası bulunamadı: {csv_path}")
+        return None
 
-    with open(inventory_file, mode="r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
+    vulnerabilities = []
+
+    # CSV verilerinin okunması ve normalize edilerek belleğe alınması
+    with open(csv_path, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
         for row in reader:
-            vuln_id = row.get("vuln_id")
-            entry_point = row.get("entry_point", "").strip().lower()
-            name = row.get("name", "")
-
-            if not vuln_id:
+            v_id = row.get("vuln_id", "").strip()
+            if not v_id:
                 continue
+            vulnerabilities.append({
+                "id": v_id,
+                "name": row.get("name", "").strip(),
+                "component": row.get("component", "").strip().lower(),
+                "cwe_id": row.get("cwe_id", "").strip().upper(),
+                "entry_point": row.get("entry_point", "").strip().lower(),
+                "requires_capability": row.get("requires_capability", "none").strip().lower() or "none",
+                "grants_capability": row.get("grants_capability", "none").strip().lower() or "none",
+            })
 
-            if entry_point in entry_node_mapping:
-                source_node = entry_node_mapping[entry_point]
+    unmapped_targets = []
+
+    # Zafiyetler üzerinde dönerek giriş ve hedef kenarlarının üretilmesi
+    for v in vulnerabilities:
+        v_id = v["id"]
+        name = v["name"]
+        cwe_id = v["cwe_id"]
+        entry_point = v["entry_point"]
+        requires = v["requires_capability"]
+
+        # KRİTİK DÜZELTME: Eğer zafiyetin bir ön koşulu (requires) varsa, dışarıdan doğrudan giriş noktası ATAMA!
+        if requires == "none":
+            if entry_point in ENTRY_POINT_NODES:
+                entry_node = ENTRY_POINT_NODES[entry_point]
+                edges.append({
+                    "source": entry_node,
+                    "target": v_id,
+                    "relation": "Entry Point",
+                    "technique_name": f"Access via {entry_point}"
+                })
             else:
-                logging.warning(f"[{vuln_id}] için bilinmeyen/boş entry_point ('{entry_point}'), varsayılan 'node_entry_login' kullanılıyor.")
-                source_node = "node_entry_login"
+                print(f"[UYARI] {v_id}: geçersiz veya boş entry_point ('{entry_point}'), giriş kenarı eklenmedi.")
 
-            # 1. Kenar: Giriş Düğümünden Zafiyete
+        # CWE / yetkinlik bazlı hedef eşlemesi ve Leads To kenarının eklenmesi
+        target_node = map_to_target(v_id, name, cwe_id, v["grants_capability"])
+        if target_node is not None:
             edges.append({
-                "source": source_node,
-                "target": vuln_id,
-                "relation": "entry_to_vuln",
-                "technique_name": f"Access via {entry_point}",
-                "vuln_id": vuln_id,
-                "basis": "rule"
-            })
-
-            # Hedef ve Dayanak Tespiti
-            target_node, basis = determine_target_and_basis(row)
-            basis_counts[basis] += 1
-
-            # 2. Kenar: Zafiyetten Hedefe
-            edges.append({
-                "source": vuln_id,
+                "source": v_id,
                 "target": target_node,
-                "relation": "vuln_to_target",
-                "technique_name": name,
-                "vuln_id": vuln_id,
-                "basis": basis
+                "relation": "Leads To",
+                "technique_name": TARGET_TECHNIQUE_NAMES[target_node]
             })
+        else:
+            unmapped_targets.append(v_id)
 
-    out_dir = os.path.dirname(output_file) or "."
-    os.makedirs(out_dir, exist_ok=True)
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(edges, f, indent=4, ensure_ascii=False)
+    # Capability (Yetenek) tabanlı mantıksal zincirleme ('Chains To' ilişkileri)
+    capability_sources = {}
+    for v in vulnerabilities:
+        grants = v["grants_capability"]
+        if grants != "none":
+            capability_sources.setdefault(grants, []).append(v["id"])
 
-    print(f"Başarılı! Toplam {len(edges)} kenar üretildi ve kaydedildi.")
-    print(f"Dayanak Dağılımı: {basis_counts}")
-    return edges
+    for v in vulnerabilities:
+        requires = v["requires_capability"]
+        if requires != "none" and requires in capability_sources:
+            for source_id in capability_sources[requires]:
+                if source_id != v["id"]:
+                    edges.append({
+                        "source": source_id,
+                        "target": v["id"],
+                        "relation": "Chains To",
+                        "technique_name": f"{requires} elde edilince mümkün olur"
+                    })
+
+    # Tekrarlayan ve fazla kenarların temizlenmesi (Unique edges)
+    unique_edges = []
+    seen = set()
+    for e in edges:
+        identifier = (e['source'], e['target'], e['relation'])
+        if identifier not in seen:
+            seen.add(identifier)
+            unique_edges.append(e)
+
+    # Üretilen tekil kenar listesinin edges.json dosyasına yazılması
+    with open(output_edges_path, "w", encoding="utf-8") as outfile:
+        json.dump(unique_edges, outfile, indent=4, ensure_ascii=False)
+
+    # İşlem sonuç raporu
+    print(f"[BAŞARILI] Toplam {len(unique_edges)} tekil kenar üretildi: {output_edges_path}")
+    if unmapped_targets:
+        print(f"[UYARI] {len(unmapped_targets)} zafiyet hiçbir hedefe eşlenemedi: {', '.join(unmapped_targets)}")
+    else:
+        print("Tüm zafiyetler bir hedefe eşlendi.")
+    return unique_edges
 
 
-if __name__ == '__main__':
-    generate_edges()
+if __name__ == "__main__":
+    generate_attack_edges()
