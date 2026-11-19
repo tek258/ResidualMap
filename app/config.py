@@ -21,7 +21,7 @@ TARGETS = {
         "aciklama": "Kasıtlı olarak açıklı eğitim uygulaması. "
                     "Lab ortamında WAF (nginx + ModSecurity) arkasında çalışıyor.",
         "konteyner": "juice-shop",                      # docker-compose.yml: container_name
-        "imaj": "bkimminich/juice-shop:v20.2.0",        # Trivy imaj taraması (compose ile aynı sürüm)
+        "imaj": "bkimminich/juice-shop:v20.2.0@sha256:8739101ade29358abb5469ee66ae78e582c97ed0a5543a4ad102e5fa5193526b",
         "zap_url": "http://host.docker.internal:8080",  # ZAP konteynerinden erişilen adres
         "tarayici_url": "http://localhost:8080",        # tarayıcıdan erişilen adres
     },

@@ -156,6 +156,7 @@ def tara_zap(target, raw_dir, on_line):
     """ZAP baseline: pasif tarama, hedefe saldırı isteği göndermez."""
     cmd = [
         "docker", "run", "--rm",
+        "-e", "TRIVY_DISABLE_VEX_NOTICE=true",
         # Linux'ta host.docker.internal tanımlı değil; Docker Desktop'ta zararsız
         "--add-host=host.docker.internal:host-gateway",
         "-v", f"{raw_dir.resolve()}:/zap/wrk:rw",

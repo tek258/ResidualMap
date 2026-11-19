@@ -12,6 +12,25 @@
 BASE="${1:-http://localhost:8080}"
 gecen=0; kalan=0
 
+WAF_MODE="${WAF_MODE:-blocking}"
+if [ "$WAF_MODE" = "detection" ] || [ "$WAF_MODE" = "DetectionOnly" ]; then
+  SQLI_OK=500
+  XSS_OK=200
+  PATH_OK=200
+  SCANNER_OK=200
+  LOGIN_SQLI_OK=200
+  V003_OK=200
+  V005_OK=404
+else
+  SQLI_OK=403
+  XSS_OK=403
+  PATH_OK=403
+  SCANNER_OK=403
+  LOGIN_SQLI_OK=403
+  V003_OK=403
+  V005_OK=403
+fi
+
 req() {  # etiket, beklenen kod, curl argümanları...
   local label="$1" bek="$2"; shift 2
   local code; code=$(curl -s -o /dev/null -w '%{http_code}' "$@")
@@ -25,25 +44,25 @@ req "ana sayfa"                        200 "$BASE/"
 req "ürün listesi"                     200 "$BASE/rest/products/search?q=apple"
 
 echo "== Test payload'ları (kendi lab'ımız) =="
-req "SQLi"                             403 -G "$BASE/rest/products/search" --data-urlencode "q=' OR 1=1--"
-req "XSS"                              403 -G "$BASE/rest/products/search" --data-urlencode "q=<script>alert(1)</script>"
-req "Path traversal"                   403 "$BASE/?file=../../../../etc/passwd"
-req "Scanner UA"                       403 -A "sqlmap/1.7" "$BASE/"
+req "SQLi"                             "$SQLI_OK" -G "$BASE/rest/products/search" --data-urlencode "q=' OR 1=1--"
+req "XSS"                              "$XSS_OK" -G "$BASE/rest/products/search" --data-urlencode "q=<script>alert(1)</script>"
+req "Path traversal"                   "$PATH_OK" "$BASE/?file=../../../../etc/passwd"
+req "Scanner UA"                       "$SCANNER_OK" -A "sqlmap/1.7" "$BASE/"
 
 echo "== V001: giriş, JSON POST gövdesinde SQLi =="
 req "V001 kontrol: yanlış şifre"       401 -X POST "${JSON[@]}" --data '{"email":"ayse@ornek.com","password":"yanlis-sifre"}' "$BASE/rest/user/login"
-req "V001 SQLi (email alanı)"          403 -X POST "${JSON[@]}" --data "{\"email\":\"' OR 1=1--\",\"password\":\"x\"}" "$BASE/rest/user/login"
+req "V001 SQLi (email alanı)"          "$LOGIN_SQLI_OK" -X POST "${JSON[@]}" --data "{\"email\":\"' OR 1=1--\",\"password\":\"x\"}" "$BASE/rest/user/login"
 
 echo "== V003: sipariş takibi (envanter: reflected XSS, yol içinde) =="
 req "V003 kontrol: geçerli biçim"      200 "$BASE/rest/track-order/5267-f9cd5882f54c75a3"
-req "V003 XSS (yol içinde iframe)"     403 "$BASE/rest/track-order/%3Ciframe%20src%3D%22javascript%3Aalert(1)%22%3E"
+req "V003 XSS (yol içinde iframe)"     "$V003_OK" "$BASE/rest/track-order/%3Ciframe%20src%3D%22javascript%3Aalert(1)%22%3E"
 # Aynı uç noktadaki ikinci açık (envanterde ayrı kayıt değil): $where NoSQL enjeksiyonu
-req "V003 yolu NoSQLi (' || true || ')" 403 "$BASE/rest/track-order/%27%20%7C%7C%20true%20%7C%7C%20%27"
+req "V003 yolu NoSQLi (' || true || ')" "$V003_OK" "$BASE/rest/track-order/%27%20%7C%7C%20true%20%7C%7C%20%27"
 
 echo "== V005: PUT /api/Products (I-1 ile açılan yol), gövdede XSS =="
 # Var olmayan ürün (999999): WAF kapalı olsa bile lab verisi değişmez.
 req "V005 kontrol: zararsız açıklama"  404 -X PUT "${JSON[@]}" --data '{"description":"Taze elma suyu"}' "$BASE/api/Products/999999"
-req "V005 XSS (description alanı)"     403 -X PUT "${JSON[@]}" --data '{"description":"<iframe src=\"javascript:alert(`xss`)\">"}' "$BASE/api/Products/999999"
+req "V005 XSS (description alanı)"     "$V005_OK" -X PUT "${JSON[@]}" --data '{"description":"<iframe src=\"javascript:alert(`xss`)\">"}' "$BASE/api/Products/999999"
 
 echo
 echo "Toplam $((gecen+kalan)) istek, $kalan beklenmeyen sonuç."

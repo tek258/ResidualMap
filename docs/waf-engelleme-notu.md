@@ -4,6 +4,13 @@
 **Kapsam:** `defense/docker-compose.yml` içindeki `waf` servisi (`owasp/modsecurity-crs:4.30.0-nginx-202610180210`, CRS 4.30.0) ve arkasındaki Juice Shop
 **Sonuç:** WAF tespit modundan (DetectionOnly) engelleme moduna (On) geçirildi. Normal kullanımda üç yanlış pozitif kaynağı bulundu. Üçü de dar kapsamlı istisnalarla giderildi. Saldırı örnekleri 403 alıyor, test edilen 62 normal istek ise sorunsuz geçiyor. `test-waf.sh` envanterdeki V001, V003 ve V005'i de kapsıyor. V003'ü CRS yakalamıyordu; bunun için bir sanal yama (SY-1) eklendi.
 
+## 0. Kanıt koşulları
+
+- **Referans taraması (08.10.2026):** ZAP hedefi `http://host.docker.internal:8080`; t1 ve t2 taramalarının aynı imaja ait olduğunu kanıtlamak için her iki Trivy raporunda `Metadata.ImageID` ve `Metadata.RepoDigests` aynı olmalıdır.
+- **Serbest bırakılan uygulama:** tarama gününde port `8080`'de Juice Shop; önünde WAF vardıysa modu ayrıntılı olarak `MODSEC_RULE_ENGINE=DetectionOnly` veya `On` biçiminde kaydedilir.
+- **Juice Shop imajı:** uygulama ve Trivy hedefi aynı digest'e kilitlenmiştir: `bkimminich/juice-shop:v20.2.0@sha256:8739101ade29358abb5469ee66ae78e582c97ed0a5543a4ad102e5fa5193526b`.
+- **Trivy sürümü ve DB günü:** canlı koşan taramada `trivy --version` çıktısı (sürüm ve `Vulnerability DB UpdatedAt`) tarama klasörüne kaydedilmelidir.
+
 ---
 
 ## 1. Yapılan değişiklikler
@@ -87,6 +94,21 @@ Her saldırı satırının yanında aynı uç noktaya giden zararsız bir kontro
 | V005 | XSS, `PUT /api/Products/999999` `description` alanı | 404 (WAF'tan geçti) | **403** | 941100, 941160, 941170, 941210, 941390 → 25 |
 
 **Sonuç (On):** 12 istek, 0 beklenmeyen sonuç.
+
+**Önce kanıtı için koşullar:** Compose'u `MODSEC_RULE_ENGINE=DetectionOnly` yapıp WAF'ı yeniden oluşturduktan sonra çalıştır:
+
+```bash
+cd defense
+WAF_MODE=DetectionOnly ./test-waf.sh | tee test-waf-detectiononly.log
+curl -s http://localhost:8080/api/Users/abc > v016-hata-yaniti.txt
+curl -sI http://localhost:8080 | tee v019-header.txt
+```
+
+Bu adımlar henüz log dosyalarını üretmeden önce rapordaki "Önce" sütunu yalnızca beklenen veya referans değer olarak kullanılmalıdır. V016 için `/api/Users/abc` yanıtının uygulama tarafından üretilen hata gövdesini göstermesi gerekir; bu yanıt olmadan hata mesajının yayanı yalnızca ve yalnızca `gerekce` olarak kalır.
+
+**V003 doğrulama sınırı:** Aşağıdaki 403'e ait audit kaydı henüz PR kanıtına eklenmediyse "CRS yakalamıyor" tek başına doğrulanmış sayılmaz. Audit log'daki `ruleId` alanına göre:
+- yalnızca `10100` görünüyorsa sanal yama engelliyor ve CRS tek başına yakalamıyor;
+- `941xxx` ile birlikte görünüyorsa son eşleşen SIEM etiketi ne olursa olsun "CRS + SY-1 birlikte engelliyor" yazılır.
 
 **Eşik notu:** SQLi isteklerinin ikisi de (arama ve giriş) yalnızca tek bir kritik kuralla (942100, libinjection) yakalanıyor ve toplam puan **tam olarak** inbound eşiğine (5) eşit. Scanner UA için de durum aynı. Yani güvenlik payı yok:
 - Eşik 6'ya ya da üstüne çıkarılırsa (yanlış pozitifleri azaltmak için sık yapılan bir ayar) bu üç istek geçer.

@@ -1,7 +1,7 @@
 vuln_id,waf,sanal_yama,ids,iam,segmentasyon,yama,dayanak,kanit
 V001,azaltir,etkisiz,tespit eder,kurulmadi,kurulmadi,etkisiz,test,test-waf.sh:35 (V001 SQLi); CRS 942100 tek kuralla tam esikte (5 puan) engelliyor guvenlik payi olmadigindan etki azaltir
 V002,azaltir,etkisiz,tespit eder,kurulmadi,kurulmadi,etkisiz,test,test-waf.sh:28 (arama SQLi); CRS 942100 tek kuralla tam esikte (5 puan) engelliyor guvenlik payi olmadigindan etki azaltir
-V003,etkisiz,engeller,etkisiz,kurulmadi,kurulmadi,etkisiz,test,test-waf.sh:39 (V003 NoSQLi); CRS tek basina yakalamiyor sanal yama SY-1 (kural 10100) ile 403 aliyor
+V003,etkisiz,engeller,etkisiz,kurulmadi,kurulmadi,etkisiz,test,test-waf.sh:39 (V003 NoSQLi); 403 bekleniyor ve kontrol icin 10100/941xxx audit ruleId'leri dogrulanmali
 V004,azaltir,etkisiz,tespit eder,kurulmadi,kurulmadi,etkisiz,gerekce,test-waf.sh:29 arama parametresini engeller fakat istemci tarafi DOM manipulasyonunu WAF goremez bu yuzden etki azaltir
 V005,engeller,etkisiz,tespit eder,kurulmadi,kurulmadi,etkisiz,test,test-waf.sh:44 (V005 XSS); I-1 altindaki PUT /api/Products govdesinde XSS 5 kural ve 25 puanla 403 aliyor
 V006,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,Mantıksal yetkilendirme acigi; istek gecerli HTTP GET formatinda oldugundan WAF ve IDS tarafindan engellenemez
@@ -14,24 +14,24 @@ V012,azaltir,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,WAF Origin/Refe
 V013,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,Yonlendirme adresi gecerli URL parametresi bicimindedir; WAF hedef URL allowlist denetimi yapmaz
 V014,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,Istemci tarafi JavaScript dosyasina gomulu statik kimlik bilgilerine ag kontrolleri etki edemez
 V015,azaltir,etkisiz,tespit eder,kurulmadi,kurulmadi,etkisiz,gerekce,WAF IP bazli hiz sinirlandirmasiyla brute force saldirisini zorlastirir ancak hesap kilitleme mekanizmasi yoktur
-V016,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,docs/waf-engelleme-notu.md Bolum 10; JSON yanitlar WAF tarafindan denetlenmediginden hata sizintisina etkisi yoktur
+V016,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,curl -s http://localhost:8080/api/Users/abc ile hata yaniti kaydedilmeli; aksi halde JSON yanitlarina gore WAF etkisi test degil gerekcedir
 V017,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,test,zap_baseline.json karsilastirmasi; 4 Kasim WAF arkasi taramasinda CSP basligi eklenmediginden bulgu suruyor
 V018,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,test,zap_baseline.json karsilastirmasi; 4 Kasim WAF arkasi taramasinda CORS basligi kisitlanmadigindan bulgu suruyor
-V019,engeller,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,test,zap_baseline.json karsilastirmasi; WAF ters vekili devreye girince Server surum bilgisi kayboldu (4 Kasim)
+V019,engeller,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,Server surum bilgisinin gizlenmesi varsayim degil: compose SERVER_TOKENS=off ve SERVER_HEADER bos olarak ayarlandi; curl -sI http://localhost:8080 cikisi eklenmeden "test" sayilmaz
 V020,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,gerekce,Istemci tarafinda tarayicida calisan JavaScript koduna sunucu onundeki WAF ve IDS mudahale edemez
 V021,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,etkisiz,test,zap_baseline.json karsilastirmasi; 4 Kasim WAF arkasi taramasinda COOP/COEP basliklari eklenmediginden bulgu suruyor
-V022,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Kutuphane zafiyeti; WAF token kriptografik imzasini denetlemez dogrudan HTTP erisim yolu varsayimsaldir
-V023,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Kutuphane zafiyeti; WAF dahili nesne prototip birlestirmesini goremez kod yolu erisilebilirligi varsayimsaldir
-V024,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Kutuphane zafiyeti; sablon komut enjeksiyonunun HTTP uzerinden tetiklenebilirligi dogrulanmamistir
-V025,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Kutuphane ici kriptografik algoritma zayifligi; ag kontrolleri etkisizdir kutuphane yamasi engeller
-V026,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Kutuphane ici rastgelelik kusuru; ag kontrolleri etkisizdir yalnizca kutuphanenin guncellenmesi cozer
-V027,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,gerekce,Dizin gecisi yolu yuklenen arsiv dosyasinin icinde kaldigindan WAF ve IDS goremez; yalnizca kutuphane yamasi cozer
-V028,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,gerekce,proxy-addr kutuphane guven zinciri hatasidir; Nginx arkasinda uygulama seviyesinde kalir ve yama gerektirir
-V029,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Arsiv dosyasi icindeki Unicode normalizasyon hatasina ag kontrolleri erisemez; yalnizca kutuphane guncellemesi cozer
-V030,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,express-jwt middleware yetkilendirme atlatmasi; WAF mantiksal yetki kontrolunu devralamaz yama ile giderilir
-V031,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Moment kutuphanesi zafiyeti; disaridan HTTP ile tetiklenebilirligi dogrulanmadigindan etkisi WAF icin etkisizdir
-V032,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Moment ReDoS zafiyeti; kutuphane ici regex hatasidir ve WAF kural setinden bagimsizdir
-V033,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,gerekce,docs/waf-engelleme-notu.md Bolum 10; WAF WebSocket ve socket.io mesaj icerigini denetleyemez yama gerekir
-V034,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Multer kutuphane ici multipart hata yonetimi zafiyeti; kutuphane seviyesinde duzeltilmelidir
-V035,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,docs/waf-engelleme-notu.md; isletim sistemi libc6 zafiyeti olup WAF ve IDS erisemez yalnizca yama cozer
-V036,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,engeller,varsayim,Isletim sistemi libc6 bellek zafiyetine ag kontrolleri etki edemez; yalnizca paket guncellemesi cozer
+V022,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,varsayim,Kutuphane zafiyeti; WAF token kriptografik imzasini denetlemez dogrudan HTTP erisim yolu varsayimsaldir
+V023,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,varsayim,Kutuphane zafiyeti; WAF dahili nesne prototip birlestirmesini goremez kod yolu erisilebilirligi varsayimsaldir
+V024,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,varsayim,Kutuphane zafiyeti; sablon komut enjeksiyonunun HTTP uzerinden tetiklenebilirligi dogrulanmamistir
+V025,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,varsayim,Kutuphane ici kriptografik algoritma zayifligi; ag kontrolleri etkisizdir kutuphane yamasi uygulanmadi
+V026,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,varsayim,Kutuphane ici rastgelelik kusuru; ag kontrolleri etkisizdir kutuphane guncellemesi uygulanmadi
+V027,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,gerekce,Dizin gecisi yolu yuklenen arsiv dosyasinin icinde kaldigindan WAF ve IDS goremez; kutuphane yamasi uygulanmadi
+V028,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,gerekce,proxy-addr kutuphane guven zinciri hatasidir; Nginx arkasinda uygulama seviyesinde kalir ve yama uygulanmadi
+V029,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,varsayim,Arsiv dosyasi icindeki Unicode normalizasyon hatasina ag kontrolleri erisemez; kutuphane guncellemesi uygulanmadi
+V030,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,varsayim,express-jwt middleware yetkilendirme atlatmasi; WAF mantiksal yetki kontrolunu devralamaz yama uygulanmadi
+V031,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,varsayim,Moment kutuphanesi zafiyeti; disaridan HTTP ile tetiklenebilirligi dogrulanmadigindan etkisi WAF icin etkisizdir
+V032,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,varsayim,Moment ReDoS zafiyeti; kutuphane ici regex hatasidir ve kutuphane yaması uygulanmadi
+V033,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,gerekce,docs/waf-engelleme-notu.md Bolum 10; WAF WebSocket ve socket.io mesaj icerigini denetleyemez yama uygulanmadi
+V034,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,varsayim,Multer kutuphane ici multipart hata yonetimi zafiyeti; kutuphane guncellemesi uygulanmadi
+V035,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,varsayim,docs/waf-engelleme-notu.md; isletim sistemi libc6 zafiyeti olup WAF ve IDS erisemez yama uygulanmadi
+V036,etkisiz,etkisiz,etkisiz,kurulmadi,kurulmadi,uygulanmadi,varsayim,Isletim sistemi libc6 bellek zafiyetine ag kontrolleri etki edemez; paket guncellemesi uygulanmadi

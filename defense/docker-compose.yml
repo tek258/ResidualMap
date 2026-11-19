@@ -4,7 +4,7 @@
 services:
   juice-shop:
     # I-1 ve SY-1 bu surume bagli; yukseltmeden once testleri tekrar calistir
-    image: bkimminich/juice-shop:v20.2.0
+    image: bkimminich/juice-shop:v20.2.0@sha256:8739101ade29358abb5469ee66ae78e582c97ed0a5543a4ad102e5fa5193526b
     container_name: juice-shop
     restart: unless-stopped
     expose:
@@ -28,6 +28,8 @@ services:
       MODSEC_AUDIT_LOG_FORMAT: JSON
       MODSEC_AUDIT_LOG_TYPE: Serial
       MODSEC_AUDIT_LOG: /var/log/modsecurity/audit.log
+      SERVER_TOKENS: "off"
+      SERVER_HEADER: ""
       PARANOIA: "1"
       BLOCKING_PARANOIA: "1"
       ANOMALY_INBOUND: "5"
