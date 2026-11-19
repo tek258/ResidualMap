@@ -33,7 +33,50 @@
         "target_name": "node_target_admin",
         "target_criticality": 10.0,
         "path": [
-            "node_entry_web",
+            "node_entry_login",
+            "V022",
+            "node_target_admin"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_login",
+            "V031",
+            "node_target_rce"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_admin",
+        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_api",
+            "V002",
+            "V025",
+            "node_target_admin"
+        ],
+        "length": 3,
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_admin",
+        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_api",
             "V008",
             "node_target_admin"
         ],
@@ -42,13 +85,13 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_web",
+        "source": "node_entry_api",
         "target": "node_target_admin",
         "target_name": "node_target_admin",
         "target_criticality": 10.0,
         "path": [
-            "node_entry_web",
-            "V014",
+            "node_entry_api",
+            "V028",
             "node_target_admin"
         ],
         "length": 2,
@@ -56,12 +99,12 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_dependency",
+        "source": "node_entry_api",
         "target": "node_target_rce",
         "target_name": "node_target_rce",
         "target_criticality": 10.0,
         "path": [
-            "node_entry_dependency",
+            "node_entry_api",
             "V023",
             "node_target_rce"
         ],
@@ -70,12 +113,12 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_dependency",
+        "source": "node_entry_api",
         "target": "node_target_rce",
         "target_name": "node_target_rce",
         "target_criticality": 10.0,
         "path": [
-            "node_entry_dependency",
+            "node_entry_api",
             "V035",
             "node_target_rce"
         ],
@@ -84,12 +127,26 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_dependency",
+        "source": "node_entry_search",
         "target": "node_target_rce",
         "target_name": "node_target_rce",
         "target_criticality": 10.0,
         "path": [
-            "node_entry_dependency",
+            "node_entry_search",
+            "V027",
+            "node_target_rce"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_search",
             "V036",
             "node_target_rce"
         ],
@@ -98,54 +155,26 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_dependency",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "target_criticality": 8.0,
+        "source": "node_entry_api",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
         "path": [
-            "node_entry_dependency",
-            "V022",
-            "node_target_account_takeover"
+            "node_entry_api",
+            "V029",
+            "node_target_rce"
         ],
         "length": 2,
-        "path_risk": 8.0,
+        "path_risk": 7.294,
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_dependency",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "target_criticality": 8.0,
-        "path": [
-            "node_entry_dependency",
-            "V028",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 8.0,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_web",
+        "source": "node_entry_login",
         "target": "node_target_leak",
         "target_name": "node_target_leak",
         "target_criticality": 7.0,
         "path": [
-            "node_entry_web",
-            "V009",
-            "node_target_leak"
-        ],
-        "length": 2,
-        "path_risk": 7.0,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_web",
-        "target": "node_target_leak",
-        "target_name": "node_target_leak",
-        "target_criticality": 7.0,
-        "path": [
-            "node_entry_web",
+            "node_entry_login",
             "V016",
             "node_target_leak"
         ],
@@ -154,41 +183,13 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_web",
+        "source": "node_entry_login",
         "target": "node_target_leak",
         "target_name": "node_target_leak",
         "target_criticality": 7.0,
         "path": [
-            "node_entry_web",
+            "node_entry_login",
             "V019",
-            "node_target_leak"
-        ],
-        "length": 2,
-        "path_risk": 7.0,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_dependency",
-        "target": "node_target_leak",
-        "target_name": "node_target_leak",
-        "target_criticality": 7.0,
-        "path": [
-            "node_entry_dependency",
-            "V025",
-            "node_target_leak"
-        ],
-        "length": 2,
-        "path_risk": 7.0,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_dependency",
-        "target": "node_target_leak",
-        "target_name": "node_target_leak",
-        "target_criticality": 7.0,
-        "path": [
-            "node_entry_dependency",
-            "V027",
             "node_target_leak"
         ],
         "length": 2,
@@ -210,40 +211,26 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_dependency",
-        "target": "node_target_dos",
-        "target_name": "node_target_dos",
-        "target_criticality": 6.0,
+        "source": "node_entry_search",
+        "target": "node_target_leak",
+        "target_name": "node_target_leak",
+        "target_criticality": 7.0,
         "path": [
-            "node_entry_dependency",
-            "V032",
-            "node_target_dos"
+            "node_entry_search",
+            "V009",
+            "node_target_leak"
         ],
         "length": 2,
-        "path_risk": 6.0,
+        "path_risk": 7.0,
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_dependency",
+        "source": "node_entry_login",
         "target": "node_target_dos",
         "target_name": "node_target_dos",
         "target_criticality": 6.0,
         "path": [
-            "node_entry_dependency",
-            "V033",
-            "node_target_dos"
-        ],
-        "length": 2,
-        "path_risk": 6.0,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_dependency",
-        "target": "node_target_dos",
-        "target_name": "node_target_dos",
-        "target_criticality": 6.0,
-        "path": [
-            "node_entry_dependency",
+            "node_entry_login",
             "V034",
             "node_target_dos"
         ],
@@ -252,12 +239,40 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_search",
+        "source": "node_entry_api",
+        "target": "node_target_dos",
+        "target_name": "node_target_dos",
+        "target_criticality": 6.0,
+        "path": [
+            "node_entry_api",
+            "V032",
+            "node_target_dos"
+        ],
+        "length": 2,
+        "path_risk": 6.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_dos",
+        "target_name": "node_target_dos",
+        "target_criticality": 6.0,
+        "path": [
+            "node_entry_api",
+            "V033",
+            "node_target_dos"
+        ],
+        "length": 2,
+        "path_risk": 6.0,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
         "target": "node_target_account_takeover",
         "target_name": "node_target_account_takeover",
         "target_criticality": 8.0,
         "path": [
-            "node_entry_search",
+            "node_entry_login",
             "V004",
             "node_target_account_takeover"
         ],
@@ -266,13 +281,13 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_web",
+        "source": "node_entry_login",
         "target": "node_target_account_takeover",
         "target_name": "node_target_account_takeover",
         "target_criticality": 8.0,
         "path": [
-            "node_entry_web",
-            "V003",
+            "node_entry_login",
+            "V007",
             "node_target_account_takeover"
         ],
         "length": 2,
@@ -280,26 +295,12 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_web",
+        "source": "node_entry_login",
         "target": "node_target_account_takeover",
         "target_name": "node_target_account_takeover",
         "target_criticality": 8.0,
         "path": [
-            "node_entry_web",
-            "V012",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 5.8352,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_web",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "target_criticality": 8.0,
-        "path": [
-            "node_entry_web",
+            "node_entry_login",
             "V013",
             "node_target_account_takeover"
         ],
@@ -322,12 +323,26 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_search",
         "target": "node_target_account_takeover",
         "target_name": "node_target_account_takeover",
         "target_criticality": 8.0,
         "path": [
-            "node_entry_api",
+            "node_entry_search",
+            "V003",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 5.8352,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_search",
             "V006",
             "node_target_account_takeover"
         ],
@@ -336,13 +351,13 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_search",
         "target": "node_target_account_takeover",
         "target_name": "node_target_account_takeover",
         "target_criticality": 8.0,
         "path": [
-            "node_entry_api",
-            "V007",
+            "node_entry_search",
+            "V012",
             "node_target_account_takeover"
         ],
         "length": 2,
@@ -350,12 +365,26 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_api",
+        "source": "node_entry_login",
+        "target": "node_target_admin",
+        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_login",
+            "V015",
+            "node_target_admin"
+        ],
+        "length": 2,
+        "path_risk": 5.714,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_login",
         "target": "node_target_leak",
         "target_name": "node_target_leak",
         "target_criticality": 7.0,
         "path": [
-            "node_entry_api",
+            "node_entry_login",
             "V010",
             "node_target_leak"
         ],
@@ -364,40 +393,12 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_dependency",
-        "target": "node_target_leak",
-        "target_name": "node_target_leak",
-        "target_criticality": 7.0,
-        "path": [
-            "node_entry_dependency",
-            "V029",
-            "node_target_leak"
-        ],
-        "length": 2,
-        "path_risk": 5.1058,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_login",
+        "source": "node_entry_api",
         "target": "node_target_account_takeover",
         "target_name": "node_target_account_takeover",
         "target_criticality": 8.0,
         "path": [
-            "node_entry_login",
-            "V015",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 4.5712,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_web",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "target_criticality": 8.0,
-        "path": [
-            "node_entry_web",
+            "node_entry_api",
             "V011",
             "node_target_account_takeover"
         ],
@@ -406,24 +407,52 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_web",
-        "target": "node_target_admin",
-        "target_name": "node_target_admin",
-        "target_criticality": 10.0,
+        "source": "node_entry_api",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
         "path": [
-            "node_entry_web",
-            "V017",
-            "node_target_admin"
+            "node_entry_api",
+            "V026",
+            "node_target_account_takeover"
         ],
         "length": 2,
-        "path_risk": 4.168,
+        "path_risk": 4.5712,
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_web",
-        "target": "node_target_admin",
-        "target_name": "node_target_admin",
-        "target_criticality": 10.0,
+        "source": "node_entry_api",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_api",
+            "V017",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 3.3344,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_api",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_api",
+            "V020",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 3.3344,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
         "path": [
             "node_entry_web",
             "V018",
@@ -444,44 +473,16 @@
             "node_target_admin"
         ],
         "length": 2,
-        "path_risk": 4.168,
+        "path_risk": 3.3344,
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_web",
-        "target": "node_target_rce",
-        "target_name": "node_target_rce",
-        "target_criticality": 10.0,
-        "path": [
-            "node_entry_web",
-            "V020",
-            "node_target_rce"
-        ],
-        "length": 2,
-        "path_risk": 4.168,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_dependency",
-        "target": "node_target_leak",
-        "target_name": "node_target_leak",
-        "target_criticality": 7.0,
-        "path": [
-            "node_entry_dependency",
-            "V026",
-            "node_target_leak"
-        ],
-        "length": 2,
-        "path_risk": 3.9998,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_dependency",
+        "source": "node_entry_search",
         "target": "node_target_admin",
         "target_name": "node_target_admin",
         "target_criticality": 10.0,
         "path": [
-            "node_entry_dependency",
+            "node_entry_search",
             "V030",
             "node_target_admin"
         ],
@@ -490,17 +491,31 @@
         "secondary_v2_score": 0.0
     },
     {
-        "source": "node_entry_dependency",
+        "source": "node_entry_search",
         "target": "node_target_rce",
         "target_name": "node_target_rce",
         "target_criticality": 10.0,
         "path": [
-            "node_entry_dependency",
+            "node_entry_search",
             "V024",
             "node_target_rce"
         ],
         "length": 2,
         "path_risk": 3.177,
+        "secondary_v2_score": 0.0
+    },
+    {
+        "source": "node_entry_search",
+        "target": "node_target_leak",
+        "target_name": "node_target_leak",
+        "target_criticality": 7.0,
+        "path": [
+            "node_entry_search",
+            "V018",
+            "node_target_leak"
+        ],
+        "length": 2,
+        "path_risk": 2.9176,
         "secondary_v2_score": 0.0
     }
 ]

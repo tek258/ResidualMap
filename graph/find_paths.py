@@ -44,8 +44,17 @@ def load_inventory_and_v2(csv_path=None):
     vuln_data = {}
     v2_scores = {}
 
-    if not csv_path or not os.path.exists(csv_path):
-        logging.error(f"Envanter dosyası bulunamadı veya belirtilmedi: {csv_path}")
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    if not csv_path:
+        possible_csvs = [
+            os.path.join(base_dir, '..', 'inventory', 'inventory_v1.0.csv'),
+            os.path.join(base_dir, '..', 'inventory_v1.0.csv'),
+            'inventory_v1.0.csv'
+        ]
+        csv_path = next((p for p in possible_csvs if os.path.exists(p)), possible_csvs[0])
+
+    if not os.path.exists(csv_path):
+        logging.error(f"Envanter dosyası bulunamadı: {csv_path}")
         return vuln_data, v2_scores
 
     with open(csv_path, mode="r", encoding="utf-8") as f:
@@ -62,13 +71,13 @@ def load_inventory_and_v2(csv_path=None):
                     "cvss_score": float(row.get("cvss_score", 0.0) or 0.0)
                 }
 
-    # Model V2 / V1 Skorları
-    v1_path = os.path.join(os.path.dirname(csv_path), "..", "ai", "results_v2_llm.csv")
-    if not os.path.exists(v1_path):
-        v1_path = "results_v1_llm.csv"
+    # AI / V2 skorları: Sadece repodaki ai/ dizininden okunur.
+    v2_path = os.path.join(base_dir, '..', 'ai', 'results_v2_llm.csv')
+    if not os.path.exists(v2_path):
+        v2_path = os.path.join(base_dir, 'ai', 'results_v2_llm.csv')
 
-    if os.path.exists(v1_path):
-        with open(v1_path, mode="r", encoding="utf-8") as f:
+    if os.path.exists(v2_path):
+        with open(v2_path, mode="r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 vid = row.get("vuln_id")
@@ -78,23 +87,28 @@ def load_inventory_and_v2(csv_path=None):
                         v2_scores[vid] = float(score)
                     except ValueError:
                         pass
+    else:
+        logging.warning("AI V2 sonuç dosyası (ai/results_v2_llm.csv) bulunamadı! İkincil skorlar 0 olarak bırakılacak.")
 
     return vuln_data, v2_scores
 
 
-def find_attack_paths(edges_file='edges.json', output_file='paths.json', csv_path=None):
-    if not csv_path:
-        logging.error("csv_path parametresi zorunludur!")
-        return None
+def find_attack_paths(edges_file=None, output_file=None, csv_path=None):
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
+    if not edges_file:
+        edges_file = os.path.join(base_dir, 'edges.json')
+    if not output_file:
+        output_file = os.path.join(base_dir, 'paths.json')
 
     if not os.path.exists(edges_file):
         logging.error(f"Edges dosyası bulunamadı: {edges_file}")
         return None
 
+    vuln_data, v2_scores = load_inventory_and_v2(csv_path)
+
     with open(edges_file, 'r', encoding='utf-8') as f:
         edges = json.load(f)
-
-    vuln_data, v2_scores = load_inventory_and_v2(csv_path)
 
     import networkx as nx
     G = nx.DiGraph()
@@ -118,7 +132,6 @@ def find_attack_paths(edges_file='edges.json', output_file='paths.json', csv_pat
                     probabilities = []
                     has_missing_vector = False
 
-                    # Yalnızca zafiyet düğümlerini (V ile başlayanlar) yol üzerinde bir kez ele al (Çift çarpım hatası önlendi)
                     vuln_nodes_in_path = [node for node in path if node.startswith('V')]
 
                     for v_id in vuln_nodes_in_path:
@@ -132,7 +145,11 @@ def find_attack_paths(edges_file='edges.json', output_file='paths.json', csv_pat
                             logging.warning(f"Zafiyet envanterde bulunamadı: {v_id}")
                             has_missing_vector = True
 
-                    target_criticality = TARGET_CRITICALITIES.get(target, 5.0)
+                    if target in TARGET_CRITICALITIES:
+                        target_criticality = TARGET_CRITICALITIES[target]
+                    else:
+                        logging.warning(f"Bilinmeyen hedef düğüm ({target}) tespit edildi!")
+                        target_criticality = 5.0
 
                     if has_missing_vector:
                         path_risk = None
@@ -154,7 +171,6 @@ def find_attack_paths(edges_file='edges.json', output_file='paths.json', csv_pat
                         "secondary_v2_score": secondary_v2_score
                     })
 
-    # Sıralama: path_risk değeri None olanlar sona, diğerleri büyükten küçüğe
     paths_data.sort(key=lambda x: (x["path_risk"] is not None, x["path_risk"] if x["path_risk"] is not None else 0,
                                    x["secondary_v2_score"]), reverse=True)
 

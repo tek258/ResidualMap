@@ -1,0 +1,169 @@
+// S5-K5: Alloy log toplayici. Kaynaklar:
+//   1. ModSecurity audit log (JSON)        -> job="modsecurity", status, teknik (ATT&CK)
+//   2. nginx access log                    -> job="nginx"
+//   3. Suricata eve.json                   -> job="suricata", event_type, in_iface, bacak (IP'den)
+//   4. oauth2-proxy ve Keycloak (container)-> job="iam", container
+// Yalnizca yeni satirlar okunur (tail_from_end): pano kurulumdan sonraki olaylari gosterir.
+
+// ---------------------------------------------------------------- 1. ModSecurity
+local.file_match "modsecurity" {
+  path_targets = [{"__path__" = "/logs/modsecurity/audit.log", "job" = "modsecurity"}]
+}
+
+loki.source.file "modsecurity" {
+  targets       = local.file_match.modsecurity.targets
+  tail_from_end = true
+  forward_to    = [loki.process.modsecurity.receiver]
+}
+
+loki.process "modsecurity" {
+  stage.json {
+    expressions = {status = "transaction.response.http_code"}
+  }
+  stage.labels {
+    values = {status = ""}
+  }
+
+  // ATT&CK eslemesi: tetiklenen CRS kural ailesine gore (docs/siem-kurulum.md, Bolum 4).
+  // Siralama onemli: son eslesen etiket kalir. Path traversal hem 930 hem 932160'i
+  // tetikledigi icin 930/931, 932'den SONRA gelir.
+  stage.match {
+    selector = "{job=\"modsecurity\"} |~ \"\\\"ruleId\\\":\\\"913\""
+    stage.static_labels {
+      values = {teknik = "Tarama · T1595"}
+    }
+  }
+  stage.match {
+    selector = "{job=\"modsecurity\"} |~ \"\\\"ruleId\\\":\\\"932\""
+    stage.static_labels {
+      values = {teknik = "Komut · T1059"}
+    }
+  }
+  stage.match {
+    selector = "{job=\"modsecurity\"} |~ \"\\\"ruleId\\\":\\\"9(30|31)\""
+    stage.static_labels {
+      values = {teknik = "Dosya keşfi · T1083"}
+    }
+  }
+  stage.match {
+    selector = "{job=\"modsecurity\"} |~ \"\\\"ruleId\\\":\\\"934\""
+    stage.static_labels {
+      values = {teknik = "SSRF · T1190"}
+    }
+  }
+  stage.match {
+    selector = "{job=\"modsecurity\"} |~ \"\\\"ruleId\\\":\\\"941\""
+    stage.static_labels {
+      values = {teknik = "XSS · T1189"}
+    }
+  }
+  stage.match {
+    selector = "{job=\"modsecurity\"} |~ \"\\\"ruleId\\\":\\\"942\""
+    stage.static_labels {
+      values = {teknik = "SQLi · T1190"}
+    }
+  }
+  stage.match {
+    selector = "{job=\"modsecurity\"} |~ \"\\\"ruleId\\\":\\\"911\""
+    stage.static_labels {
+      values = {teknik = "Metod · T1190"}
+    }
+  }
+  stage.match {
+    selector = "{job=\"modsecurity\"} |~ \"\\\"ruleId\\\":\\\"10100\""
+    stage.static_labels {
+      values = {teknik = "SY-1 (V003) · T1190"}
+    }
+  }
+
+  forward_to = [loki.write.yerel.receiver]
+}
+
+// ---------------------------------------------------------------- 2. nginx
+local.file_match "nginx" {
+  path_targets = [{"__path__" = "/logs/nginx/access.log", "job" = "nginx"}]
+}
+
+loki.source.file "nginx" {
+  targets       = local.file_match.nginx.targets
+  tail_from_end = true
+  forward_to    = [loki.write.yerel.receiver]
+}
+
+// ---------------------------------------------------------------- 3. Suricata
+local.file_match "suricata" {
+  path_targets = [{"__path__" = "/logs/suricata/eve.json", "job" = "suricata"}]
+}
+
+loki.source.file "suricata" {
+  targets       = local.file_match.suricata.targets
+  tail_from_end = true
+  forward_to    = [loki.process.suricata.receiver]
+}
+
+loki.process "suricata" {
+  stage.json {
+    expressions = {event_type = "event_type", in_iface = "in_iface"}
+  }
+  // Istatistik kayitlari cok sik ve panoda gereksiz
+  stage.drop {
+    source = "event_type"
+    value  = "stats"
+  }
+  stage.labels {
+    values = {event_type = "", in_iface = ""}
+  }
+  // Bacak IP adresinden belirlenir, arayuz adindan DEGIL: WAF yeniden olusturulunca
+  // Docker aglari farkli sirayla baglayabiliyor ve eth0/eth1 yer degistiriyor
+  // (18.11.2026'da oldu). IP'ler compose'da sabit:
+  //   172.30.1.x = frontend (istemci <-> WAF), 172.30.2.x = backend (WAF <-> Juice Shop)
+  stage.match {
+    selector = "{job=\"suricata\"} |~ \"\\\"(src_ip|dest_ip)\\\":\\\"172\\\\.30\\\\.1\\\\.\""
+    stage.static_labels {
+      values = {bacak = "istemci-waf"}
+    }
+  }
+  stage.match {
+    selector = "{job=\"suricata\"} |~ \"\\\"(src_ip|dest_ip)\\\":\\\"172\\\\.30\\\\.2\\\\.\""
+    stage.static_labels {
+      values = {bacak = "waf-juiceshop"}
+    }
+  }
+  forward_to = [loki.write.yerel.receiver]
+}
+
+// ---------------------------------------------------------------- 4. IAM (container ciktilari)
+discovery.docker "konteynerler" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "iam" {
+  targets = discovery.docker.konteynerler.targets
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(oauth2-proxy|keycloak)"
+    action        = "keep"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+  rule {
+    target_label = "job"
+    replacement  = "iam"
+  }
+}
+
+loki.source.docker "iam" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.iam.output
+  forward_to = [loki.write.yerel.receiver]
+}
+
+// ---------------------------------------------------------------- Loki'ye yaz
+loki.write "yerel" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
