@@ -1,0 +1,99 @@
+# ResidualMap lab uygulaması
+
+Lab hedefinin seçilmesinden saldırı grafiğine ve savunma testine kadar olan akışı tek bir arayüzde birleştiren Streamlit uygulaması. Makine önerir ve doğrular, kullanıcı onaylar.
+
+| Adım | Ne yapar |
+|---|---|
+| 1. Hedef | İzin listesindeki lab hedefini seçer, çalıştırma başlatır (ya da örnek veriyle başlatır) |
+| 2. Tarama | ZAP baseline, Trivy ve Juice Shop challenge listesini canlı toplar ya da repodaki ham dosyaları yükler |
+| 3. Bulgular | Ham çıktıları ayrıştırır, dondurulmuş envanterle karşılaştırır, grafiğe girecek bulguları seçtirir |
+| 4. Grafik | Kenarları, saldırı yollarını ve etkileşimli grafiği üretir; CVSS ve AI (model v2) sıralamasını yan yana gösterir |
+| 5. Savunma testi | Lab'ın WAF doğrulama testini çalıştırır; sonuçlar savunma panosunda (Grafana) da görünür |
+
+## Değişmez kurallar
+
+1. **Hedef serbest yazılamaz.** Uygulama yalnızca `app/config.py`'deki izin listesindeki yerel lab hedeflerini tarar. Adres girme alanı yoktur. Listeye yerel olmayan bir adres eklenirse uygulama açılmaz.
+2. **Rapor sonuçları dondurulmuş envanterden gelir** (`inventory/inventory_v1.0.csv`). Uygulamada yapılan seçimler raporun sayılarını değiştirmez.
+3. **Ekibin scriptleri yeniden yazılmaz,** fonksiyon olarak çağrılır: `graph/` (kenar, yol, grafik), `ai/model_v2_local_llm.py`, `defense/test-waf.sh`.
+
+## Kurulum
+
+Gerekenler:
+
+| | Zorunlu mu | Ne için |
+|---|---|---|
+| Python 3.11+ | Evet | Uygulama |
+| Docker Desktop | Canlı tarama ve savunma testi için | Lab ortamı, ZAP, Trivy |
+| Git for Windows (Git Bash) | Savunma testi için | `test-waf.sh` bash ile çalışır |
+| Ollama + `qwen2.5:7b` | Hayır | Yeni bulguları AI ile skorlamak |
+
+Repo kök dizininde:
+
+```powershell
+pip install -r requirements-app.txt
+```
+
+## Çalıştırma
+
+### Örnek veriyle (Docker gerekmez)
+
+```powershell
+streamlit run app/main.py
+```
+
+1. **1. Hedef** → "Örnek veriyle başlat"
+2. **3. Bulgular** → "Dondurulmuş envanteri uygula" → "Seçimi kaydet"
+3. **4. Grafik** → "Grafiği oluştur"
+
+Ekibin `inventory/raw/` altındaki ZAP, Trivy ve challenge dosyaları kullanılır. Grafik 36 zafiyet, 72 kenar ve 36 yolla, repodaki `graph/edges.json` / `graph/paths.json` ile aynı çıkar. AI skorları hazır sonuçtan (`ai/results_v2_llm.csv`) gelir.
+
+### Lab ortamıyla (canlı tarama ve savunma testi)
+
+```powershell
+cd defense
+docker compose --profile siem up -d   # siem profili savunma panosunu da açar; istenmezse çıkarın
+cd ..
+streamlit run app/main.py
+```
+
+- **1. Hedef:** Docker ve Juice Shop konteyneri yeşil görünmeli → "Yeni çalıştırma başlat".
+- **2. Tarama:** "Canlı topla". İlk çalıştırmada ZAP (~1.5 GB) ve Trivy imajları indirilir. ZAP taraması birkaç dakika sürer. ZAP baseline pasiftir: hedefe saldırı isteği göndermez.
+- **3. ve 4. adım:** Örnek veriyle aynı.
+- **5. Savunma testi:** "Saldırı testlerini çalıştır". 13 istek gönderilir, beklenen sonuç 8 engelleme ve 0 beklenmeyen sonuçtur.
+- **Savunma panosu:** Yan menüdeki "Savunma panosu (Grafana)" düğmesi panoyu yeni sekmede açar (`admin` / compose dosyasındaki lab şifresi).
+
+### AI skoru (isteğe bağlı)
+
+Dondurulmuş envanterdeki kayıtların skoru hazırdır. Yeni taramadan gelen kayıtlar "AI skoru yok" görünür. Bu kayıtları skorlamak için:
+
+```powershell
+ollama pull qwen2.5:7b
+```
+
+Ollama açıkken 4. adımdaki "N kaydı modelle skorla" düğmesi etkin olur. Kayıt başına ~3 sn sürer (GPU). Skorlama bitince grafik yeni skorlarla yeniden üretilir.
+
+## Çıktılar
+
+Her çalıştırma `runs/<tarih-saat>/` altında tutulur (gitignore'da):
+
+```
+runs/20261119-153012/
+├── meta.json          adımlar, seçimler, test sonuçları
+├── raw/               zap_baseline.json, trivy.json, challenges.json
+├── inventory.csv      bu çalıştırmanın envanteri
+├── ai_skorlari.csv    AI skorları ve kaynağı (hazır sonuç / model)
+└── graph/             edges.json, paths.json, attack_graph.html
+```
+
+4. adımdaki "Hepsini indir (zip)" bunların hepsini tek dosyada indirir.
+
+## Sorun giderme
+
+| Belirti | Neden / çözüm |
+|---|---|
+| 1. adımda "Docker çalışmıyor" | Docker Desktop'ı başlatın, "Durumu yenile". Docker olmadan "Örnek veriyle başlat" kullanılabilir |
+| "Savunma panosu kapalı" | `defense/` klasöründe `docker compose --profile siem up -d` |
+| Savunma testi düğmesi pasif, "Git Bash bulunamadı" | Git for Windows kurun. WSL bash bilerek kullanılmaz |
+| Canlı tarama sırasında yüksek bellek | ZAP (Java) ve ilk imaj indirmesi. Normaldir; Docker'ın toplam belleği `%USERPROFILE%\.wslconfig` içinde `memory=10GB` ile sınırlanabilir |
+| Panoda WAF olayı yok | Tarama pasiftir, WAF'ın engelleyeceği istek göndermez. Olaylar 5. adımdaki savunma testinden sonra görünür; panoda zaman aralığını "Son 15 dakika" seçin |
+| 3. adımda JSON hatası | `inventory/raw/` altındaki bir dosya bozuk olabilir (PowerShell `>` ile yazılan dosyalar UTF-16 olur). Dosyayı `-o` ya da `Out-File -Encoding utf8` ile yeniden üretin |
