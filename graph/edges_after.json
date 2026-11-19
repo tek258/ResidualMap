@@ -53,7 +53,7 @@
     "relation": "Entry Point",
     "technique_name": "Access via search",
     "status": "zayifladi",
-    "cutting_control": "waf"
+    "cutting_control": "ids"
   },
   {
     "source": "V004",
@@ -61,7 +61,7 @@
     "relation": "Leads To",
     "technique_name": "Account Takeover via Client-Side Attack",
     "status": "zayifladi",
-    "cutting_control": "waf"
+    "cutting_control": "ids"
   },
   {
     "source": "node_entry_api",
@@ -132,16 +132,16 @@
     "target": "V009",
     "relation": "Entry Point",
     "technique_name": "Access via web",
-    "status": "acik",
-    "cutting_control": null
+    "status": "kesildi",
+    "cutting_control": "iam"
   },
   {
     "source": "V009",
     "target": "node_target_leak",
     "relation": "Leads To",
     "technique_name": "Sensitive Data Exfiltration & Database Exposure",
-    "status": "acik",
-    "cutting_control": null
+    "status": "kesildi",
+    "cutting_control": "iam"
   },
   {
     "source": "node_entry_api",
@@ -180,16 +180,16 @@
     "target": "V012",
     "relation": "Entry Point",
     "technique_name": "Access via web",
-    "status": "zayifladi",
-    "cutting_control": "waf"
+    "status": "acik",
+    "cutting_control": null
   },
   {
     "source": "V012",
     "target": "node_target_account_takeover",
     "relation": "Leads To",
     "technique_name": "Account Takeover via Client-Side Attack",
-    "status": "zayifladi",
-    "cutting_control": "waf"
+    "status": "acik",
+    "cutting_control": null
   },
   {
     "source": "node_entry_web",
@@ -229,7 +229,7 @@
     "relation": "Entry Point",
     "technique_name": "Access via login",
     "status": "zayifladi",
-    "cutting_control": "waf"
+    "cutting_control": "ids"
   },
   {
     "source": "V015",
@@ -237,7 +237,7 @@
     "relation": "Leads To",
     "technique_name": "Unauthorized Administrator Access",
     "status": "zayifladi",
-    "cutting_control": "waf"
+    "cutting_control": "ids"
   },
   {
     "source": "node_entry_web",
@@ -412,32 +412,32 @@
     "target": "V027",
     "relation": "Entry Point",
     "technique_name": "Access via dependency",
-    "status": "zayifladi",
-    "cutting_control": "yama"
+    "status": "acik",
+    "cutting_control": null
   },
   {
     "source": "V027",
     "target": "node_target_rce",
     "relation": "Leads To",
     "technique_name": "Remote Code Execution & System Compromise",
-    "status": "zayifladi",
-    "cutting_control": "yama"
+    "status": "acik",
+    "cutting_control": null
   },
   {
     "source": "node_entry_dependency",
     "target": "V028",
     "relation": "Entry Point",
     "technique_name": "Access via dependency",
-    "status": "zayifladi",
-    "cutting_control": "yama"
+    "status": "acik",
+    "cutting_control": null
   },
   {
     "source": "V028",
     "target": "node_target_admin",
     "relation": "Leads To",
     "technique_name": "Unauthorized Administrator Access",
-    "status": "zayifladi",
-    "cutting_control": "yama"
+    "status": "acik",
+    "cutting_control": null
   },
   {
     "source": "node_entry_dependency",
@@ -508,16 +508,16 @@
     "target": "V033",
     "relation": "Entry Point",
     "technique_name": "Access via dependency",
-    "status": "zayifladi",
-    "cutting_control": "yama"
+    "status": "acik",
+    "cutting_control": null
   },
   {
     "source": "V033",
     "target": "node_target_dos",
     "relation": "Leads To",
     "technique_name": "Denial of Service & Resource Exhaustion",
-    "status": "zayifladi",
-    "cutting_control": "yama"
+    "status": "acik",
+    "cutting_control": null
   },
   {
     "source": "node_entry_dependency",
