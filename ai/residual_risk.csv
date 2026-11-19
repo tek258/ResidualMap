@@ -1,0 +1,37 @@
+vuln_id,risk_before,kontroller,etkinlik,risk_after,dayanak,hesaba_katildi
+V001,9.5,"waf:azaltir, ids:tespit_eder",0.6,3.8,test,Evet
+V002,7.5,"waf:azaltir, ids:tespit_eder",0.6,3.0,test,Evet
+V003,6.8,sanal_yama:engeller,0.9,0.68,test,Evet
+V004,7.0,"waf:azaltir, ids:tespit_eder",0.441,3.913,gerekce,Evet
+V005,6.8,"waf:engeller, ids:tespit_eder",0.92,0.544,test,Evet
+V006,5.8,yok,0.0,5.8,gerekce,Evet
+V007,5.8,yok,0.0,5.8,gerekce,Evet
+V008,9.5,yok,0.0,9.5,gerekce,Evet
+V009,7.5,yok,0.0,7.5,gerekce,Evet
+V010,5.8,"waf:azaltir, ids:tespit_eder",0.441,3.2422,gerekce,Evet
+V011,7.8,yok,0.0,7.8,gerekce,Evet
+V012,5.5,waf:azaltir,0.35,3.575,gerekce,Evet
+V013,5.5,yok,0.0,5.5,gerekce,Evet
+V014,7.5,yok,0.0,7.5,gerekce,Evet
+V015,7.9,"waf:azaltir, ids:tespit_eder",0.441,4.4161,gerekce,Evet
+V016,3.8,yok,0.0,3.8,gerekce,Evet
+V017,2.8,yok,0.0,2.8,test,Evet
+V018,4.5,yok,0.0,4.5,test,Evet
+V019,2.5,waf:engeller,0.9,0.25,test,Evet
+V020,3.8,yok,0.0,3.8,gerekce,Evet
+V021,2.3,yok,0.0,2.3,test,Evet
+V022,9.3,yama:engeller,0.0,9.3,varsayim,Hayır (varsayim)
+V023,7.6,yama:engeller,0.0,7.6,varsayim,Hayır (varsayim)
+V024,7.8,yama:engeller,0.0,7.8,varsayim,Hayır (varsayim)
+V025,7.3,yama:engeller,0.0,7.3,varsayim,Hayır (varsayim)
+V026,7.3,yama:engeller,0.0,7.3,varsayim,Hayır (varsayim)
+V027,7.8,yama:engeller,0.63,2.886,gerekce,Evet
+V028,7.3,yama:engeller,0.63,2.701,gerekce,Evet
+V029,7.3,yama:engeller,0.0,7.3,varsayim,Hayır (varsayim)
+V030,7.8,yama:engeller,0.0,7.8,varsayim,Hayır (varsayim)
+V031,7.5,yama:engeller,0.0,7.5,varsayim,Hayır (varsayim)
+V032,7.5,yama:engeller,0.0,7.5,varsayim,Hayır (varsayim)
+V033,7.8,yama:engeller,0.63,2.886,gerekce,Evet
+V034,7.0,yama:engeller,0.0,7.0,varsayim,Hayır (varsayim)
+V035,7.3,yama:engeller,0.0,7.3,varsayim,Hayır (varsayim)
+V036,7.8,yama:engeller,0.0,7.8,varsayim,Hayır (varsayim)
