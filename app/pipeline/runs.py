@@ -39,6 +39,33 @@ def new_run(target_key):
     return run_id
 
 
+def ornek_veriyle_baslat(target_key):
+    """Docker ve tarama olmadan çalışan çalıştırma (demo B planı).
+
+    inventory/raw/ altındaki ham dosyalar bu çalıştırmanın raw/ klasörüne kopyalanır ve
+    2. adım "Repodaki dosya" yöntemiyle tamamlanmış sayılır. Sonraki adımlar normal akışla
+    aynı kodu çalıştırır. Dönüş: (run_id, {kaynak: Sonuc}).
+    """
+    from pipeline import scans   # döngüsel içe aktarmayı önlemek için burada
+
+    run_id = new_run(target_key)
+    raw_dir = run_dir(run_id) / "raw"
+    meta = load_meta(run_id)
+    meta["ornek_veri"] = True
+    sonuclar, tarama = {}, {}
+    for kaynak in scans.RAW_FILES:
+        sonuc = scans.yukle_repodan(kaynak, raw_dir)
+        sonuclar[kaynak] = sonuc
+        tarama[kaynak] = {
+            "yontem": "Repodaki dosya (örnek veri)", "ok": sonuc.ok, "mesaj": sonuc.mesaj,
+            "sure_sn": 0.0, "ozet": sonuc.ozet,
+            "zaman": datetime.datetime.now().isoformat(timespec="seconds"),
+        }
+    meta["steps"]["tarama"] = tarama
+    save_meta(run_id, meta)
+    return run_id, sonuclar
+
+
 def load_meta(run_id):
     with open(run_dir(run_id) / "meta.json", encoding="utf-8") as f:
         return json.load(f)

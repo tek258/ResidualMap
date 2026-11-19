@@ -17,8 +17,8 @@ from dataclasses import dataclass, field
 
 from config import RAW_DIR
 
-ZAP_IMAGE = "ghcr.io/zaproxy/zaproxy:stable"
-TRIVY_IMAGE = "aquasec/trivy:latest"
+ZAP_IMAGE = "ghcr.io/zaproxy/zaproxy:2.17.0"     # S5-K2 ile aynı sürüm (sabit)
+TRIVY_IMAGE = "aquasec/trivy:0.75.0"             # S5-K2 ile aynı sürüm (sabit)
 
 RAW_FILES = {
     "zap": "zap_baseline.json",

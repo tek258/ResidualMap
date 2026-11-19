@@ -95,6 +95,13 @@ def render():
     if ozet["hedefsiz"]:
         st.warning("Hiçbir hedefe bağlanamayan kayıtlar (CWE'leri hedef kümelerinde yok): "
                    + ", ".join(_ad(ozet, v) for v in ozet["hedefsiz"]))
+    if ozet["girissiz"]:
+        st.warning("Giriş noktası boş ya da geçersiz olan kayıtlar (giriş kenarı eklenmedi; "
+                   "geçerli değerler: login, search, api, web, dependency): "
+                   + ", ".join(_ad(ozet, v) for v in ozet["girissiz"]))
+    if ozet["risksiz_yollar"]:
+        st.warning(f"{len(ozet['risksiz_yollar'])} yolun riski hesaplanamadı (yoldaki bir kaydın "
+                   "CVSS vektörü eksik). Bu yollar sıralamanın sonunda.")
     if ozet["ulasilamayan"]:
         st.warning("Hiçbir saldırı yolunda yer almayan kayıtlar: "
                    + ", ".join(_ad(ozet, v) for v in ozet["ulasilamayan"]))
@@ -104,8 +111,9 @@ def render():
 
     # --- Grafik ---
     st.markdown("**Saldırı grafiği**")
-    st.caption("Turuncu: giriş noktası · Mavi: zafiyet · Kırmızı: hedef. Kenarların üzerine "
-               "gelince ilişki türü görünür. Grafik yakınlaştırılıp sürüklenebilir.")
+    st.caption("Yeşil elmas: giriş noktası · Mavi yıldız: hedef · Daireler: zafiyetler (renk AI v2 "
+               "skoruna göre, yoksa CVSS) · Kırmızı kenarlar: en riskli 5 yol. Düğüm ve kenarların "
+               "üzerine gelince ayrıntılar görünür. Grafik yakınlaştırılıp sürüklenebilir.")
     components.html(html.read_text(encoding="utf-8"), height=980, scrolling=True)
 
     # --- İndir ---

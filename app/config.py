@@ -27,12 +27,19 @@ TARGETS = {
     },
 }
 
+# --- Savunma panosu (Grafana, defense/ klasöründe `docker compose --profile siem up -d`) ---
+# Uygulama Grafana'ya yalnızca bağlantı verir; panoyu Grafana kendi sekmesinde gösterir.
+GRAFANA_URL = "http://localhost:3001"
+GRAFANA_PANO = GRAFANA_URL + "/d/residualmap-lab"   # siem/grafana/dashboards/residualmap-lab.json (uid)
+
 # Hedef adresleri yalnızca yerel olabilir; listeye yanlışlıkla dış bir adres
 # eklenirse uygulama hiç açılmaz.
 ALLOWED_HOSTS = {"localhost", "127.0.0.1", "host.docker.internal"}
 
 
 def _check_targets():
+    if urlparse(GRAFANA_URL).hostname not in ALLOWED_HOSTS:
+        raise ValueError(f"GRAFANA_URL yerel bir adres değil: {GRAFANA_URL}")
     for key, target in TARGETS.items():
         for alan in ("zap_url", "tarayici_url"):
             host = urlparse(target[alan]).hostname

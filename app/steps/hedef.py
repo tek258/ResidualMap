@@ -3,7 +3,7 @@
 import streamlit as st
 
 from config import TARGETS
-from pipeline import runs
+from pipeline import runs, scans
 from steps.ortak import durumlar as _durumlar
 
 
@@ -47,11 +47,27 @@ def render():
     st.divider()
     st.subheader("Çalıştırma")
 
-    if st.button("Yeni çalıştırma başlat", type="primary"):
-        run_id = runs.new_run(target_key)
-        st.session_state["run_id"] = run_id
-        st.session_state["target"] = target_key
-        st.success(f"Çalıştırma oluşturuldu: `{run_id}`. Sol menüden 2. adıma geçin.")
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("Yeni çalıştırma başlat", type="primary", use_container_width=True):
+            run_id = runs.new_run(target_key)
+            st.session_state["run_id"] = run_id
+            st.session_state["target"] = target_key
+            st.success(f"Çalıştırma oluşturuldu: `{run_id}`. Sol menüden 2. adıma geçin.")
+    with c2:
+        if st.button("Örnek veriyle başlat (Docker gerekmez)", use_container_width=True):
+            run_id, sonuclar = runs.ornek_veriyle_baslat(target_key)
+            st.session_state["run_id"] = run_id
+            st.session_state["target"] = target_key
+            eksik = [scans.KAYNAK_ADLARI[k] for k, s in sonuclar.items() if not s.ok]
+            if eksik:
+                st.warning(f"`{run_id}` oluşturuldu, ama şu kaynaklar yüklenemedi: {', '.join(eksik)}.")
+            else:
+                st.success(f"`{run_id}` oluşturuldu; ekibin `inventory/raw/` altındaki tarama "
+                           "dosyaları yüklendi. Sol menüden 3. adıma geçin.")
+    st.caption("Örnek veri modu canlı tarama yapmaz: ekibin daha önce topladığı ZAP, Trivy ve "
+               "challenge dosyalarıyla 3. ve 4. adımları çalıştırır. Lab ortamı kapalıyken ya da "
+               "canlı demoda sorun çıkarsa kullanılır.")
 
     onceki = runs.list_runs(target_key)
     if onceki:

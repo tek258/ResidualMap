@@ -44,10 +44,13 @@ def uret(inventory_csv, out_dir):
             edges = _yukle("generate_edges").generate_attack_edges(str(inventory_csv), str(edges_p))
             if edges is None:
                 return False, gunluk.getvalue()
-            paths = _yukle("find_paths").find_attack_paths(str(edges_p), str(paths_p))
+            # csv_path: yol olasılıkları bu çalıştırmanın envanterinden (repodakinden değil)
+            paths = _yukle("find_paths").find_attack_paths(str(edges_p), str(paths_p), str(inventory_csv))
             if paths is None:
                 return False, gunluk.getvalue()
-            html = _yukle("visualize_graph").create_visual_graph(str(edges_p), str(inventory_csv), str(html_p))
+            # paths_path: grafikte bu çalıştırmanın en riskli yolları vurgulanır
+            html = _yukle("visualize_graph").create_visual_graph(
+                str(edges_p), str(inventory_csv), str(html_p), str(paths_p))
             if html is None:
                 return False, gunluk.getvalue()
     except Exception as e:   # ör. pyvis/networkx kurulu değil
@@ -80,6 +83,12 @@ def ozetle(inventory_csv, out_dir):
         "zincirli_yollar": [" → ".join(p["path"]) for p in paths if p["length"] > 2],
         # hiçbir hedefe bağlanamayan (CWE kümelerinde yok)
         "hedefsiz": [v for v in satirlar if v not in hedefli],
+        # ön koşulu yok ama giriş kenarı da yok: entry_point boş ya da liste dışı
+        "girissiz": [v for v, r in satirlar.items()
+                     if (r.get("requires_capability") or "none").strip().lower() == "none"
+                     and v not in girisli],
+        # CVSS vektörü eksik olduğu için riski hesaplanamayan yollar
+        "risksiz_yollar": [" → ".join(p["path"]) for p in paths if p.get("path_risk") is None],
         # doğrudan girişi yok, sadece zincirle ulaşılıyor
         "sadece_zincirle": sorted(zincirli - girisli),
         # hiçbir yolda yer almayan (ne girişten ne zincirle ulaşılabiliyor)
