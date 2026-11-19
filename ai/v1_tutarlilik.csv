@@ -1,0 +1,4 @@
+vuln_id,cvss,v1_kayitli_skor,skor_1,skor_2,skor_3,etiket_1,etiket_2,etiket_3,skor_std,skor_araligi,etiket_degisti,gecersiz
+V001,9.8,9.8,9.8,9.8,9.8,Yüksek,Yüksek,Yüksek,0.0,0.0,False,0
+V012,4.3,4.3,4.3,4.3,4.3,Yüksek,Yüksek,Yüksek,0.0,0.0,False,0
+V035,9.8,0.00718,9.8,9.8,,Kritik,Kritik,,0.0,0.0,False,1
