@@ -14,6 +14,15 @@ ACCOUNT_CWES = {"cwe-79", "cwe-639", "cwe-640", "cwe-352", "cwe-601", "cwe-693",
 RCE_CWES = {"cwe-1321", "cwe-94", "cwe-22", "cwe-176", "cwe-122", "cwe-119"}
 DOS_CWES = {"cwe-400", "cwe-476", "cwe-248"}
 
+# Geçerli giriş noktaları ve karşılık gelen düğümler
+ENTRY_POINT_NODES = {
+    "login": "node_entry_login",
+    "search": "node_entry_search",
+    "api": "node_entry_api",
+    "web": "node_entry_web",
+    "dependency": "node_entry_dependency",
+}
+
 
 # Kazanım (grants_capability) tabanlı hedefler: bir zafiyet bu yetkinlikleri
 # kazandırıyorsa, sonucu CWE'den bağımsız olarak bu hedeftir. Örn. V025 (zayıf
@@ -63,7 +72,7 @@ def map_to_target(v_id, name, cwe_id, grants="none"):
     return None
 
 
-# Hedef düğümlerin teknik teknik isim karşılıkları
+# Hedef düğümlerin teknik isim karşılıkları
 TARGET_TECHNIQUE_NAMES = {
     "node_target_admin": "Unauthorized Administrator Access",
     "node_target_leak": "Sensitive Data Exfiltration & Database Exposure",
@@ -100,46 +109,35 @@ def generate_attack_edges(csv_path=CSV_PATH, output_edges_path=OUTPUT_EDGES_PATH
                 "name": row.get("name", "").strip(),
                 "component": row.get("component", "").strip().lower(),
                 "cwe_id": row.get("cwe_id", "").strip().upper(),
+                "entry_point": row.get("entry_point", "").strip().lower(),
                 "requires_capability": row.get("requires_capability", "none").strip().lower() or "none",
                 "grants_capability": row.get("grants_capability", "none").strip().lower() or "none",
             })
 
-    # Giriş noktaları havuzu
-    entry_nodes_pool = [
-        ("node_entry_login", "Initial Access via Authentication & Session"),
-        ("node_entry_api", "API Interface & Service Exposure"),
-        ("node_entry_search", "User Input & Parameter Vector")
-    ]
-
     unmapped_targets = []
 
     # Zafiyetler üzerinde dönerek giriş ve hedef kenarlarının üretilmesi
-    for index, v in enumerate(vulnerabilities):
+    for v in vulnerabilities:
         v_id = v["id"]
         name = v["name"]
-        component = v["component"]
         cwe_id = v["cwe_id"]
+        entry_point = v["entry_point"]
         requires = v["requires_capability"]
-        name_lower = name.lower()
 
         # KRİTİK DÜZELTME: Eğer zafiyetin bir ön koşulu (requires) varsa, dışarıdan doğrudan giriş noktası ATAMA!
         if requires == "none":
-            if any(k in cwe_id.lower() or k in component or k in name_lower for k in ["287", "798", "auth", "login", "session", "credential"]):
-                entry_node, technique_initial = entry_nodes_pool[0]
-            elif any(k in cwe_id.lower() or k in component or k in name_lower for k in ["200", "api", "service", "endpoint", "exposure", "proxy", "ws"]):
-                entry_node, technique_initial = entry_nodes_pool[1]
+            if entry_point in ENTRY_POINT_NODES:
+                entry_node = ENTRY_POINT_NODES[entry_point]
+                edges.append({
+                    "source": entry_node,
+                    "target": v_id,
+                    "relation": "Entry Point",
+                    "technique_name": f"Access via {entry_point}"
+                })
             else:
-                chosen_entry = entry_nodes_pool[index % len(entry_nodes_pool)]
-                entry_node, technique_initial = chosen_entry[0], f"Vector via {chosen_entry[0].replace('node_entry_', '').upper()}"
+                print(f"[UYARI] {v_id}: geçersiz veya boş entry_point ('{entry_point}'), giriş kenarı eklenmedi.")
 
-            edges.append({
-                "source": entry_node,
-                "target": v_id,
-                "relation": "Entry Point",
-                "technique_name": technique_initial
-            })
-
-        # CWE bazlı hedef eşlemesi ve Leads To kenarının eklenmesi
+        # CWE / yetkinlik bazlı hedef eşlemesi ve Leads To kenarının eklenmesi
         target_node = map_to_target(v_id, name, cwe_id, v["grants_capability"])
         if target_node is not None:
             edges.append({
