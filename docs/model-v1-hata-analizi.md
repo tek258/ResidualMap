@@ -25,11 +25,15 @@ V014 v1'de Ollama 500 hatası nedeniyle atlandığı için karşılaştırma 35 
 |---|---|---|
 | v1 etiketi | 13/35 (%37.1) | 0.283 |
 | v1 skoru | — | 0.829 |
-| CVSS bandı (≥9 Kritik, ≥7 Yüksek, ≥4 Orta, <4 Düşük) | **20/35 (%57.1)** | 0.775 |
+| Baseline: CVSS bandı (≥9 Kritik, ≥7 Yüksek, ≥4 Orta, <4 Düşük) | **20/35 (%57.1)** | 0.775 |
+
+Baseline, `ai/baseline_ranking.py`'ın sıralamasıdır: yalnızca CVSS'e göre sıralar, yani `baseline_score` = CVSS. Uzman etiketiyle sınıf düzeyinde karşılaştırabilmek için bu skor, CVSS v3.1'in önem bantlarıyla sınıfa çevrildi.
+
+**Top-10 karşılaştırması:** v1'in en yüksek 10 skoru ile baseline'ın top-10'u 9/10 örtüşüyor. Tek fark, v1'de V035'in yerine V029'un girmesi; bunun nedeni de V035'teki alan hatası (bkz. Bölüm 3, K6). Uzmanın Kritik dediği iki kayıt (V001, V008) iki listede de var. Bu yüzden top-10 düzeyinde v1 baseline'dan ayırt edilemiyor.
 
 v1 skorunun Spearman değeri CVSS'ten yüksek görünüyor. Ama iki skor yalnızca V035'te farklı: model o kayıtta skor alanına EPSS'i (0.00718) yazmış. Uzman da V035'i düşük tuttuğu (Orta) için bu hata korelasyonu tesadüfen yükseltmiş. Tutarlılık testinde V035 artık 9.8 alıyor (Bölüm 4), yani bu üstünlük tekrarlanamıyor.
 
-v1 değerlendirmesindeki "baseline ile top-10 örtüşmesi %90" sonucu da aynı nedenle bir başarı göstergesi değil: skor CVSS'in kopyası olduğu için örtüşme kaçınılmaz.
+v1 değerlendirmesindeki "baseline ile top-10 örtüşmesi %90" sonucu da bir başarı göstergesi değil: skor CVSS'in kopyası olduğu için örtüşme kaçınılmaz.
 
 ### Karışıklık matrisi
 
