@@ -85,6 +85,11 @@ def main():
     for ad, yol in YONTEMLER:
         if os.path.exists(yol):
             sonuc[ad] = {v: float(r["risk_score_llm"]) for v, r in oku(yol).items()}
+            # Kimlik denetimi: yazım hatalı ya da eksik vuln_id sonuçları sessizce bozmasın
+            bilinmeyen = sorted(set(sonuc[ad]) - set(uzman))
+            eksik = sorted(set(uzman) - set(sonuc[ad]))
+            if bilinmeyen or eksik:
+                print(f"UYARI [{ad}] {yol}: bilinmeyen vuln_id {bilinmeyen or '-'}, eksik {eksik or '-'}")
         else:
             print(f"Atlandı (dosya yok): {yol}")
 

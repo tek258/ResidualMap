@@ -1,5 +1,5 @@
 vuln_id,risk_score_llm,risk_label_llm,llm_reason,score_std,tekrar_skorlari,few_shot
-python ai/model_v1_qwen_kontrol.py,9.5,Kritik,"Critical band: confirmed in the application, no authentication required, gives administrator access.",0.0,9.5 9.5 9.5,False
+V001,9.5,Kritik,"Critical band: confirmed in the application, no authentication required, gives administrator access.",0.0,9.5 9.5 9.5,False
 V002,7.5,Yüksek,"High band: confirmed in the application, severe impact on confidentiality, but no administrative access or large-scale exposure.",,,False
 V003,6.8,Orta,"High band: confirmed in the application, low complexity, user interaction required, and impacts confidentiality and integrity.",,,False
 V004,7.0,Yüksek,"High band: confirmed in the application, low complexity, and can impact multiple users' sessions.",,,False
