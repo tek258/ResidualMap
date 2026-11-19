@@ -1,0 +1,578 @@
+[
+  {
+    "source": "node_entry_login",
+    "target": "V001",
+    "relation": "Entry Point",
+    "technique_name": "Access via login",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "V001",
+    "target": "node_target_admin",
+    "relation": "Leads To",
+    "technique_name": "Unauthorized Administrator Access",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "node_entry_search",
+    "target": "V002",
+    "relation": "Entry Point",
+    "technique_name": "Access via search",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "V002",
+    "target": "node_target_leak",
+    "relation": "Leads To",
+    "technique_name": "Sensitive Data Exfiltration & Database Exposure",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V003",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
+  },
+  {
+    "source": "V003",
+    "target": "node_target_account_takeover",
+    "relation": "Leads To",
+    "technique_name": "Account Takeover via Client-Side Attack",
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
+  },
+  {
+    "source": "node_entry_search",
+    "target": "V004",
+    "relation": "Entry Point",
+    "technique_name": "Access via search",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "V004",
+    "target": "node_target_account_takeover",
+    "relation": "Leads To",
+    "technique_name": "Account Takeover via Client-Side Attack",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "node_entry_api",
+    "target": "V005",
+    "relation": "Entry Point",
+    "technique_name": "Access via api",
+    "status": "kesildi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "V005",
+    "target": "node_target_account_takeover",
+    "relation": "Leads To",
+    "technique_name": "Account Takeover via Client-Side Attack",
+    "status": "kesildi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "node_entry_api",
+    "target": "V006",
+    "relation": "Entry Point",
+    "technique_name": "Access via api",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V006",
+    "target": "node_target_account_takeover",
+    "relation": "Leads To",
+    "technique_name": "Account Takeover via Client-Side Attack",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_api",
+    "target": "V007",
+    "relation": "Entry Point",
+    "technique_name": "Access via api",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V007",
+    "target": "node_target_account_takeover",
+    "relation": "Leads To",
+    "technique_name": "Account Takeover via Client-Side Attack",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V008",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V008",
+    "target": "node_target_admin",
+    "relation": "Leads To",
+    "technique_name": "Unauthorized Administrator Access",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V009",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V009",
+    "target": "node_target_leak",
+    "relation": "Leads To",
+    "technique_name": "Sensitive Data Exfiltration & Database Exposure",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_api",
+    "target": "V010",
+    "relation": "Entry Point",
+    "technique_name": "Access via api",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "V010",
+    "target": "node_target_leak",
+    "relation": "Leads To",
+    "technique_name": "Sensitive Data Exfiltration & Database Exposure",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V011",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V011",
+    "target": "node_target_account_takeover",
+    "relation": "Leads To",
+    "technique_name": "Account Takeover via Client-Side Attack",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V012",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "V012",
+    "target": "node_target_account_takeover",
+    "relation": "Leads To",
+    "technique_name": "Account Takeover via Client-Side Attack",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V013",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V013",
+    "target": "node_target_account_takeover",
+    "relation": "Leads To",
+    "technique_name": "Account Takeover via Client-Side Attack",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V014",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V014",
+    "target": "node_target_admin",
+    "relation": "Leads To",
+    "technique_name": "Unauthorized Administrator Access",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_login",
+    "target": "V015",
+    "relation": "Entry Point",
+    "technique_name": "Access via login",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "V015",
+    "target": "node_target_admin",
+    "relation": "Leads To",
+    "technique_name": "Unauthorized Administrator Access",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V016",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V016",
+    "target": "node_target_leak",
+    "relation": "Leads To",
+    "technique_name": "Sensitive Data Exfiltration & Database Exposure",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V017",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V017",
+    "target": "node_target_account_takeover",
+    "relation": "Leads To",
+    "technique_name": "Account Takeover via Client-Side Attack",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V018",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V018",
+    "target": "node_target_leak",
+    "relation": "Leads To",
+    "technique_name": "Sensitive Data Exfiltration & Database Exposure",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V019",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "kesildi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "V019",
+    "target": "node_target_leak",
+    "relation": "Leads To",
+    "technique_name": "Sensitive Data Exfiltration & Database Exposure",
+    "status": "kesildi",
+    "cutting_control": "waf"
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V020",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V020",
+    "target": "node_target_account_takeover",
+    "relation": "Leads To",
+    "technique_name": "Account Takeover via Client-Side Attack",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_web",
+    "target": "V021",
+    "relation": "Entry Point",
+    "technique_name": "Access via web",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V021",
+    "target": "node_target_account_takeover",
+    "relation": "Leads To",
+    "technique_name": "Account Takeover via Client-Side Attack",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V022",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V022",
+    "target": "node_target_admin",
+    "relation": "Leads To",
+    "technique_name": "Unauthorized Administrator Access",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V023",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V023",
+    "target": "node_target_rce",
+    "relation": "Leads To",
+    "technique_name": "Remote Code Execution & System Compromise",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V024",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V024",
+    "target": "node_target_rce",
+    "relation": "Leads To",
+    "technique_name": "Remote Code Execution & System Compromise",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V025",
+    "target": "node_target_admin",
+    "relation": "Leads To",
+    "technique_name": "Unauthorized Administrator Access",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V026",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V026",
+    "target": "node_target_account_takeover",
+    "relation": "Leads To",
+    "technique_name": "Account Takeover via Client-Side Attack",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V027",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "zayifladi",
+    "cutting_control": "yama"
+  },
+  {
+    "source": "V027",
+    "target": "node_target_rce",
+    "relation": "Leads To",
+    "technique_name": "Remote Code Execution & System Compromise",
+    "status": "zayifladi",
+    "cutting_control": "yama"
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V028",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "zayifladi",
+    "cutting_control": "yama"
+  },
+  {
+    "source": "V028",
+    "target": "node_target_admin",
+    "relation": "Leads To",
+    "technique_name": "Unauthorized Administrator Access",
+    "status": "zayifladi",
+    "cutting_control": "yama"
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V029",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V029",
+    "target": "node_target_rce",
+    "relation": "Leads To",
+    "technique_name": "Remote Code Execution & System Compromise",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V030",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V030",
+    "target": "node_target_admin",
+    "relation": "Leads To",
+    "technique_name": "Unauthorized Administrator Access",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V031",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V031",
+    "target": "node_target_rce",
+    "relation": "Leads To",
+    "technique_name": "Remote Code Execution & System Compromise",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V032",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V032",
+    "target": "node_target_dos",
+    "relation": "Leads To",
+    "technique_name": "Denial of Service & Resource Exhaustion",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V033",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "zayifladi",
+    "cutting_control": "yama"
+  },
+  {
+    "source": "V033",
+    "target": "node_target_dos",
+    "relation": "Leads To",
+    "technique_name": "Denial of Service & Resource Exhaustion",
+    "status": "zayifladi",
+    "cutting_control": "yama"
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V034",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V034",
+    "target": "node_target_dos",
+    "relation": "Leads To",
+    "technique_name": "Denial of Service & Resource Exhaustion",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V035",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V035",
+    "target": "node_target_rce",
+    "relation": "Leads To",
+    "technique_name": "Remote Code Execution & System Compromise",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "V036",
+    "relation": "Entry Point",
+    "technique_name": "Access via dependency",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V036",
+    "target": "node_target_rce",
+    "relation": "Leads To",
+    "technique_name": "Remote Code Execution & System Compromise",
+    "status": "acik",
+    "cutting_control": null
+  },
+  {
+    "source": "V002",
+    "target": "V025",
+    "relation": "Chains To",
+    "technique_name": "password_hashes elde edilince mümkün olur",
+    "status": "zayifladi",
+    "cutting_control": "waf"
+  }
+]
