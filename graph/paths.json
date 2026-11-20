@@ -11,7 +11,77 @@
         ],
         "length": 2,
         "path_risk": 10.0,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 9.5
+    },
+    {
+        "source": "node_entry_web",
+        "target": "node_target_admin",
+        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_web",
+            "V008",
+            "node_target_admin"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 9.5
+    },
+    {
+        "source": "node_entry_dependency",
+        "target": "node_target_admin",
+        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_dependency",
+            "V022",
+            "node_target_admin"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 9.3
+    },
+    {
+        "source": "node_entry_dependency",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_dependency",
+            "V027",
+            "node_target_rce"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 7.8
+    },
+    {
+        "source": "node_entry_dependency",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_dependency",
+            "V036",
+            "node_target_rce"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 7.8
+    },
+    {
+        "source": "node_entry_dependency",
+        "target": "node_target_rce",
+        "target_name": "node_target_rce",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_dependency",
+            "V023",
+            "node_target_rce"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 7.6
     },
     {
         "source": "node_entry_search",
@@ -26,21 +96,7 @@
         ],
         "length": 3,
         "path_risk": 10.0,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_web",
-        "target": "node_target_admin",
-        "target_name": "node_target_admin",
-        "target_criticality": 10.0,
-        "path": [
-            "node_entry_web",
-            "V008",
-            "node_target_admin"
-        ],
-        "length": 2,
-        "path_risk": 10.0,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.5
     },
     {
         "source": "node_entry_web",
@@ -54,63 +110,7 @@
         ],
         "length": 2,
         "path_risk": 10.0,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_dependency",
-        "target": "node_target_admin",
-        "target_name": "node_target_admin",
-        "target_criticality": 10.0,
-        "path": [
-            "node_entry_dependency",
-            "V022",
-            "node_target_admin"
-        ],
-        "length": 2,
-        "path_risk": 10.0,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_dependency",
-        "target": "node_target_admin",
-        "target_name": "node_target_admin",
-        "target_criticality": 10.0,
-        "path": [
-            "node_entry_dependency",
-            "V028",
-            "node_target_admin"
-        ],
-        "length": 2,
-        "path_risk": 10.0,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_dependency",
-        "target": "node_target_rce",
-        "target_name": "node_target_rce",
-        "target_criticality": 10.0,
-        "path": [
-            "node_entry_dependency",
-            "V023",
-            "node_target_rce"
-        ],
-        "length": 2,
-        "path_risk": 10.0,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_dependency",
-        "target": "node_target_rce",
-        "target_name": "node_target_rce",
-        "target_criticality": 10.0,
-        "path": [
-            "node_entry_dependency",
-            "V027",
-            "node_target_rce"
-        ],
-        "length": 2,
-        "path_risk": 10.0,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.5
     },
     {
         "source": "node_entry_dependency",
@@ -124,7 +124,21 @@
         ],
         "length": 2,
         "path_risk": 10.0,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.5
+    },
+    {
+        "source": "node_entry_dependency",
+        "target": "node_target_admin",
+        "target_name": "node_target_admin",
+        "target_criticality": 10.0,
+        "path": [
+            "node_entry_dependency",
+            "V028",
+            "node_target_admin"
+        ],
+        "length": 2,
+        "path_risk": 10.0,
+        "secondary_v2_score": 7.3
     },
     {
         "source": "node_entry_dependency",
@@ -138,21 +152,7 @@
         ],
         "length": 2,
         "path_risk": 10.0,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_dependency",
-        "target": "node_target_rce",
-        "target_name": "node_target_rce",
-        "target_criticality": 10.0,
-        "path": [
-            "node_entry_dependency",
-            "V036",
-            "node_target_rce"
-        ],
-        "length": 2,
-        "path_risk": 10.0,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.3
     },
     {
         "source": "node_entry_dependency",
@@ -166,7 +166,7 @@
         ],
         "length": 2,
         "path_risk": 7.294,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.3
     },
     {
         "source": "node_entry_search",
@@ -180,7 +180,7 @@
         ],
         "length": 2,
         "path_risk": 7.0,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.5
     },
     {
         "source": "node_entry_web",
@@ -194,7 +194,7 @@
         ],
         "length": 2,
         "path_risk": 7.0,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.5
     },
     {
         "source": "node_entry_web",
@@ -208,7 +208,7 @@
         ],
         "length": 2,
         "path_risk": 7.0,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 3.8
     },
     {
         "source": "node_entry_web",
@@ -222,21 +222,7 @@
         ],
         "length": 2,
         "path_risk": 7.0,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_dependency",
-        "target": "node_target_dos",
-        "target_name": "node_target_dos",
-        "target_criticality": 6.0,
-        "path": [
-            "node_entry_dependency",
-            "V032",
-            "node_target_dos"
-        ],
-        "length": 2,
-        "path_risk": 6.0,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 2.5
     },
     {
         "source": "node_entry_dependency",
@@ -250,7 +236,21 @@
         ],
         "length": 2,
         "path_risk": 6.0,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.8
+    },
+    {
+        "source": "node_entry_dependency",
+        "target": "node_target_dos",
+        "target_name": "node_target_dos",
+        "target_criticality": 6.0,
+        "path": [
+            "node_entry_dependency",
+            "V032",
+            "node_target_dos"
+        ],
+        "length": 2,
+        "path_risk": 6.0,
+        "secondary_v2_score": 7.5
     },
     {
         "source": "node_entry_dependency",
@@ -264,7 +264,7 @@
         ],
         "length": 2,
         "path_risk": 6.0,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.0
     },
     {
         "source": "node_entry_search",
@@ -278,7 +278,7 @@
         ],
         "length": 2,
         "path_risk": 5.8352,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.0
     },
     {
         "source": "node_entry_web",
@@ -292,35 +292,7 @@
         ],
         "length": 2,
         "path_risk": 5.8352,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_web",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "target_criticality": 8.0,
-        "path": [
-            "node_entry_web",
-            "V012",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 5.8352,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_web",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "target_criticality": 8.0,
-        "path": [
-            "node_entry_web",
-            "V013",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 5.8352,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 6.8
     },
     {
         "source": "node_entry_api",
@@ -334,7 +306,7 @@
         ],
         "length": 2,
         "path_risk": 5.8352,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 6.8
     },
     {
         "source": "node_entry_api",
@@ -348,7 +320,7 @@
         ],
         "length": 2,
         "path_risk": 5.8352,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 5.8
     },
     {
         "source": "node_entry_api",
@@ -362,7 +334,35 @@
         ],
         "length": 2,
         "path_risk": 5.8352,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 5.8
+    },
+    {
+        "source": "node_entry_web",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_web",
+            "V012",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 5.8352,
+        "secondary_v2_score": 5.5
+    },
+    {
+        "source": "node_entry_web",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_web",
+            "V013",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 5.8352,
+        "secondary_v2_score": 5.5
     },
     {
         "source": "node_entry_login",
@@ -376,7 +376,7 @@
         ],
         "length": 2,
         "path_risk": 5.714,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.9
     },
     {
         "source": "node_entry_api",
@@ -390,7 +390,7 @@
         ],
         "length": 2,
         "path_risk": 5.1058,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 5.8
     },
     {
         "source": "node_entry_web",
@@ -404,7 +404,7 @@
         ],
         "length": 2,
         "path_risk": 4.5712,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.8
     },
     {
         "source": "node_entry_dependency",
@@ -418,21 +418,7 @@
         ],
         "length": 2,
         "path_risk": 4.5712,
-        "secondary_v2_score": 0.0
-    },
-    {
-        "source": "node_entry_web",
-        "target": "node_target_account_takeover",
-        "target_name": "node_target_account_takeover",
-        "target_criticality": 8.0,
-        "path": [
-            "node_entry_web",
-            "V017",
-            "node_target_account_takeover"
-        ],
-        "length": 2,
-        "path_risk": 3.3344,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.3
     },
     {
         "source": "node_entry_web",
@@ -446,7 +432,21 @@
         ],
         "length": 2,
         "path_risk": 3.3344,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 3.8
+    },
+    {
+        "source": "node_entry_web",
+        "target": "node_target_account_takeover",
+        "target_name": "node_target_account_takeover",
+        "target_criticality": 8.0,
+        "path": [
+            "node_entry_web",
+            "V017",
+            "node_target_account_takeover"
+        ],
+        "length": 2,
+        "path_risk": 3.3344,
+        "secondary_v2_score": 2.8
     },
     {
         "source": "node_entry_web",
@@ -460,7 +460,7 @@
         ],
         "length": 2,
         "path_risk": 3.3344,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 2.3
     },
     {
         "source": "node_entry_dependency",
@@ -474,7 +474,7 @@
         ],
         "length": 2,
         "path_risk": 3.334,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.8
     },
     {
         "source": "node_entry_dependency",
@@ -488,7 +488,7 @@
         ],
         "length": 2,
         "path_risk": 3.177,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 7.8
     },
     {
         "source": "node_entry_web",
@@ -502,6 +502,6 @@
         ],
         "length": 2,
         "path_risk": 2.9176,
-        "secondary_v2_score": 0.0
+        "secondary_v2_score": 4.5
     }
 ]
