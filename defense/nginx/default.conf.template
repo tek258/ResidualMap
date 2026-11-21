@@ -26,7 +26,7 @@ more_set_headers 'Server: ${SERVER_HEADER}';
 # Imaj yukseltilirse test-waf.sh'taki "CSP ozetleri" satirlari HATA verir; ozetler yenilenir.
 # style-src 'unsafe-inline': Angular Material calisirken stil enjekte ediyor (kabul edilen eksik).
 map $upstream_http_content_security_policy $juice_csp {
-    ""      "default-src 'self'; script-src 'self' 'sha256-2ADpmZIga9zdrCfzZ7IWyavasltpcKCkxomklfMTCG0=' 'sha256-9MsdBx9vZ9NzdkYLMYk/U1qJmmxuixSv2ivJtXTG9tY=' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; connect-src 'self' ws: wss:; media-src 'self'; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
+    ""      "default-src 'self'; script-src 'self' 'sha256-2ADpmZIga9zdrCfzZ7IWyavasltpcKCkxomklfMTCG0=' 'sha256-9MsdBx9vZ9NzdkYLMYk/U1qJmmxuixSv2ivJtXTG9tY=' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; connect-src 'self'; media-src 'self'; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
     default $upstream_http_content_security_policy;
 }
 more_set_headers "Content-Security-Policy: $juice_csp";
