@@ -21,6 +21,7 @@ if [ "$WAF_MODE" = "detection" ] || [ "$WAF_MODE" = "DetectionOnly" ]; then
   LOGIN_SQLI_OK=200
   V003_OK=200
   V005_OK=404
+  V008_OK=201
 else
   SQLI_OK=403
   XSS_OK=403
@@ -29,6 +30,7 @@ else
   LOGIN_SQLI_OK=403
   V003_OK=403
   V005_OK=403
+  V008_OK=403
 fi
 
 req() {  # etiket, beklenen kod, curl argümanları...
@@ -63,6 +65,12 @@ echo "== V005: PUT /api/Products (I-1 ile açılan yol), gövdede XSS =="
 # Var olmayan ürün (999999): WAF kapalı olsa bile lab verisi değişmez.
 req "V005 kontrol: zararsız açıklama"  404 -X PUT "${JSON[@]}" --data '{"description":"Taze elma suyu"}' "$BASE/api/Products/999999"
 req "V005 XSS (description alanı)"     "$V005_OK" -X PUT "${JSON[@]}" --data '{"description":"<iframe src=\"javascript:alert(`xss`)\">"}' "$BASE/api/Products/999999"
+
+echo "== V008: kayıt, gövdede rol alanı (mass assignment, SY-2) =="
+# Her çalıştırmada yeni bir e-posta: kayıt aynı adresle ikinci kez yapılamaz.
+V008_ID="$(date +%s)$RANDOM"
+req "V008 kontrol: normal kayıt"       201 -X POST "${JSON[@]}" --data "{\"email\":\"v008-kontrol-$V008_ID@ornek.com\",\"password\":\"Kontrol-Lab-2026!\",\"passwordRepeat\":\"Kontrol-Lab-2026!\"}" "$BASE/api/Users/"
+req "V008 rol alanı (role=admin)"      "$V008_OK" -X POST "${JSON[@]}" --data "{\"email\":\"v008-test-$V008_ID@ornek.com\",\"password\":\"Kontrol-Lab-2026!\",\"passwordRepeat\":\"Kontrol-Lab-2026!\",\"role\":\"admin\"}" "$BASE/api/Users/"
 
 echo
 echo "Toplam $((gecen+kalan)) istek, $kalan beklenmeyen sonuç."
