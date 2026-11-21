@@ -99,6 +99,46 @@ V012_TOKEN=$(curl -s -X POST "${JSON[@]}" --data "{\"email\":\"v008-kontrol-$V00
 req "V012 kontrol: kendi sitemizden"   302 -X POST -H "Cookie: token=$V012_TOKEN" -H "Origin: http://localhost:8080" --data "username=kontrol$V008_ID" "$BASE/profile"
 req "V012 başka siteden (Origin)"      "$V012_OK" -X POST -H "Cookie: token=$V012_TOKEN" -H "Origin: http://kotu-site.invalid" --data "username=csrf$V008_ID" "$BASE/profile"
 
+# --- Ek savunma: nginx başlıkları ve hata sayfası (WAF modundan bağımsız) ---
+sonuc() {  # etiket, koşul (0 = sağlandı), açıklama
+  if [ "$2" = 0 ]; then gecen=$((gecen+1)); durum="OK"; else kalan=$((kalan+1)); durum="HATA"; fi
+  printf '%-34s -> %s %s\n' "$1" "$3" "$durum"
+}
+baslik() {  # etiket, başlık adı, var|yok, curl argümanları...
+  local label="$1" ad="$2" bek="$3"; shift 3
+  local h; h=$(curl -s -o /dev/null -D - "$@" | tr -d '\r' | grep -i "^$ad:" | head -1)
+  if [ "$bek" = var ]; then [ -n "$h" ]; else [ -z "$h" ]; fi
+  sonuc "$label" $? "$(cut -c1-60 <<< "${h:-($ad yok)}")"
+}
+yigin_yok() {  # etiket, beklenen kod, curl argümanları...: kod tutmalı, gövdede yığın izi olmamalı
+  local label="$1" bek="$2"; shift 2
+  local govde code; govde=$(curl -s -w '\n%{http_code}' "$@"); code="${govde##*$'\n'}"
+  if [ "$code" = "$bek" ] && ! grep -qE 'node_modules|at [^ ]+ \(|"stack"' <<< "$govde"; then r=0; else r=1; fi
+  sonuc "$label" $r "HTTP $code, yığın izi $( [ $r = 0 ] && echo yok || echo VAR/kod farklı)"
+}
+
+echo "== V017, V021: güvenlik başlıkları =="
+baslik "V017 CSP (ana sayfa)"             Content-Security-Policy      var "$BASE/"
+baslik "V017 CSP (WAF 403 yanıtı)"        Content-Security-Policy      var "$BASE/?x=<script>"
+baslik "V021 COOP"                         Cross-Origin-Opener-Policy   var "$BASE/"
+baslik "V021 COEP"                         Cross-Origin-Embedder-Policy var "$BASE/"
+baslik "V021 CORP"                         Cross-Origin-Resource-Policy var "$BASE/"
+# CSP'deki sha256 özetleri bu iki sayfanın gövdesine bağlı (Juice Shop v20.2.0).
+# Burada HATA çıkarsa imaj değişmiştir: özetler nginx/default.conf.template'te yenilenir.
+oz=$(curl -s "$BASE/" | sha256sum | cut -c1-16);          [ "$oz" = aa97229042ece5a3 ]; sonuc "V017 CSP özetleri: index.html" $? "$oz"
+oz=$(curl -s "$BASE/promotion" | sha256sum | cut -c1-16); [ "$oz" = 413043c1ccddc833 ]; sonuc "V017 CSP özetleri: /promotion" $? "$oz"
+
+echo "== V018: CORS =="
+baslik "V018 ACAO yok (GET)"              Access-Control-Allow-Origin yok -H "Origin: http://kotu-site.invalid" "$BASE/rest/languages"
+baslik "V018 ACAO yok (OPTIONS)"          Access-Control-Allow-Origin yok -X OPTIONS -H "Origin: http://kotu-site.invalid" -H "Access-Control-Request-Method: GET" "$BASE/rest/languages"
+
+echo "== V016: hata sayfası =="
+yigin_yok "V016 bilinmeyen yol (500)"      500 "$BASE/rest/qwertz"
+yigin_yok "V016 bilinmeyen yol, JSON (500)" 500 -H "Accept: application/json" "$BASE/api/qwertz"
+# 406/410: yönlendirme ve XML yüklemeyi SY-3/SY-4 403 ile kesiyor; 410'a YAML yükleme ulaşır
+yigin_yok "V016 YAML yükleme (410)"        410 -F "file=@-;filename=sikayet.yml;type=application/x-yaml" "$BASE/file-upload" <<< "sikayet: kontrol"
+req       "V016 kontrol: giriş hatası 401" 401 -X POST "${JSON[@]}" --data '{"email":"ayse@ornek.com","password":"yanlis-sifre"}' "$BASE/rest/user/login"
+
 echo
 echo "Toplam $((gecen+kalan)) istek, $kalan beklenmeyen sonuç."
 [ "$kalan" -eq 0 ]
