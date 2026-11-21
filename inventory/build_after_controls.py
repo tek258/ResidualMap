@@ -12,6 +12,7 @@ Kullanım (repo kökünden):
 Girdiler:
     inventory/inventory_v1.0.csv, inventory/control_mapping.csv,
     inventory/raw/after_controls/{test-waf.log, test-iam.log, zap_baseline.json, trivy.json}
+    (test-waf-esik6.log yalnızca eşleme kanıtıdır, burada okunmaz)
 Çıktı:
     inventory/after_controls.csv
 """
@@ -31,12 +32,22 @@ CIKTI = KOK / "inventory" / "after_controls.csv"
 KONTROLLER = ["waf", "sanal_yama", "ids", "iam", "segmentasyon", "yama"]
 ETKISIZ = {"etkisiz", "kurulmadi", "uygulanmadi", ""}
 
-# test-waf.log satırları -> zafiyet (etiket, beklenen engel kodu)
+# test-waf.log satırları -> zafiyet. Satır "OK" ise kontrol beklendiği gibi çalıştı
+# (saldırı satırlarında engelleme modunda 403/429, başlık ve hata sayfası satırlarında
+# başlığın var/yok olması, yığın izinin olmaması). Aynı uç noktadaki zararsız kontrol
+# istekleri de listede: yanlış pozitif varsa kanıt sayılmaz.
 WAF_TESTLERI = {
-    "V001": ["V001 SQLi (email alanı)"],
-    "V002": ["SQLi"],
-    "V003": ["V003 XSS (yol içinde iframe)", "V003 yolu NoSQLi (' || true || ')"],
-    "V005": ["V005 XSS (description alanı)"],
+    "V001": ["V001 SQLi (email alanı)", "V001 SQLi (form gövdesi)", "V001 kontrol: yanlış şifre"],
+    "V002": ["SQLi", "V002 kontrol: çift tırnaklı ad"],
+    "V003": ["V003 XSS (yol içinde iframe)", "V003 yolu NoSQLi (' || true || ')", "V003 kontrol: geçerli biçim"],
+    "V005": ["V005 XSS (description alanı)", "V005 kontrol: zararsız açıklama"],
+    "V008": ["V008 rol alanı (role=admin)", "V008 kontrol: normal kayıt"],
+    "V010": ["V010 XML yükleme", "V010 kontrol: PDF yükleme"],
+    "V012": ["V012 başka siteden (Origin)", "V012 kontrol: kendi sitemizden"],
+    "V013": ["V013 eskimiş adres (kripto)", "V013 izinli adresi içeren hedef", "V013 kontrol: izinli adres"],
+    "V015": ["V015 ilk deneme 401", "V015 30 denemede 429 var", "V015 kontrol: diğer yollar etkilenmez"],
+    "V016": ["V016 bilinmeyen yol (500)", "V016 bilinmeyen yol, JSON (500)", "V016 YAML yükleme (410)",
+             "V016 kontrol: giriş hatası 401"],
 }
 # ZAP eklentisi -> zafiyet (envanter notlarıyla aynı eşleme)
 ZAP_EKLENTI = {"V017": "10038", "V018": "10098", "V019": "10036", "V020": "10110", "V021": "90004"}
@@ -51,13 +62,22 @@ def _json(p):
 
 
 def waf_sonuclari():
-    """{etiket: http_kodu} test-waf.log'dan."""
+    """{etiket: True/False} test-waf.log'dan: satır sonundaki OK/HATA."""
     sonuc = {}
     for satir in (HAM / "test-waf.log").read_text(encoding="utf-8").splitlines():
-        m = re.match(r"^(?P<e>.*?)\s+-> HTTP (?P<k>\d{3})", satir)
+        m = re.match(r"^(?P<e>.*?)\s+-> .*\s(?P<d>OK|HATA)\s*$", satir)
         if m:
-            sonuc[m["e"].strip()] = int(m["k"])
+            sonuc[m["e"].strip()] = m["d"] == "OK"
     return sonuc
+
+
+def en_guclu(etkin):
+    """Eşlemedeki etkilerden en güçlüsü: engeller > azaltir > diğerleri."""
+    if any(x.endswith(":engeller") for x in etkin):
+        return "engellendi"
+    if any(x.endswith(":azaltir") for x in etkin):
+        return "azaltildi"
+    return None
 
 
 def iam_sonuclari():
@@ -104,17 +124,19 @@ def main():
         durum, dayanak, kanit, notu = None, e.get("dayanak", ""), "", ""
 
         if vid in WAF_TESTLERI:
-            kodlar = [waf.get(et) for et in WAF_TESTLERI[vid]]
-            if all(k == 403 for k in kodlar):
-                azaltir = any(x.endswith(":azaltir") for x in etkin)
-                durum = "azaltildi" if azaltir else "engellendi"
-                dayanak, kanit = "test", _rel(HAM / "test-waf.log")
-                notu = (f"test-waf.sh: {', '.join(WAF_TESTLERI[vid])} -> 403. "
-                        + ("CRS 942100 tek kuralla tam eşikte (5 puan) yakalıyor; güvenlik payı yok."
-                           if azaltir else ""))
+            eksik = [et for et in WAF_TESTLERI[vid] if et not in waf]
+            if eksik:
+                raise SystemExit(f"{vid}: test-waf.log'da satır yok: {eksik}")
+            dayanak, kanit = "test", _rel(HAM / "test-waf.log")
+            hatali = [et for et in WAF_TESTLERI[vid] if not waf[et]]
+            if not hatali and en_guclu(etkin):
+                durum = en_guclu(etkin)
+                notu = (f"test-waf.sh: {', '.join(WAF_TESTLERI[vid])} -> OK. "
+                        + ("Kontrol saldırıyı yalnızca kısmen karşılıyor (eşlemede en güçlü etki azaltir)."
+                           if durum == "azaltildi" else ""))
             else:
-                durum, dayanak, kanit = "erisilebilir", "test", _rel(HAM / "test-waf.log")
-                notu = f"test-waf.sh beklenen 403'ü vermedi: {kodlar}"
+                durum = "erisilebilir"
+                notu = f"test-waf.sh beklenen sonucu vermedi: {hatali or 'eşlemede etkili kontrol yok'}"
         elif vid == "V009":
             if iam_ok:
                 durum, dayanak, kanit = "engellendi", "test", _rel(HAM / "test-iam.log")
@@ -125,8 +147,10 @@ def main():
                 durum = "erisilebilir"
                 notu = f"Kontroller sonrası ZAP taramasında eklenti {ZAP_EKLENTI[vid]} hâlâ var."
             else:
-                durum = "engellendi"
-                notu = f"Kontroller sonrası ZAP taramasında eklenti {ZAP_EKLENTI[vid]} yok (önce vardı)."
+                durum = en_guclu(etkin) or "engellendi"
+                notu = (f"Kontroller sonrası ZAP taramasında eklenti {ZAP_EKLENTI[vid]} yok (önce vardı)."
+                        + (" Eşlemede en güçlü etki azaltir: kalan zayıflıklar eşleme kanıtında."
+                           if durum == "azaltildi" else ""))
         elif inv.get("cve_id"):
             dayanak, kanit = "test", _rel(HAM / "trivy.json")
             if inv["cve_id"] in cve:

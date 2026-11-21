@@ -9,41 +9,41 @@ Bu belge `python tools/sonuc_kontrol.py` ile üretilir. SHA-256 özetleri, metin
 | Dosya | İçerik | Üreten | Komut | Kayıt | SHA-256 |
 |---|---|---|---|---|---|
 | `inventory/inventory_v1.0.csv` | Dondurulmuş envanter | K2 (elle, S1) | `-` | 36 | `99335994113f7da4…` |
-| `inventory/control_mapping.csv` | Kontrol eşlemesi (etki, dayanak, kanıt) | K2 (elle, S4-S5) | `-` | 36 | `4ee46b7a382cf104…` |
-| `inventory/after_controls.csv` | Kontroller açıkken durum | inventory/build_after_controls.py | `python inventory/build_after_controls.py` | 36 | `2e88e30c5ba2c90c…` |
+| `inventory/control_mapping.csv` | Kontrol eşlemesi (etki, dayanak, kanıt) | K2 (elle, S4-S5) | `-` | 36 | `2ffb7829f9befc8a…` |
+| `inventory/after_controls.csv` | Kontroller açıkken durum | inventory/build_after_controls.py | `python inventory/build_after_controls.py` | 36 | `7ffb8017d7a8614e…` |
 | `ai/results_v2_llm.csv` | AI risk skoru (risk_before) | ai/model_v2_local_llm.py | `python ai/model_v2_local_llm.py --tekrar-ids V001 V012 V035` | 36 | `134c568bc94611bc…` |
-| `ai/residual_risk.csv` | Zafiyet düzeyinde artık risk | ai/residual_risk.py | `python ai/residual_risk.py` | 36 | `91aa3d08786beb51…` |
-| `ai/before_after.csv` | Önce/sonra tablosu | ai/before_after.py | `python ai/before_after.py` | 36 | `5cad0a1d0367f82e…` |
+| `ai/residual_risk.csv` | Zafiyet düzeyinde artık risk | ai/residual_risk.py | `python ai/residual_risk.py` | 36 | `58a9a65a78624c85…` |
+| `ai/before_after.csv` | Önce/sonra tablosu | ai/before_after.py | `python ai/before_after.py` | 36 | `bb7a4733fc4bf3bf…` |
 | `graph/edges.json` | Saldırı grafiği kenarları | graph/generate_edges.py | `python graph/generate_edges.py` | 72 | `8ffab5f3deddac8f…` |
 | `graph/paths.json` | Saldırı yolları ve riskleri | graph/find_paths.py | `python graph/find_paths.py` | 36 | `fa8ee4e998668b1e…` |
-| `graph/edges_after.json` | Kontrol sonrası kenar durumları | graph/cut_edges.py | `python graph/cut_edges.py` | 72 | `a22088718388ed6f…` |
-| `graph/paths_after.json` | Kontrol sonrası yol durumu ve riski | graph/paths_after.py | `python graph/paths_after.py` | 36 | `a6cc6e6139fe8c84…` |
-| `docs/once-sonra-ozet.md` | Önce/sonra özeti | ai/before_after.py | `python ai/before_after.py` | - | `c08107a0dc3869c2…` |
-| `report/img/once-sonra.png` | Rapor grafiği | ai/before_after.py | `python ai/before_after.py` | - | `73c4d16042879f7b…` |
+| `graph/edges_after.json` | Kontrol sonrası kenar durumları | graph/cut_edges.py | `python graph/cut_edges.py` | 72 | `bb75efbb9744c90d…` |
+| `graph/paths_after.json` | Kontrol sonrası yol durumu ve riski | graph/paths_after.py | `python graph/paths_after.py` | 36 | `6517799f9b890740…` |
+| `docs/once-sonra-ozet.md` | Önce/sonra özeti | ai/before_after.py | `python ai/before_after.py` | - | `8b350e99773cde56…` |
+| `report/img/once-sonra.png` | Rapor grafiği | ai/before_after.py | `python ai/before_after.py` | - | `c006f38f8f50cb1e…` |
 | `graph/attack_graph_v2.html` | Grafik (önce) | graph/visualize_graph.py | `python graph/visualize_graph.py` | - | `490d9ec289f2b082…` |
-| `graph/attack_graph_after.html` | Grafik (sonra) | graph/visualize_graph.py | `python graph/visualize_graph.py --after` | - | `2018aad9cfb29293…` |
+| `graph/attack_graph_after.html` | Grafik (sonra) | graph/visualize_graph.py | `python graph/visualize_graph.py --after` | - | `0ef22fb13f249bd3…` |
 | `report/img/graf-once.png` | Rapor görseli | tarayıcı ekran görüntüsü | `attack_graph_v2.html, 1600×1000, ölçek 2` | - | `f8ac3a090de6e8f5…` |
-| `report/img/graf-sonra.png` | Rapor görseli | tarayıcı ekran görüntüsü | `attack_graph_after.html, 1600×1000, ölçek 2` | - | `0c51c24ada9d9d1b…` |
+| `report/img/graf-sonra.png` | Rapor görseli | tarayıcı ekran görüntüsü | `attack_graph_after.html, 1600×1000, ölçek 2` | - | `a41e844468018887…` |
 
 Tam özetler (`sha256sum` çıktısıyla karşılaştırmak için; satır sonları LF):
 
 ```
 99335994113f7da4d6b9ca52f73c2f36b71c9b8516c45b723af686e7022cf6ec  inventory/inventory_v1.0.csv
-4ee46b7a382cf10438e1ae7488d08ab1fb597669450b06b65215f16c7e5b62de  inventory/control_mapping.csv
-2e88e30c5ba2c90c85048068d40f660d8a283b171ab85e8f2a67b8a2d5b813e3  inventory/after_controls.csv
+2ffb7829f9befc8a624c3f1fce93cfb1eff4f9c962c617c6802d29d83c25638d  inventory/control_mapping.csv
+7ffb8017d7a8614e3301fd2149d81d537e1e03f4ca932f8788ee81716d809004  inventory/after_controls.csv
 134c568bc94611bc4fcac40c6405a8aec2488b776348cd80c9fb178566c1f211  ai/results_v2_llm.csv
-91aa3d08786beb51040b98e6797dc8be693d3abd2ba0dc9c6d13cf9e6a79be1d  ai/residual_risk.csv
-5cad0a1d0367f82e1eca4d65722e72fbe0d7ae59e4094f85a720c0ca2494c501  ai/before_after.csv
+58a9a65a78624c85497b246390ced14947dd3696270e11fb90e2f0e2d77f7b09  ai/residual_risk.csv
+bb7a4733fc4bf3bfd2df560151a05d5331e0edee651358f27922452ec01c3b05  ai/before_after.csv
 8ffab5f3deddac8fa86eb57346e668f3961d591250bfb9a149356bf51c1f5372  graph/edges.json
 fa8ee4e998668b1e1c000d895b45a8a0b6b44f8e0f3efc1be3aa79b685c59cce  graph/paths.json
-a22088718388ed6f3fe4dd0842c34015a9cf363782b6eb0dead0010bf9ae6f93  graph/edges_after.json
-a6cc6e6139fe8c847edbc77d3ff55179946e16333e0cd8cd86b3bece79d0ebe3  graph/paths_after.json
-c08107a0dc3869c20eadfc82a52f20fb337eb51be55952c71a58df2b03287370  docs/once-sonra-ozet.md
-73c4d16042879f7b679491d0ed855efca56eb3ce41977f588b37f548aa759159  report/img/once-sonra.png
+bb75efbb9744c90d5b59e0ea4c935f60cac57cc029f8e6e482658c68cce190b3  graph/edges_after.json
+6517799f9b8907401be1b2252727c3c01a4acc47bc86a3dd45e11f6ebb00662b  graph/paths_after.json
+8b350e99773cde566f2087eb46809d1564fd9367ca9924f13ac56e3cf8383cc9  docs/once-sonra-ozet.md
+c006f38f8f50cb1e68aa159301c8cfa93695df05574cc432f0499c259e002f09  report/img/once-sonra.png
 490d9ec289f2b08246e977754c71e0b3003cf72d4925bbaa9f63d55a5d0c0a00  graph/attack_graph_v2.html
-2018aad9cfb29293ee9ada2835eaf7119dd8a9cc4238446d1d1e3e5fd360b1ef  graph/attack_graph_after.html
+0ef22fb13f249bd360d9544985e11ad7f5975d729f0a370703a9ef4a4ed21077  graph/attack_graph_after.html
 f8ac3a090de6e8f51f2f9818efb47c4b8b281954b27ba8cea83fb31cbecc1cf5  report/img/graf-once.png
-0c51c24ada9d9d1b55312c19cee3966143ebc0b7e2a2f3fc7de74945ef64b0c0  report/img/graf-sonra.png
+a41e844468018887a1b29534b9f7bcbcb7a5d966127c42692e26d6b0649543e9  report/img/graf-sonra.png
 ```
 
 ## Yeniden üretim sırası
@@ -60,6 +60,6 @@ Bir girdi değişirse sonraki adımların hepsi yeniden çalıştırılır:
 
 ## Kontrol sonucu
 
-- Zafiyet: engellendi 4, azaltildi 2; yol: kesildi 4, zayifladi 6, acik 26
-- Toplam artık risk: 240.30 -> 202.95 (%15.54)
+- Zafiyet: engellendi 12, azaltildi 3; yol: kesildi 13, zayifladi 4, acik 19
+- Toplam artık risk: 240.30 -> 163.33 (%32.03)
 - Tutarsızlık yok.

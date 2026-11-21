@@ -38,6 +38,24 @@ more_set_headers "Cross-Origin-Resource-Policy: same-origin";
 more_clear_headers "Access-Control-Allow-Origin";
 # --------------------------------------------- Ek savunma: guvenlik basliklari son
 
+# -------------------------------------------------- Ek savunma: hiz siniri
+# V015 (admin parolasina kaba kuvvet), V011 (guvenlik sorusu denemesi).
+# Yalnizca POST /rest/user/login ve /rest/user/reset-password sayilir (bos anahtar
+# sayilmaz). Express yollari buyuk/kucuk harf duyarsiz oldugundan ~* kullanilir;
+# $uri nginx'te %xx cozulmus ve // birlestirilmis haldedir.
+# Anahtar baglantinin gercek adresi: Juice Shop'un kendi siniri X-Forwarded-For'a
+# bakiyor ve bu baslik degistirilerek atlatilabiliyor, buradaki atlatilamaz.
+# Lab notu: bilgisayardan gelen butun istekler ayni Docker ag gecidi adresinden
+# gorunur, yani lab'da sinir tum istemciler icin ortaktir.
+# 10/dk, 20'lik ani yuklenme payi: normal giris etkilenmez; kaba kuvvet
+# dakikada 10 denemeye iner (1000 sifre ~100 dk).
+map "$request_method:$uri" $giris_anahtari {
+    "~*^POST:/rest/user/(?:login|reset-password)/?$"  $binary_remote_addr;
+    default                                           "";
+}
+limit_req_zone $giris_anahtari zone=giris:10m rate=10r/m;
+# ---------------------------------------------- Ek savunma: hiz siniri son
+
 map $http_upgrade $connection_upgrade {
     default upgrade;
     '' close;
@@ -69,6 +87,10 @@ server {
         # 401/403 dokunulmaz: arayuz bu yanitlarin metnini gosteriyor (giris ekrani).
         proxy_intercept_errors on;
         error_page 500 502 503 504 406 410 /__hata;
+
+        # Ek savunma, V015/V011: hiz siniri (anahtar dosyanin basinda)
+        limit_req zone=giris burst=20 nodelay;
+        limit_req_status 429;
     }
 
     location = /__hata {

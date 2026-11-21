@@ -139,6 +139,20 @@ yigin_yok "V016 bilinmeyen yol, JSON (500)" 500 -H "Accept: application/json" "$
 yigin_yok "V016 YAML yükleme (410)"        410 -F "file=@-;filename=sikayet.yml;type=application/x-yaml" "$BASE/file-upload" <<< "sikayet: kontrol"
 req       "V016 kontrol: giriş hatası 401" 401 -X POST "${JSON[@]}" --data '{"email":"ayse@ornek.com","password":"yanlis-sifre"}' "$BASE/rest/user/login"
 
+echo "== V015, V011: hız sınırı (en sonda; sonraki 2 dk girişler 429 alabilir) =="
+# 30 hızlı yanlış şifre denemesi: ilkler 401, sınır (10/dk + 20 pay) aşılınca 429.
+kodlar=""
+for i in $(seq 1 30); do
+  kodlar+="$(curl -s -o /dev/null -w '%{http_code}' -X POST "${JSON[@]}" --data '{"email":"admin@juice-sh.op","password":"deneme-'$i'"}' "$BASE/rest/user/login") "
+done
+ilk=${kodlar%% *}; s429=$(grep -o 429 <<< "$kodlar" | wc -l)
+[ "$ilk" = 401 ];  sonuc "V015 ilk deneme 401"               $? "HTTP $ilk"
+[ "$s429" -gt 0 ]; sonuc "V015 30 denemede 429 var"          $? "$s429 tanesi 429"
+k=$(curl -s -o /dev/null -w '%{http_code}' -X POST "${JSON[@]}" -H "X-Forwarded-For: 10.9.9.$RANDOM" --data '{"email":"jim@juice-sh.op","answer":"x","new":"Deneme-2026!","repeat":"Deneme-2026!"}' "$BASE/rest/user/reset-password")
+[ "$k" = 429 ];    sonuc "V011 sıfırlama, sahte XFF ile"      $? "HTTP $k (sınır başlıkla atlatılamıyor)"
+k=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/rest/products/search?q=apple")
+[ "$k" = 200 ];    sonuc "V015 kontrol: diğer yollar etkilenmez" $? "HTTP $k"
+
 echo
 echo "Toplam $((gecen+kalan)) istek, $kalan beklenmeyen sonuç."
 [ "$kalan" -eq 0 ]

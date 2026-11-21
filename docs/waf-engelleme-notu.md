@@ -4,6 +4,8 @@
 **Kapsam:** `defense/docker-compose.yml` içindeki `waf` servisi (`owasp/modsecurity-crs:4.30.0-nginx-202610180210`, CRS 4.30.0) ve arkasındaki Juice Shop
 **Sonuç:** WAF tespit modundan (DetectionOnly) engelleme moduna (On) geçirildi. Normal kullanımda üç yanlış pozitif kaynağı bulundu. Üçü de dar kapsamlı istisnalarla giderildi. Saldırı örnekleri 403 alıyor, test edilen 62 normal istek ise sorunsuz geçiyor. `test-waf.sh` envanterdeki V001, V003 ve V005'i de kapsıyor. V003'ü CRS yakalamıyordu; bunun için bir sanal yama (SY-1) eklendi.
 
+**Güncelleme (21.11.2026, ek savunma):** Altı sanal yama daha (SY-2…SY-7: V008, V013, V010, V012, V002, V001) ve nginx'te güvenlik başlıkları (V017, V018, V021), genel hata sayfası (V016) ve hız sınırı (V015) eklendi. Ayrıntı: Bölüm 7 ve Bölüm 11. Son durum: `test-waf.sh` 41/0, `test-juice-flows.py` 70/0.
+
 ---
 
 ## 1. Yapılan değişiklikler
@@ -92,6 +94,8 @@ Her saldırı satırının yanında aynı uç noktaya giden zararsız bir kontro
 - Eşik 6'ya ya da üstüne çıkarılırsa (yanlış pozitifleri azaltmak için sık yapılan bir ayar) bu üç istek geçer.
 - 942100 bir istisnayla bu alanlardan çıkarılırsa da geçerler.
 - Eşik ya da bu alanlara dokunan bir istisna değişirse `test-waf.sh` mutlaka tekrar çalıştırılmalı. Bu satırlar böyle bir değişikliği yakalamak için var.
+
+> **Güncelleme (21.11.2026):** SQLi için güvenlik payı sorunu SY-6 (V002) ve SY-7 (V001) ile giderildi. Bu iki kural puanlamaya katılmıyor, doğrudan engelliyor. Eşik 6'ya çıkarılarak denendi: arama ve giriş SQLi'si (JSON ve form gövdesi) yine 403 aldı (`inventory/raw/after_controls/test-waf-esik6.log`). SY-7'nin ilk sürümü (`ARGS_POST`) eşik 6'da JSON gövdesini kaçırmıştı (200, admin girişi); ModSecurity v3 JSON alanlarını `ARGS`'a koyduğu için düzeltildi. Scanner UA satırı hâlâ tam eşikte (913100, 5 puan); envanterde bir zafiyete bağlı değil.
 
 **V003 ve sanal yama:** CRS, PL1'de yol içindeki NoSQL enjeksiyonunu yakalamıyor. Sanal yama eklenmeden önce engelleme modunda da istek 200 aldı ve siparişler sızdı. Varyasyonlara bakıldığında `sleep()` içeren yük 403 alıyordu, ama boolean (`' || 1==1 || '`) ve `$where` yükleri geçiyordu. Ayrıntı: Bölüm 7.
 
@@ -186,6 +190,41 @@ Arama, giriş, özel karakterli şifreler, dosya yükleme, iletişim formu ve ö
   - Tek yan etki: sonu `/` ile biten geçerli bir numara da 403 alıyor. Ön yüz bu biçimi kullanmıyor.
 - **Sınırlama:** Bu yama açığı kapatmıyor, yalnızca WAF önünde maskeliyor; kalıcı çözüm uygulamada `$where` yerine parametreli sorgu kullanmak. Juice Shop güncellenip sipariş numarası biçimi değişirse sipariş takibi 403 almaya başlar. Audit log'da 10100 görülürse regex güncellenmeli.
 
+### SY-2: Kayıtta rol atama (V008) | ID 10110
+
+- **Açık:** `POST /api/Users` gövdesi doğrudan Sequelize `User` modeline yazılıyor; gövdeye `"role":"admin"` eklenince yönetici hesabı açılıyor (mass assignment). Kayıt formu bu alanı hiç göndermiyor.
+- **Kural:** `POST /api/users` (yol normalize, küçük harf) isteğinde argüman adı `role` ile bitiyorsa (JSON'da `json.role`) 403. phase:2, CRS'in JSON işlemcisinden sonra.
+- **Test:** `role=admin` 403, normal kayıt 201.
+
+### SY-3: Yönlendirme izin listesi (V013) | ID 10120, 10121
+
+- **Açık:** `/redirect?to=` hedefi `lib/insecurity.ts`'te `url.includes(izinli)` ile denetleniyor: izinli bir adresi *içeren* her adrese yönlendiriyor. Listede arayüzün artık kullanmadığı üç kripto para adresi de duruyor.
+- **Kural (pozitif model):** Tek bir `to` parametresi zorunlu (10120); değer arayüzün kullandığı beş adresten biriyle **birebir** aynı olmalı (10121: github, iki spreadshirt, stickeryou, leanpub).
+- **Test:** izinli adres 302; kripto adresi ve izinli adresi içeren hedef 403.
+
+### SY-4: XML dosya yükleme, XXE (V010) | ID 10130
+
+- **Açık:** `routes/fileUpload.ts` dosyayı yalnızca adı `.xml` ile bitiyorsa dış varlıkları açık bir XML ayrıştırıcıyla işliyor. Arayüz yalnızca PDF ve ZIP yüklüyor; XML yükleme uygulamada da "kullanımdan kalktı" olarak işaretli.
+- **Kural:** `/file-upload` isteğinde yüklenen dosyanın adı `.xml` ile bitiyorsa 403. İçeriğe bakmaya gerek yok, karar dosya adına göre (uygulama da öyle karar veriyor).
+- **Test:** PDF 204, XML (zararsız içerik) 403.
+
+### SY-5: Profil güncellemede CSRF (V012) | ID 10140
+
+- **Açık:** `POST /profile` yalnızca oturum çerezine bakıyor; isteğin hangi siteden geldiğini denetlemiyor.
+- **Kural:** `Origin` başlığı varsa ve lab'ın kendi adreslerinden biri değilse (`localhost`, `127.0.0.1`, `host.docker.internal`; `:8080` ile ya da portsuz) 403. Tarayıcılar başka siteden gelen POST'a her zaman `Origin` ekler.
+- **Test:** girişli oturum, kendi sitemizden 302; yabancı Origin 403.
+- **Sınırlama:** `Origin` göndermeyen istemciler (curl gibi) kapsam dışı; bunlar CSRF senaryosu değil.
+
+### SY-6: Ürün aramasında SQLi (V002) | ID 10150 ve SY-7: Giriş formunda SQLi (V001) | ID 10160
+
+- **Açık:** `routes/search.ts` ve `routes/login.ts` girdiyi SQLite'ta tek tırnaklı bir metnin içine koyuyor (`LIKE '%${q}%'`, `email = '${email}'`). SQLite'ta ters eğik çizgi kaçış karakteri değil; metinden çıkmanın tek yolu tek tırnak.
+- **Kural:** aramada `q`, girişte `email` alanında tek tırnak (`\x27`) varsa doğrudan 403. JSON (`\u0027` dahil), form gövdesi ve dizi biçimleri (`q[]=`, `email[]=`) kapsanıyor.
+- **Yanlış pozitif:** Hiçbir ürün adında tek tırnak yok (yalnızca çift tırnak); arayüz aramayı `q=` ile yapıp tarayıcıda süzüyor. Seed kullanıcıların e-postalarında tek tırnak yok.
+- **Test:** arama SQLi 403, çift tırnaklı zararsız arama 200; giriş SQLi JSON ve form gövdesinde 403. Eşik 6'da da 403 (Bölüm 4, eşik notu).
+- **Söz dizimi notları:** Operatörde çıplak `'` ve değişken seçicide `$|\[` ModSecurity ayrıştırıcısında söz dizimi hatası veriyor (WAF açılmıyor); kurallar bu yüzden `\x27` ve sade seçicilerle (`ARGS_GET:/^q/`, `ARGS:/email/`) yazıldı.
+
+Bütün sanal yamalar için aynı sınırlama geçerli: açığı kapatmıyorlar, WAF önünde maskeliyorlar. Kalıcı çözüm uygulama kodunda. Juice Shop sürümü değişirse `test-waf.sh` mutlaka tekrar çalıştırılmalı.
+
 ## 8. İstisnaların sınır testleri
 
 `test-juice-flows.py` en sonda istisnaların fazla geniş olmadığını da kontrol ediyor (bu istekler 403 almalı):
@@ -223,3 +262,30 @@ Meşru bir istek engellenmişse bu dosyadaki yöntemle ilerleyin: önce kural ID
 - **Yanıt tarafı (outbound).** Test sırasında outbound kuralları hiçbir yanıtı engellemedi. Juice Shop'un JSON yanıtları imaj varsayılanı gereği yanıt gövdesi denetimine girmiyor; yalnızca `text/plain`, `text/html` ve `text/xml` denetleniyor.
 - **WebSocket ve socket.io içeriği.** WAF, socket.io mesaj içeriğini denetleyemiyor (bkz. I-3).
 - **Tarayıcıyla manuel test.** Betik gerçek tarayıcı isteklerini taklit ediyor, ama YP-3'ün gösterdiği gibi her şeyi yakalayamıyor. Yönetici ve muhasebe ekranları da dahil, tarayıcıyla gezinip audit log'u (Bölüm 9) kontrol etmek, kalıcı doğrulama adımı olarak her güncellemeden sonra tekrarlanmalı.
+
+## 11. Ek savunma: nginx kontrolleri (21.11.2026)
+
+ModSecurity dışındaki kontroller WAF konteynerindeki nginx'te: `defense/nginx/default.conf.template`. WAF modundan (On/DetectionOnly) bağımsız çalışırlar.
+
+| Kontrol | Zafiyet | Ne yapıyor | Kanıt |
+|---|---|---|---|
+| CSP | V017 | Satır içi betiklere yalnızca sha256 özetiyle izin; `'unsafe-inline'` betik yok. Juice Shop'un kendi CSP'si olan yanıtlarda (`/profile`) onunki korunuyor. | ZAP 10038 kayboldu |
+| CORS | V018 | Juice Shop'un her yanıta eklediği `Access-Control-Allow-Origin: *` siliniyor (uygulama tek kökenli). | ZAP 10098 kayboldu |
+| COOP / COEP / CORP | V021 | `same-origin` / `require-corp` / `same-origin` | ZAP 90004 kayboldu |
+| Genel hata sayfası | V016 | 500, 502, 503, 504, 406, 410 yanıtlarında yığın izi yerine `{"error":"Istek islenemedi."}`; durum kodu korunuyor. | test-waf: yığın izi yok |
+| Hız sınırı | V015 | `POST /rest/user/login` ve `/rest/user/reset-password`: dakikada 10, anlık 20 pay, aşılınca 429. Anahtar bağlantı adresi (`X-Forwarded-For` ile atlatılamaz); büyük/küçük harf duyarsız. | test-waf: 30 denemede 19 tanesi 429 |
+
+**Doğrulama:**
+- `test-waf.sh` 41/0, `test-juice-flows.py` 70/0 (`inventory/raw/after_controls/`).
+- Juice Shop v20.2.0'ın resmi derlemesi önünde aynı nginx yapılandırmasıyla tarayıcıda 25 sayfa gezildi: CSP ihlali ve sayfa hatası yok; ana sayfa ve skor tablosu ekran görüntüleri başlıklı/başlıksız piksel piksel aynı; socket.io WebSocket bağlantısı ve "challenge çözüldü" bildirimi çalışıyor.
+- ZAP baseline (WAF arkasında): `inventory/raw/after_controls/zap_baseline.json` (önceki tarama `zap_baseline_s5.json`).
+
+**CSP özetleri imaja bağlı.** Üç özet Juice Shop v20.2.0 (`sha256:8739101a…`) sayfalarına ait: `index.html`'deki cookieconsent betiği, `/promotion`'daki altyazı betiği ve stil dosyasını açan `onload="this.media='all'"`. İmaj değişirse `test-waf.sh`'taki "CSP özetleri" satırları HATA verir; özetler yeniden hesaplanır.
+
+**Kabul edilen eksikler:**
+- **CSP (V017 → azaltır):** ZAP 10055 iki Medium uyarı veriyor: `script-src 'unsafe-hashes'` (yalnızca yukarıdaki tek `onload` satırına izin veriyor) ve `style-src 'unsafe-inline'` (Angular Material çalışırken stil ekliyor). İkisini kaldırmak Juice Shop'un kodunu değiştirmeyi gerektiriyor. İlk sürümdeki `connect-src ws: wss:` (ZAP "Wildcard Directive") kaldırıldı; `'self'` aynı adresin WebSocket'ini de kapsıyor.
+- **Hata sayfası (V016 → azaltır):** 401 ve 403 yanıtlarına dokunulmadı, çünkü arayüz bu yanıtların metnini gösteriyor (örneğin giriş ekranındaki "Invalid email or password"). Bu yanıtlarda Juice Shop'un yığın izi kalıyor.
+- **Hız sınırı (V015 → azaltır, V011 → etkisiz):** Kaba kuvvet dakikada 10 denemeye iniyor, ama `admin123` küçük listelerde de var; sınır yalnızca yavaşlatıyor. V011'de asıl saldırı cevabı internetten bulup tek istekte girmek; hız sınırı bunu durdurmuyor. Lab'da bilgisayardan gelen bütün istekler aynı Docker ağ geçidi adresinden göründüğü için sınır tüm istemciler için ortak. `test-waf.sh`'taki hız sınırı testi en sonda; bitince giriş istekleri yaklaşık 2 dakika 429 alabilir, bu yüzden `test-juice-flows.py` önce çalıştırılır.
+- **ZAP'ın yeni gördüğü IAM bulguları:** `_oauth2_proxy_csrf` çerezinde `SameSite` yok (10054) ve oturum yanıtı bilgisi (10112). İkisi de oauth2-proxy'den geliyor, bu değişiklikten değil.
+
+**Test betiği düzeltmesi:** `test-juice-flows.py` tarayıcı gibi `Accept-Encoding: gzip` gönderiyor, ama sıkıştırılmış yanıtı açmıyordu. Yorum listesi 1 KB'ı geçince JSON okunamıyor ve "yorumu düzenle/beğen" adımları sessizce atlanıyordu (68/70). Betik artık yanıtı açıyor; bulunamayan yorum da HATA sayılıyor.
