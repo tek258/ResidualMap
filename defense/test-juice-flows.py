@@ -151,6 +151,15 @@ if rid:
     call("yorumu duzenle (PATCH)", "PATCH", "/rest/products/reviews",
          {"id": rid, "message": "Guncelleme: hala cok begeniyorum."})
     call("yorumu begen (POST)", "POST", "/rest/products/reviews", {"id": rid})
+else:
+    # Adimlar sessizce atlanmasin: yazilan yorum listede yoksa HATA say.
+    veri = yorumlar.get("data", []) if isinstance(yorumlar, dict) else []
+    bizim = [r for r in veri if "ornek.com.tr" in str(r.get("author", ""))]
+    print(f"  ! yorum bulunamadi: listede {len(veri)} yorum, bu scriptin yazdiklari {len(bizim)}, "
+          f"son yazar: {veri[-1].get('author') if veri else '-'}, aranan: {email}")
+    for label in ("yorumu duzenle (PATCH)", "yorumu begen (POST)"):
+        results.append(("HATA", 0, "-", "/rest/products/reviews", label + " - yorum bulunamadi"))
+        print(f"[HATA]   0 -      {'/rest/products/reviews':60} {label} - yorum bulunamadi")
 
 print("== Adres ve kart yonetimi ==")
 if aid:

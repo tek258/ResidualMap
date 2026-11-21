@@ -60,6 +60,11 @@ req "Scanner UA"                       "$SCANNER_OK" -A "sqlmap/1.7" "$BASE/"
 echo "== V001: giriş, JSON POST gövdesinde SQLi =="
 req "V001 kontrol: yanlış şifre"       401 -X POST "${JSON[@]}" --data '{"email":"ayse@ornek.com","password":"yanlis-sifre"}' "$BASE/rest/user/login"
 req "V001 SQLi (email alanı)"          "$LOGIN_SQLI_OK" -X POST "${JSON[@]}" --data "{\"email\":\"' OR 1=1--\",\"password\":\"x\"}" "$BASE/rest/user/login"
+req "V001 SQLi (form gövdesi)"         "$LOGIN_SQLI_OK" -X POST --data-urlencode "email=' OR 1=1--" --data-urlencode "password=x" "$BASE/rest/user/login"
+
+echo "== V002: ürün araması (SY-6) =="
+# Saldırı satırı yukarıdaki "SQLi" satırı; burada tırnaklı ama zararsız arama.
+req "V002 kontrol: çift tırnaklı ad"   200 -G "$BASE/rest/products/search" --data-urlencode 'q="King of the Hill"'
 
 echo "== V003: sipariş takibi (envanter: reflected XSS, yol içinde) =="
 req "V003 kontrol: geçerli biçim"      200 "$BASE/rest/track-order/5267-f9cd5882f54c75a3"
