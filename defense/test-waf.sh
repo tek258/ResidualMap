@@ -22,6 +22,9 @@ if [ "$WAF_MODE" = "detection" ] || [ "$WAF_MODE" = "DetectionOnly" ]; then
   V003_OK=200
   V005_OK=404
   V008_OK=201
+  V013_OK=302
+  V010_OK=410
+  V012_OK=302
 else
   SQLI_OK=403
   XSS_OK=403
@@ -31,6 +34,9 @@ else
   V003_OK=403
   V005_OK=403
   V008_OK=403
+  V013_OK=403
+  V010_OK=403
+  V012_OK=403
 fi
 
 req() {  # etiket, beklenen kod, curl argümanları...
@@ -71,6 +77,22 @@ echo "== V008: kayıt, gövdede rol alanı (mass assignment, SY-2) =="
 V008_ID="$(date +%s)$RANDOM"
 req "V008 kontrol: normal kayıt"       201 -X POST "${JSON[@]}" --data "{\"email\":\"v008-kontrol-$V008_ID@ornek.com\",\"password\":\"Kontrol-Lab-2026!\",\"passwordRepeat\":\"Kontrol-Lab-2026!\"}" "$BASE/api/Users/"
 req "V008 rol alanı (role=admin)"      "$V008_OK" -X POST "${JSON[@]}" --data "{\"email\":\"v008-test-$V008_ID@ornek.com\",\"password\":\"Kontrol-Lab-2026!\",\"passwordRepeat\":\"Kontrol-Lab-2026!\",\"role\":\"admin\"}" "$BASE/api/Users/"
+
+echo "== V013: yönlendirme izin listesi (SY-3) =="
+req "V013 kontrol: izinli adres"       302 "$BASE/redirect?to=https://github.com/juice-shop/juice-shop"
+req "V013 eskimiş adres (kripto)"      "$V013_OK" "$BASE/redirect?to=https://blockchain.info/address/1AbKfgvw9psQ41NbLi8kufDQTezwG8DRZm"
+req "V013 izinli adresi içeren hedef"  "$V013_OK" -G "$BASE/redirect" --data-urlencode "to=https://ornek.invalid/?x=https://github.com/juice-shop/juice-shop"
+
+echo "== V010: dosya yükleme, XML (SY-4) =="
+# İçerik zararsız; kural dosya adına bakıyor (uygulama da XML'i adına göre işliyor).
+req "V010 kontrol: PDF yükleme"        204 -F "file=@-;filename=sikayet.pdf;type=application/pdf" "$BASE/file-upload" <<< "%PDF-1.4 kontrol"
+req "V010 XML yükleme"                 "$V010_OK" -F "file=@-;filename=sikayet.xml;type=text/xml" "$BASE/file-upload" <<< "<?xml version=\"1.0\"?><sikayet>kontrol</sikayet>"
+
+echo "== V012: profil güncelleme, başka siteden (CSRF, SY-5) =="
+# V008 kontrol kullanıcısıyla giriş yapılıp oturum çerezi alınır.
+V012_TOKEN=$(curl -s -X POST "${JSON[@]}" --data "{\"email\":\"v008-kontrol-$V008_ID@ornek.com\",\"password\":\"Kontrol-Lab-2026!\"}" "$BASE/rest/user/login" | sed -n 's/.*"token":"\([^"]*\)".*/\1/p')
+req "V012 kontrol: kendi sitemizden"   302 -X POST -H "Cookie: token=$V012_TOKEN" -H "Origin: http://localhost:8080" --data "username=kontrol$V008_ID" "$BASE/profile"
+req "V012 başka siteden (Origin)"      "$V012_OK" -X POST -H "Cookie: token=$V012_TOKEN" -H "Origin: http://kotu-site.invalid" --data "username=csrf$V008_ID" "$BASE/profile"
 
 echo
 echo "Toplam $((gecen+kalan)) istek, $kalan beklenmeyen sonuç."
