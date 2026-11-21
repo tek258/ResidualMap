@@ -1,0 +1,750 @@
+[
+  {
+    "source": "node_entry_web",
+    "target": "node_target_admin",
+    "target_name": "node_target_admin",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_web",
+      "V008",
+      "node_target_admin"
+    ],
+    "length": 2,
+    "path_risk": 10.0,
+    "secondary_v2_score": 9.5,
+    "status": "acik",
+    "path_risk_after": 10.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V008": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_admin",
+    "target_name": "node_target_admin",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_dependency",
+      "V022",
+      "node_target_admin"
+    ],
+    "length": 2,
+    "path_risk": 10.0,
+    "secondary_v2_score": 9.3,
+    "status": "acik",
+    "path_risk_after": 10.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V022": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_rce",
+    "target_name": "node_target_rce",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_dependency",
+      "V027",
+      "node_target_rce"
+    ],
+    "length": 2,
+    "path_risk": 10.0,
+    "secondary_v2_score": 7.8,
+    "status": "acik",
+    "path_risk_after": 10.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V027": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_rce",
+    "target_name": "node_target_rce",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_dependency",
+      "V036",
+      "node_target_rce"
+    ],
+    "length": 2,
+    "path_risk": 10.0,
+    "secondary_v2_score": 7.8,
+    "status": "acik",
+    "path_risk_after": 10.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V036": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_rce",
+    "target_name": "node_target_rce",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_dependency",
+      "V023",
+      "node_target_rce"
+    ],
+    "length": 2,
+    "path_risk": 10.0,
+    "secondary_v2_score": 7.6,
+    "status": "acik",
+    "path_risk_after": 10.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V023": 0.0
+    }
+  },
+  {
+    "source": "node_entry_web",
+    "target": "node_target_admin",
+    "target_name": "node_target_admin",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_web",
+      "V014",
+      "node_target_admin"
+    ],
+    "length": 2,
+    "path_risk": 10.0,
+    "secondary_v2_score": 7.5,
+    "status": "acik",
+    "path_risk_after": 10.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V014": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_rce",
+    "target_name": "node_target_rce",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_dependency",
+      "V031",
+      "node_target_rce"
+    ],
+    "length": 2,
+    "path_risk": 10.0,
+    "secondary_v2_score": 7.5,
+    "status": "acik",
+    "path_risk_after": 10.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V031": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_admin",
+    "target_name": "node_target_admin",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_dependency",
+      "V028",
+      "node_target_admin"
+    ],
+    "length": 2,
+    "path_risk": 10.0,
+    "secondary_v2_score": 7.3,
+    "status": "acik",
+    "path_risk_after": 10.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V028": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_rce",
+    "target_name": "node_target_rce",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_dependency",
+      "V035",
+      "node_target_rce"
+    ],
+    "length": 2,
+    "path_risk": 10.0,
+    "secondary_v2_score": 7.3,
+    "status": "acik",
+    "path_risk_after": 10.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V035": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_rce",
+    "target_name": "node_target_rce",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_dependency",
+      "V029",
+      "node_target_rce"
+    ],
+    "length": 2,
+    "path_risk": 7.294,
+    "secondary_v2_score": 7.3,
+    "status": "acik",
+    "path_risk_after": 7.294,
+    "kontroller": [],
+    "etkinlik": {
+      "V029": 0.0
+    }
+  },
+  {
+    "source": "node_entry_web",
+    "target": "node_target_leak",
+    "target_name": "node_target_leak",
+    "target_criticality": 7.0,
+    "path": [
+      "node_entry_web",
+      "V016",
+      "node_target_leak"
+    ],
+    "length": 2,
+    "path_risk": 7.0,
+    "secondary_v2_score": 3.8,
+    "status": "acik",
+    "path_risk_after": 7.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V016": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_dos",
+    "target_name": "node_target_dos",
+    "target_criticality": 6.0,
+    "path": [
+      "node_entry_dependency",
+      "V033",
+      "node_target_dos"
+    ],
+    "length": 2,
+    "path_risk": 6.0,
+    "secondary_v2_score": 7.8,
+    "status": "acik",
+    "path_risk_after": 6.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V033": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_dos",
+    "target_name": "node_target_dos",
+    "target_criticality": 6.0,
+    "path": [
+      "node_entry_dependency",
+      "V032",
+      "node_target_dos"
+    ],
+    "length": 2,
+    "path_risk": 6.0,
+    "secondary_v2_score": 7.5,
+    "status": "acik",
+    "path_risk_after": 6.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V032": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_dos",
+    "target_name": "node_target_dos",
+    "target_criticality": 6.0,
+    "path": [
+      "node_entry_dependency",
+      "V034",
+      "node_target_dos"
+    ],
+    "length": 2,
+    "path_risk": 6.0,
+    "secondary_v2_score": 7.0,
+    "status": "acik",
+    "path_risk_after": 6.0,
+    "kontroller": [],
+    "etkinlik": {
+      "V034": 0.0
+    }
+  },
+  {
+    "source": "node_entry_api",
+    "target": "node_target_account_takeover",
+    "target_name": "node_target_account_takeover",
+    "target_criticality": 8.0,
+    "path": [
+      "node_entry_api",
+      "V006",
+      "node_target_account_takeover"
+    ],
+    "length": 2,
+    "path_risk": 5.8352,
+    "secondary_v2_score": 5.8,
+    "status": "acik",
+    "path_risk_after": 5.8352,
+    "kontroller": [],
+    "etkinlik": {
+      "V006": 0.0
+    }
+  },
+  {
+    "source": "node_entry_api",
+    "target": "node_target_account_takeover",
+    "target_name": "node_target_account_takeover",
+    "target_criticality": 8.0,
+    "path": [
+      "node_entry_api",
+      "V007",
+      "node_target_account_takeover"
+    ],
+    "length": 2,
+    "path_risk": 5.8352,
+    "secondary_v2_score": 5.8,
+    "status": "acik",
+    "path_risk_after": 5.8352,
+    "kontroller": [],
+    "etkinlik": {
+      "V007": 0.0
+    }
+  },
+  {
+    "source": "node_entry_web",
+    "target": "node_target_account_takeover",
+    "target_name": "node_target_account_takeover",
+    "target_criticality": 8.0,
+    "path": [
+      "node_entry_web",
+      "V012",
+      "node_target_account_takeover"
+    ],
+    "length": 2,
+    "path_risk": 5.8352,
+    "secondary_v2_score": 5.5,
+    "status": "acik",
+    "path_risk_after": 5.8352,
+    "kontroller": [],
+    "etkinlik": {
+      "V012": 0.0
+    }
+  },
+  {
+    "source": "node_entry_web",
+    "target": "node_target_account_takeover",
+    "target_name": "node_target_account_takeover",
+    "target_criticality": 8.0,
+    "path": [
+      "node_entry_web",
+      "V013",
+      "node_target_account_takeover"
+    ],
+    "length": 2,
+    "path_risk": 5.8352,
+    "secondary_v2_score": 5.5,
+    "status": "acik",
+    "path_risk_after": 5.8352,
+    "kontroller": [],
+    "etkinlik": {
+      "V013": 0.0
+    }
+  },
+  {
+    "source": "node_entry_search",
+    "target": "node_target_account_takeover",
+    "target_name": "node_target_account_takeover",
+    "target_criticality": 8.0,
+    "path": [
+      "node_entry_search",
+      "V004",
+      "node_target_account_takeover"
+    ],
+    "length": 2,
+    "path_risk": 5.8352,
+    "secondary_v2_score": 7.0,
+    "status": "zayifladi",
+    "path_risk_after": 5.0183,
+    "kontroller": [
+      "ids"
+    ],
+    "etkinlik": {
+      "V004": 0.14
+    }
+  },
+  {
+    "source": "node_entry_login",
+    "target": "node_target_admin",
+    "target_name": "node_target_admin",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_login",
+      "V015",
+      "node_target_admin"
+    ],
+    "length": 2,
+    "path_risk": 5.714,
+    "secondary_v2_score": 7.9,
+    "status": "zayifladi",
+    "path_risk_after": 4.914,
+    "kontroller": [
+      "ids"
+    ],
+    "etkinlik": {
+      "V015": 0.14
+    }
+  },
+  {
+    "source": "node_entry_web",
+    "target": "node_target_account_takeover",
+    "target_name": "node_target_account_takeover",
+    "target_criticality": 8.0,
+    "path": [
+      "node_entry_web",
+      "V011",
+      "node_target_account_takeover"
+    ],
+    "length": 2,
+    "path_risk": 4.5712,
+    "secondary_v2_score": 7.8,
+    "status": "acik",
+    "path_risk_after": 4.5712,
+    "kontroller": [],
+    "etkinlik": {
+      "V011": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_account_takeover",
+    "target_name": "node_target_account_takeover",
+    "target_criticality": 8.0,
+    "path": [
+      "node_entry_dependency",
+      "V026",
+      "node_target_account_takeover"
+    ],
+    "length": 2,
+    "path_risk": 4.5712,
+    "secondary_v2_score": 7.3,
+    "status": "acik",
+    "path_risk_after": 4.5712,
+    "kontroller": [],
+    "etkinlik": {
+      "V026": 0.0
+    }
+  },
+  {
+    "source": "node_entry_login",
+    "target": "node_target_admin",
+    "target_name": "node_target_admin",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_login",
+      "V001",
+      "node_target_admin"
+    ],
+    "length": 2,
+    "path_risk": 10.0,
+    "secondary_v2_score": 9.5,
+    "status": "zayifladi",
+    "path_risk_after": 4.0,
+    "kontroller": [
+      "ids",
+      "waf"
+    ],
+    "etkinlik": {
+      "V001": 0.6
+    }
+  },
+  {
+    "source": "node_entry_search",
+    "target": "node_target_admin",
+    "target_name": "node_target_admin",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_search",
+      "V002",
+      "V025",
+      "node_target_admin"
+    ],
+    "length": 3,
+    "path_risk": 10.0,
+    "secondary_v2_score": 7.5,
+    "status": "zayifladi",
+    "path_risk_after": 4.0,
+    "kontroller": [
+      "ids",
+      "waf"
+    ],
+    "etkinlik": {
+      "V002": 0.6,
+      "V025": 0.0
+    }
+  },
+  {
+    "source": "node_entry_web",
+    "target": "node_target_account_takeover",
+    "target_name": "node_target_account_takeover",
+    "target_criticality": 8.0,
+    "path": [
+      "node_entry_web",
+      "V020",
+      "node_target_account_takeover"
+    ],
+    "length": 2,
+    "path_risk": 3.3344,
+    "secondary_v2_score": 3.8,
+    "status": "acik",
+    "path_risk_after": 3.3344,
+    "kontroller": [],
+    "etkinlik": {
+      "V020": 0.0
+    }
+  },
+  {
+    "source": "node_entry_web",
+    "target": "node_target_account_takeover",
+    "target_name": "node_target_account_takeover",
+    "target_criticality": 8.0,
+    "path": [
+      "node_entry_web",
+      "V017",
+      "node_target_account_takeover"
+    ],
+    "length": 2,
+    "path_risk": 3.3344,
+    "secondary_v2_score": 2.8,
+    "status": "acik",
+    "path_risk_after": 3.3344,
+    "kontroller": [],
+    "etkinlik": {
+      "V017": 0.0
+    }
+  },
+  {
+    "source": "node_entry_web",
+    "target": "node_target_account_takeover",
+    "target_name": "node_target_account_takeover",
+    "target_criticality": 8.0,
+    "path": [
+      "node_entry_web",
+      "V021",
+      "node_target_account_takeover"
+    ],
+    "length": 2,
+    "path_risk": 3.3344,
+    "secondary_v2_score": 2.3,
+    "status": "acik",
+    "path_risk_after": 3.3344,
+    "kontroller": [],
+    "etkinlik": {
+      "V021": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_admin",
+    "target_name": "node_target_admin",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_dependency",
+      "V030",
+      "node_target_admin"
+    ],
+    "length": 2,
+    "path_risk": 3.334,
+    "secondary_v2_score": 7.8,
+    "status": "acik",
+    "path_risk_after": 3.334,
+    "kontroller": [],
+    "etkinlik": {
+      "V030": 0.0
+    }
+  },
+  {
+    "source": "node_entry_dependency",
+    "target": "node_target_rce",
+    "target_name": "node_target_rce",
+    "target_criticality": 10.0,
+    "path": [
+      "node_entry_dependency",
+      "V024",
+      "node_target_rce"
+    ],
+    "length": 2,
+    "path_risk": 3.177,
+    "secondary_v2_score": 7.8,
+    "status": "acik",
+    "path_risk_after": 3.177,
+    "kontroller": [],
+    "etkinlik": {
+      "V024": 0.0
+    }
+  },
+  {
+    "source": "node_entry_web",
+    "target": "node_target_leak",
+    "target_name": "node_target_leak",
+    "target_criticality": 7.0,
+    "path": [
+      "node_entry_web",
+      "V018",
+      "node_target_leak"
+    ],
+    "length": 2,
+    "path_risk": 2.9176,
+    "secondary_v2_score": 4.5,
+    "status": "acik",
+    "path_risk_after": 2.9176,
+    "kontroller": [],
+    "etkinlik": {
+      "V018": 0.0
+    }
+  },
+  {
+    "source": "node_entry_search",
+    "target": "node_target_leak",
+    "target_name": "node_target_leak",
+    "target_criticality": 7.0,
+    "path": [
+      "node_entry_search",
+      "V002",
+      "node_target_leak"
+    ],
+    "length": 2,
+    "path_risk": 7.0,
+    "secondary_v2_score": 7.5,
+    "status": "zayifladi",
+    "path_risk_after": 2.8,
+    "kontroller": [
+      "ids",
+      "waf"
+    ],
+    "etkinlik": {
+      "V002": 0.6
+    }
+  },
+  {
+    "source": "node_entry_api",
+    "target": "node_target_leak",
+    "target_name": "node_target_leak",
+    "target_criticality": 7.0,
+    "path": [
+      "node_entry_api",
+      "V010",
+      "node_target_leak"
+    ],
+    "length": 2,
+    "path_risk": 5.1058,
+    "secondary_v2_score": 5.8,
+    "status": "zayifladi",
+    "path_risk_after": 1.8554,
+    "kontroller": [
+      "ids",
+      "segmentasyon",
+      "waf"
+    ],
+    "etkinlik": {
+      "V010": 0.6366
+    }
+  },
+  {
+    "source": "node_entry_web",
+    "target": "node_target_leak",
+    "target_name": "node_target_leak",
+    "target_criticality": 7.0,
+    "path": [
+      "node_entry_web",
+      "V009",
+      "node_target_leak"
+    ],
+    "length": 2,
+    "path_risk": 7.0,
+    "secondary_v2_score": 7.5,
+    "status": "kesildi",
+    "path_risk_after": 0.7,
+    "kontroller": [
+      "iam"
+    ],
+    "etkinlik": {
+      "V009": 0.9
+    }
+  },
+  {
+    "source": "node_entry_web",
+    "target": "node_target_leak",
+    "target_name": "node_target_leak",
+    "target_criticality": 7.0,
+    "path": [
+      "node_entry_web",
+      "V019",
+      "node_target_leak"
+    ],
+    "length": 2,
+    "path_risk": 7.0,
+    "secondary_v2_score": 2.5,
+    "status": "kesildi",
+    "path_risk_after": 0.7,
+    "kontroller": [
+      "waf"
+    ],
+    "etkinlik": {
+      "V019": 0.9
+    }
+  },
+  {
+    "source": "node_entry_web",
+    "target": "node_target_account_takeover",
+    "target_name": "node_target_account_takeover",
+    "target_criticality": 8.0,
+    "path": [
+      "node_entry_web",
+      "V003",
+      "node_target_account_takeover"
+    ],
+    "length": 2,
+    "path_risk": 5.8352,
+    "secondary_v2_score": 6.8,
+    "status": "kesildi",
+    "path_risk_after": 0.5835,
+    "kontroller": [
+      "sanal_yama"
+    ],
+    "etkinlik": {
+      "V003": 0.9
+    }
+  },
+  {
+    "source": "node_entry_api",
+    "target": "node_target_account_takeover",
+    "target_name": "node_target_account_takeover",
+    "target_criticality": 8.0,
+    "path": [
+      "node_entry_api",
+      "V005",
+      "node_target_account_takeover"
+    ],
+    "length": 2,
+    "path_risk": 5.8352,
+    "secondary_v2_score": 6.8,
+    "status": "kesildi",
+    "path_risk_after": 0.4668,
+    "kontroller": [
+      "ids",
+      "waf"
+    ],
+    "etkinlik": {
+      "V005": 0.92
+    }
+  }
+]

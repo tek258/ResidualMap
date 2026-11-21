@@ -207,12 +207,69 @@ def load_inventory_details(csv_path=None, llm_csv_path=None, epss_csv_path=None)
 
 
 def _strip_bootstrap_cdn(html_content):
-    cleaned_lines = []
-    for line in html_content.splitlines():
-        if "cdn.jsdelivr.net" in line.lower() and "bootstrap" in line.lower():
-            continue
-        cleaned_lines.append(line)
-    return "\n".join(cleaned_lines)
+    """Dış kaynakları çıkarır: http(s) ile yüklenen script/stylesheet satırları, pyvis şablonundaki
+    ../node_modules ve lib/bindings bağlantıları. vis.js cdn_resources="in_line" ile sayfanın
+    içinde olduğu için grafik internetsiz açılır."""
+    dis = r'(?:src|href)\s*=\s*"(?:https?:|\.\./node_modules|lib/bindings)[^"]*"'
+    # etiketler birden fazla satıra yayılabiliyor (pyvis şablonu), bu yüzden bütün metin üzerinde
+    html_content = re.sub(r"<link\b[^>]*" + dis + r"[^>]*>\s*", "", html_content, flags=re.S | re.I)
+    html_content = re.sub(r"<script\b[^>]*" + dis + r"[^>]*>\s*</script>\s*", "", html_content,
+                          flags=re.S | re.I)
+    return html_content
+
+
+HEDEF_SIRASI = ["node_target_admin", "node_target_rce", "node_target_account_takeover",
+                "node_target_leak", "node_target_dos"]
+
+
+def sabit_konumlar(edges, sutun=3, satir_araligi=78, sutun_araligi=230, grup_boslugu=1):
+    """Önce ve sonra grafiklerinin aynı yerleşimi kullanması için deterministik konumlar.
+
+    Girişler solda, zafiyetler ortada hedeflerine göre gruplanmış (her grup `sutun` sütunlu),
+    hedefler sağda. Konumlar yalnızca kenar listesinden hesaplanır; aynı edges.json her zaman
+    aynı resmi verir.
+    """
+    hedef_of, giris_of = {}, {}
+    for e in edges:
+        src, tgt, rel = e.get("source", ""), e.get("target", ""), e.get("relation", "")
+        if rel == "Leads To":
+            hedef_of[src] = tgt
+        elif rel == "Entry Point":
+            giris_of.setdefault(tgt, src)
+    zafiyetler = sorted(hedef_of, key=lambda v: (
+        HEDEF_SIRASI.index(hedef_of[v]) if hedef_of[v] in HEDEF_SIRASI else 99,
+        giris_of.get(v, "node_entry_~"), v))
+
+    gruplar = {}
+    for v in zafiyetler:
+        gruplar.setdefault(hedef_of[v], []).append(v)
+
+    konum, grup_y, satir = {}, {}, 0
+    for h, uyeler in gruplar.items():
+        for i, v in enumerate(uyeler):
+            x = (i % sutun - (sutun - 1) / 2) * sutun_araligi
+            y = (satir + i // sutun) * satir_araligi
+            konum[v] = (x, y)
+            grup_y.setdefault(h, []).append(y)
+        satir += -(-len(uyeler) // sutun) + grup_boslugu
+
+    orta_x = sutun_araligi * (sutun + 1) / 2 + 220
+    for h, ys in grup_y.items():
+        konum[h] = (orta_x, sum(ys) / len(ys))
+
+    girisler = {}
+    for v, g in giris_of.items():
+        if v in konum:
+            girisler.setdefault(g, []).append(konum[v][1])
+    sirali = sorted(girisler.items(), key=lambda kv: sum(kv[1]) / len(kv[1]))
+    son_y = None
+    for g, ys in sirali:
+        y = sum(ys) / len(ys)
+        if son_y is not None and y - son_y < 110:
+            y = son_y + 110
+        konum[g] = (-orta_x, y)
+        son_y = y
+    return konum
 
 
 def _write_html_utf8(net, output_html):
@@ -248,17 +305,44 @@ def _get_vuln_risk_style(score_str):
     return "#f9e79f", "Düşük (< 6.0)"
 
 
+DURUM_RENK = {"kesildi": "#6b7280", "zayifladi": "#f59e0b", "acik": "#5c6bc0"}
+DURUM_AD = {"kesildi": "kesildi", "zayifladi": "zayıfladı", "acik": "açık"}
+
+
+def _sonra_bilgileri(residual_csv, after_csv):
+    """{vuln_id: {...}} ai/residual_risk.csv ve inventory/after_controls.csv'den."""
+    bilgi = {}
+    if residual_csv and os.path.exists(residual_csv):
+        with open(residual_csv, encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                bilgi[r["vuln_id"]] = {"risk_before": r["risk_before"], "risk_after": r["risk_after"],
+                                       "etkinlik": r["etkinlik"], "kontroller": r["kontroller"]}
+    if after_csv and os.path.exists(after_csv):
+        with open(after_csv, encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                bilgi.setdefault(r["vuln_id"], {})["durum"] = r["durum"]
+    return bilgi
+
+
 def visualize_graph(
     edges_file=None,
     paths_file=None,
     output_html=None,
     csv_path=None,
     top_n=5,
+    edges_after_file=None,
+    paths_after_file=None,
 ):
+    """edges_after_file verilirse kontrol sonrası grafik çizilir (S6-K3): kenarlar durumlarına göre
+    renklenir, düğüm tonu kontrol sonrası riskten gelir, panel paths_after.json'daki sıralamayı
+    gösterir. Her iki modda da düğüm konumları edges.json'dan hesaplanır, iki grafik üst üste oturur."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_root = os.path.abspath(os.path.join(base_dir, ".."))
+    sonra = edges_after_file is not None
     edges_file = edges_file or os.path.join(base_dir, "edges.json")
     paths_file = paths_file or os.path.join(base_dir, "paths.json")
-    output_html = output_html or os.path.join(base_dir, "attack_graph_v2.html")
+    output_html = output_html or os.path.join(
+        base_dir, "attack_graph_after.html" if sonra else "attack_graph_v2.html")
 
     if not os.path.exists(edges_file):
         logging.error(f"Edges dosyası bulunamadı: {edges_file}")
@@ -266,6 +350,15 @@ def visualize_graph(
 
     with open(edges_file, "r", encoding="utf-8") as f:
         edges = json.load(f)
+    konumlar = sabit_konumlar(edges)   # her iki modda edges.json'dan: aynı yerleşim
+
+    sonra_bilgi = {}
+    if sonra:
+        with open(edges_after_file, "r", encoding="utf-8") as f:
+            edges = json.load(f)
+        paths_file = paths_after_file or os.path.join(base_dir, "paths_after.json")
+        sonra_bilgi = _sonra_bilgileri(os.path.join(repo_root, "ai", "residual_risk.csv"),
+                                       os.path.join(repo_root, "inventory", "after_controls.csv"))
 
     paths_data = []
     if os.path.exists(paths_file):
@@ -289,7 +382,9 @@ def visualize_graph(
                 if cve_from_edge in epss_by_cve:
                     inv_details.setdefault(vid, {})["epss"] = epss_by_cve[cve_from_edge]
 
-    valid_paths = [p for p in paths_data if p.get("path_risk") is not None]
+    risk_alani = "path_risk_after" if sonra else "path_risk"
+    valid_paths = [p for p in paths_data if p.get(risk_alani) is not None
+                   and not (sonra and p.get("status") == "kesildi")]
     top_paths = valid_paths[:top_n]
 
     top_edges = set()
@@ -298,25 +393,17 @@ def visualize_graph(
     for idx, p_obj in enumerate(top_paths, start=1):
         p_nodes = p_obj.get("path", [])
         for n in p_nodes:
-            path_rank_map.setdefault(n, []).append(f"#{idx} (Risk: {p_obj.get('path_risk')})")
+            path_rank_map.setdefault(n, []).append(f"#{idx} (Risk: {p_obj.get(risk_alani)})")
         for i in range(len(p_nodes) - 1):
             top_edges.add((p_nodes[i], p_nodes[i + 1]))
 
     net = Network(
-        height="900px",
+        height="100vh",
         width="100%",
         directed=True,
         bgcolor="#141820",
         font_color="#f5f7fa",
-        cdn_resources="local",
-    )
-
-    net.barnes_hut(
-        gravity=-4500,
-        central_gravity=0.3,
-        spring_length=160,
-        spring_strength=0.05,
-        damping=0.09,
+        cdn_resources="in_line",   # vis.js sayfanın içinde: grafik internetsiz açılır
     )
 
     added_nodes = set()
@@ -351,6 +438,9 @@ def visualize_graph(
                 ai_score_val and ai_score_val not in ("-", "henüz yok", "nan", "None")
             )
             risk_metric = ai_score_val if has_ai_score else info.get("cvss_score")
+            sb = sonra_bilgi.get(node_id, {})
+            if sonra and sb.get("risk_after") not in (None, ""):
+                risk_metric = sb["risk_after"]
             color, risk_label = _get_vuln_risk_style(risk_metric)
             shape = "dot"
             size = 20
@@ -370,10 +460,19 @@ def visualize_graph(
                 f"Hedef Eşleşmesi Dayanağı: {target_basis}\n"
                 f"Zafiyet ID: {node_id} | Risk Tonu: {risk_label}"
             )
+            if sonra and sb:
+                tooltip += (
+                    f"\n— Kontroller sonrası —\n"
+                    f"Durum: {sb.get('durum', '-')}\n"
+                    f"Risk: {sb.get('risk_before', '-')} → {sb.get('risk_after', '-')} "
+                    f"(etkinlik {sb.get('etkinlik', '-')})\n"
+                    f"Kontroller: {sb.get('kontroller', '-')}"
+                )
 
         if node_id in path_rank_map:
             tooltip += f"\nTop-{top_n} Yol Sırası: {', '.join(path_rank_map[node_id])}"
 
+        x, y = konumlar.get(node_id, (0, 0))
         net.add_node(
             node_id,
             label=label,
@@ -381,6 +480,8 @@ def visualize_graph(
             color=color,
             shape=shape,
             size=size,
+            x=x,
+            y=y,
         )
 
     for edge in edges:
@@ -402,6 +503,13 @@ def visualize_graph(
 
         edge_color = "#ff3b30" if is_top else ("#9aa5b1" if is_estimated_cvss else "#5c6bc0")
         edge_width = 4.2 if is_top else 1.8
+        dashes = is_estimated_cvss
+        status = edge.get("status")
+        if sonra and status:
+            # kesilen kenar silinmez: gri ve kesikli çizilir, neyin kesildiği görünsün
+            edge_color = "#ff3b30" if is_top else DURUM_RENK.get(status, "#5c6bc0")
+            dashes = status == "kesildi"
+            edge_width = 4.2 if is_top else (1.2 if status == "kesildi" else 1.8)
 
         hover_text = (
             f"Kaynak: {src} -> Hedef: {tgt}\n"
@@ -411,6 +519,9 @@ def visualize_graph(
             f"Dayanak (Basis): {basis or '-'}"
             + (" (Tahmini Bağlantı - CVSS)" if is_estimated_cvss else "")
             + ("\nTop-5 Yüksek Riskli Yol" if is_top else "")
+            + (f"\nDurum: {DURUM_AD.get(status, status)}"
+               + (f" ({edge.get('cutting_control')})" if edge.get("cutting_control") else "")
+               if sonra and status else "")
         )
 
         net.add_edge(
@@ -419,22 +530,17 @@ def visualize_graph(
             title=hover_text,
             color=edge_color,
             width=edge_width,
-            dashes=is_estimated_cvss,
+            dashes=dashes,
             arrows="to",
+            # zincir kenarı aynı sütundaki düğümlerin üstünden geçmesin: yana kavis
+            **({"smooth": {"enabled": True, "type": "curvedCW", "roundness": 0.35}}
+               if relation == "Chains To" else {}),
         )
 
     net.set_options("""
     {
-      "physics": {
-        "enabled": true,
-        "barnesHut": {
-          "gravitationalConstant": -4500,
-          "centralGravity": 0.3,
-          "springLength": 160,
-          "springConstant": 0.05,
-          "damping": 0.09
-        }
-      },
+      "physics": {"enabled": false},
+      "edges": {"smooth": {"enabled": true, "type": "continuous", "roundness": 0.3}},
       "interaction": {
         "dragNodes": true,
         "zoomView": true,
@@ -464,10 +570,10 @@ def visualize_graph(
             <div><span style="color:#2ecc71; font-weight:bold;">◆</span> Giriş Düğümü (diamond)</div>
             <div><span style="color:#3498db; font-weight:bold;">★</span> Hedef Düğümü (star)</div>
             <div><span style="color:#ff3b30; font-weight:bold;">━</span> Top-5 Yüksek Riskli Yol</div>
-            <div><span style="color:#9aa5b1; font-weight:bold;">┄</span> Tahmini Bağlantı (basis: cvss)</div>
+            __DURUM_SATIRLARI__
         </div>
         <div style="border-top: 1px solid rgba(255,255,255,0.14); padding-top: 6px;">
-            <div style="font-weight: bold; margin-bottom: 4px;">Zafiyet Risk Tonu (dot) &mdash; renk: AI skoru (yoksa CVSS)</div>
+            <div style="font-weight: bold; margin-bottom: 4px;">Zafiyet Risk Tonu (dot) &mdash; renk: __RENK_KAYNAGI__</div>
             <div style="margin: 2px 0;"><span style="color:#e74c3c; font-weight:bold;">●</span> Yüksek (&ge; 8.0)</div>
             <div style="margin: 2px 0;"><span style="color:#f39c12; font-weight:bold;">●</span> Orta (6.0 - 7.9)</div>
             <div style="margin: 2px 0;"><span style="color:#f9e79f; font-weight:bold;">●</span> Düşük (&lt; 6.0)</div>
@@ -475,13 +581,30 @@ def visualize_graph(
     </div>
     """
 
-    extra_html = ""
+    if sonra:
+        durum_satirlari = (
+            '<div><span style="color:#6b7280; font-weight:bold;">┄</span> Kesildi (kontrol engelliyor)</div>'
+            '<div><span style="color:#f59e0b; font-weight:bold;">━</span> Zayıfladı (kısmen / tespit)</div>'
+            '<div><span style="color:#5c6bc0; font-weight:bold;">━</span> Açık</div>')
+        legend_html = legend_html.replace("__DURUM_SATIRLARI__", durum_satirlari).replace(
+            "__RENK_KAYNAGI__", "kontroller sonrası risk").replace("Top-5 Yüksek Riskli Yol",
+                                                                  "Kontroller sonrası en riskli 5 yol")
+    else:
+        legend_html = legend_html.replace("__DURUM_SATIRLARI__", "").replace(
+            "__RENK_KAYNAGI__", "AI skoru (yoksa CVSS)")
+
+    baslik = "Kontroller sonrası" if sonra else "Kontroller öncesi"
+    extra_html = (f'<div id="graph-title" style="position: fixed; top: 14px; left: 14px; z-index: 9999; '
+                  f'color: #f5f7fa; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold;">'
+                  f'Saldırı grafiği: {baslik}</div>\n')
     if top_paths:
         summary_items = []
         for idx, p in enumerate(top_paths, start=1):
             chain = " &rarr; ".join(p.get("path", []))
+            risk = (f"{p.get('path_risk')} → <b>{p.get('path_risk_after')}</b> ({DURUM_AD.get(p.get('status'), '')})"
+                    if sonra else f"<b>{p.get('path_risk')}</b>")
             summary_items.append(
-                f"<li><b>#{idx}</b> | Risk: <b>{p.get('path_risk')}</b> | "
+                f"<li><b>#{idx}</b> | Risk: {risk} | "
                 f"Hedef Kritiklik: {p.get('target_criticality')} | {chain}</li>"
             )
         panel_html = f"""
@@ -492,7 +615,7 @@ def visualize_graph(
             padding: 12px 14px; font-family: Arial, sans-serif; font-size: 12px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.45);">
             <div style="font-weight: bold; font-size: 13px; color: #ff6b6b; margin-bottom: 6px;">
-                En Riskli {len(top_paths)} Saldırı Yolu (Top-{top_n})
+                {"Kontroller sonrası " if sonra else ""}En Riskli {len(top_paths)} Saldırı Yolu (Top-{top_n})
             </div>
             <ol style="margin: 0; padding-left: 18px; line-height: 1.45;">
                 {''.join(summary_items)}
@@ -505,6 +628,18 @@ def visualize_graph(
 
     with open(output_html, "r", encoding="utf-8") as f:
         html_content = _strip_bootstrap_cdn(f.read())
+    # Açılışta grafiği sola yasla: sağ üstteki panel düğümlerin üstüne binmesin.
+    extra_html += """
+    <script>
+    if (typeof network !== "undefined") {
+      // vis.js ilk çizimde kendi sığdırmasını yapıyor; ayarı ondan sonra uygula
+      setTimeout(function () {
+        network.fit({animation: false});
+        var s = network.getScale() * 0.9, p = network.getViewPosition();
+        network.moveTo({scale: s, position: {x: p.x + 190 / s, y: p.y + 20 / s}, animation: false});
+      }, 400);
+    }
+    </script>"""
     if "</body>" in html_content:
         html_content = html_content.replace("</body>", extra_html + "\n</body>")
     with open(output_html, "w", encoding="utf-8") as f:
@@ -526,4 +661,13 @@ def create_visual_graph(edges_path=None, csv_path=None, output_path=None, paths_
 
 
 if __name__ == "__main__":
-    visualize_graph()
+    import argparse
+
+    ap = argparse.ArgumentParser(description="Saldırı grafiğini HTML olarak üretir.")
+    ap.add_argument("--after", nargs="?", const="graph/edges_after.json", metavar="EDGES_AFTER",
+                    help="Kontrol sonrası grafik (varsayılan: graph/edges_after.json -> attack_graph_after.html)")
+    args = ap.parse_args()
+    if args.after:
+        visualize_graph(edges_after_file=args.after)
+    else:
+        visualize_graph()

@@ -1,0 +1,37 @@
+vuln_id,durum,kontrol,dayanak,kanit_dosyasi,not
+V001,azaltildi,"waf:azaltir, ids:tespit eder",test,inventory/raw/after_controls/test-waf.log,test-waf.sh: V001 SQLi (email alanı) -> 403. CRS 942100 tek kuralla tam eşikte (5 puan) yakalıyor; güvenlik payı yok.
+V002,azaltildi,"waf:azaltir, ids:tespit eder",test,inventory/raw/after_controls/test-waf.log,test-waf.sh: SQLi -> 403. CRS 942100 tek kuralla tam eşikte (5 puan) yakalıyor; güvenlik payı yok.
+V003,engellendi,sanal_yama:engeller,test,inventory/raw/after_controls/test-waf.log,"test-waf.sh: V003 XSS (yol içinde iframe), V003 yolu NoSQLi (' || true || ') -> 403."
+V004,test_edilmedi,ids:tespit eder,gerekce,,Kontroller açıkken test edilmedi. Eşlemedeki beklenen etki: ids:tespit eder (gerekce).
+V005,engellendi,"waf:engeller, ids:tespit eder",test,inventory/raw/after_controls/test-waf.log,test-waf.sh: V005 XSS (description alanı) -> 403.
+V006,test_edilmedi,-,gerekce,,Kontroller açıkken test edilmedi. Eşlemedeki beklenen etki: kontroller etkisiz (gerekce).
+V007,test_edilmedi,-,gerekce,,Kontroller açıkken test edilmedi. Eşlemedeki beklenen etki: kontroller etkisiz (gerekce).
+V008,test_edilmedi,-,gerekce,,Kontroller açıkken test edilmedi. Eşlemedeki beklenen etki: kontroller etkisiz (gerekce).
+V009,engellendi,iam:engeller,test,inventory/raw/after_controls/test-iam.log,"test-iam.py: girişsiz /ftp/ ve atlatma denemeleri 302 (Keycloak), rolsüz misafir 403."
+V010,test_edilmedi,"waf:azaltir, ids:tespit eder, segmentasyon:azaltir",gerekce,,"Kontroller açıkken test edilmedi. Eşlemedeki beklenen etki: waf:azaltir, ids:tespit eder, segmentasyon:azaltir (gerekce)."
+V011,test_edilmedi,-,gerekce,,Kontroller açıkken test edilmedi. Eşlemedeki beklenen etki: kontroller etkisiz (gerekce).
+V012,test_edilmedi,-,gerekce,,Kontroller açıkken test edilmedi. Eşlemedeki beklenen etki: kontroller etkisiz (gerekce).
+V013,test_edilmedi,-,gerekce,,Kontroller açıkken test edilmedi. Eşlemedeki beklenen etki: kontroller etkisiz (gerekce).
+V014,test_edilmedi,-,gerekce,,Kontroller açıkken test edilmedi. Eşlemedeki beklenen etki: kontroller etkisiz (gerekce).
+V015,test_edilmedi,ids:tespit eder,gerekce,,Kontroller açıkken test edilmedi. Eşlemedeki beklenen etki: ids:tespit eder (gerekce).
+V016,test_edilmedi,-,gerekce,,Kontroller açıkken test edilmedi. Eşlemedeki beklenen etki: kontroller etkisiz (gerekce).
+V017,erisilebilir,-,test,inventory/raw/after_controls/zap_baseline.json,Kontroller sonrası ZAP taramasında eklenti 10038 hâlâ var.
+V018,erisilebilir,-,test,inventory/raw/after_controls/zap_baseline.json,Kontroller sonrası ZAP taramasında eklenti 10098 hâlâ var.
+V019,engellendi,waf:engeller,test,inventory/raw/after_controls/zap_baseline.json,Kontroller sonrası ZAP taramasında eklenti 10036 yok (önce vardı).
+V020,erisilebilir,-,test,inventory/raw/after_controls/zap_baseline.json,Kontroller sonrası ZAP taramasında eklenti 10110 hâlâ var.
+V021,erisilebilir,-,test,inventory/raw/after_controls/zap_baseline.json,Kontroller sonrası ZAP taramasında eklenti 90004 hâlâ var.
+V022,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2015-9235 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V023,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2019-10744 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V024,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2021-23337 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V025,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2023-46233 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V026,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2026-71851 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V027,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2026-101894 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V028,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2026-90711 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V029,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2026-23950 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V030,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2020-15084 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V031,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2022-24785 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V032,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2017-18214 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V033,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2024-37890 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V034,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2025-47944 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V035,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2026-5450 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
+V036,erisilebilir,-,test,inventory/raw/after_controls/trivy.json,CVE-2019-1010022 kontroller sonrası Trivy taramasında hâlâ var; yama uygulanmadı. Paketin uygulamada erişilebilir kod yolu doğrulanmadı.
