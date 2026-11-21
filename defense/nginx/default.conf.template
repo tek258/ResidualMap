@@ -2,8 +2,9 @@
 #
 # S4-K5: owasp/modsecurity-crs:4.30.0-nginx-202610180210 imajindaki
 # /etc/nginx/templates/conf.d/default.conf.template dosyasinin kopyasi.
-# Tek degisiklik: HTTP sunucusuna "S4-K5 IAM" bolumu eklendi (/oauth2/, /ftp,
-# /metrics). SSL sunucusu ve geri kalan her sey imajdakiyle ayni.
+# Degisiklikler: HTTP sunucusuna "S4-K5 IAM" bolumu (/oauth2/, /ftp, /metrics),
+# guvenlik basliklari (V017, V018, V021) ve genel hata sayfasi (V016).
+# SSL sunucusu ve geri kalan her sey imajdakiyle ayni.
 # CRS imaji yukseltilirse bu dosya yeni imajin sablonuyla karsilastirilmali.
 
 server_tokens ${SERVER_TOKENS};
@@ -12,6 +13,48 @@ server_tokens ${SERVER_TOKENS};
 # here instead. Without -s this applies to every status code, and an empty
 # SERVER_HEADER removes the header altogether.
 more_set_headers 'Server: ${SERVER_HEADER}';
+
+# ------------------------------------------------- Ek savunma: guvenlik basliklari
+# V017 (CSP), V018 (genis CORS), V021 (COOP/COEP). Ayrinti: docs/waf-engelleme-notu.md
+#
+# CSP: Juice Shop'un kendi CSP'si olan yanitlarda (/profile) onunki korunur, digerlerine
+# asagidaki politika eklenir. Satir ici betiklere yalnizca sha256 ozetiyle izin verilir;
+# 'unsafe-inline' yok. Ozetler bu imaja bagli (juice-shop v20.2.0@sha256:8739101a...):
+#   2ADpmZ... index.html cookieconsent betigi
+#   9Msd...   /promotion altyazi betigi
+#   Mht...    index.html'deki onload="this.media='all'" (stil dosyasini acar; 'unsafe-hashes')
+# Imaj yukseltilirse test-waf.sh'taki "CSP ozetleri" satirlari HATA verir; ozetler yenilenir.
+# style-src 'unsafe-inline': Angular Material calisirken stil enjekte ediyor (kabul edilen eksik).
+map $upstream_http_content_security_policy $juice_csp {
+    ""      "default-src 'self'; script-src 'self' 'sha256-2ADpmZIga9zdrCfzZ7IWyavasltpcKCkxomklfMTCG0=' 'sha256-9MsdBx9vZ9NzdkYLMYk/U1qJmmxuixSv2ivJtXTG9tY=' 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; connect-src 'self'; media-src 'self'; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
+    default $upstream_http_content_security_policy;
+}
+more_set_headers "Content-Security-Policy: $juice_csp";
+more_set_headers "Cross-Origin-Opener-Policy: same-origin";
+more_set_headers "Cross-Origin-Embedder-Policy: require-corp";
+more_set_headers "Cross-Origin-Resource-Policy: same-origin";
+# Juice Shop her yanita "Access-Control-Allow-Origin: *" ekliyor; uygulama tek kokenli,
+# CORS'a ihtiyac yok.
+more_clear_headers "Access-Control-Allow-Origin";
+# --------------------------------------------- Ek savunma: guvenlik basliklari son
+
+# -------------------------------------------------- Ek savunma: hiz siniri
+# V015 (admin parolasina kaba kuvvet), V011 (guvenlik sorusu denemesi).
+# Yalnizca POST /rest/user/login ve /rest/user/reset-password sayilir (bos anahtar
+# sayilmaz). Express yollari buyuk/kucuk harf duyarsiz oldugundan ~* kullanilir;
+# $uri nginx'te %xx cozulmus ve // birlestirilmis haldedir.
+# Anahtar baglantinin gercek adresi: Juice Shop'un kendi siniri X-Forwarded-For'a
+# bakiyor ve bu baslik degistirilerek atlatilabiliyor, buradaki atlatilamaz.
+# Lab notu: bilgisayardan gelen butun istekler ayni Docker ag gecidi adresinden
+# gorunur, yani lab'da sinir tum istemciler icin ortaktir.
+# 10/dk, 20'lik ani yuklenme payi: normal giris etkilenmez; kaba kuvvet
+# dakikada 10 denemeye iner (1000 sifre ~100 dk).
+map "$request_method:$uri" $giris_anahtari {
+    "~*^POST:/rest/user/(?:login|reset-password)/?$"  $binary_remote_addr;
+    default                                           "";
+}
+limit_req_zone $giris_anahtari zone=giris:10m rate=10r/m;
+# ---------------------------------------------- Ek savunma: hiz siniri son
 
 map $http_upgrade $connection_upgrade {
     default upgrade;
@@ -38,6 +81,22 @@ server {
 
         index index.html index.htm;
         root /usr/share/nginx/html;
+
+        # Ek savunma, V016: Juice Shop'un yigin izli hata sayfalari (errorhandler)
+        # yerine genel bir hata. Durum kodu korunur (error_page'de "=" yok).
+        # 401/403 dokunulmaz: arayuz bu yanitlarin metnini gosteriyor (giris ekrani).
+        proxy_intercept_errors on;
+        error_page 500 502 503 504 406 410 /__hata;
+
+        # Ek savunma, V015/V011: hiz siniri (anahtar dosyanin basinda)
+        limit_req zone=giris burst=20 nodelay;
+        limit_req_status 429;
+    }
+
+    location = /__hata {
+        internal;
+        default_type application/json;
+        return 200 '{"error":"Istek islenemedi."}';
     }
 
     # ---------------------------------------------------------------- S4-K5 IAM

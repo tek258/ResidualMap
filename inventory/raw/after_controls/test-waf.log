@@ -1,24 +1,57 @@
 == Normal trafik ==
 ana sayfa                          -> HTTP 200  (beklenen 200) OK
-ürün listesi                       -> HTTP 200  (beklenen 200) OK
-
+ürün listesi                     -> HTTP 200  (beklenen 200) OK
 == Test payload'ları (kendi lab'ımız) ==
 SQLi                               -> HTTP 403  (beklenen 403) OK
 XSS                                -> HTTP 403  (beklenen 403) OK
 Path traversal                     -> HTTP 403  (beklenen 403) OK
 Scanner UA                         -> HTTP 403  (beklenen 403) OK
-
 == V001: giriş, JSON POST gövdesinde SQLi ==
-V001 kontrol: yanlış şifre         -> HTTP 401  (beklenen 401) OK
-V001 SQLi (email alanı)            -> HTTP 403  (beklenen 403) OK
-
+V001 kontrol: yanlış şifre      -> HTTP 401  (beklenen 401) OK
+V001 SQLi (email alanı)           -> HTTP 403  (beklenen 403) OK
+V001 SQLi (form gövdesi)          -> HTTP 403  (beklenen 403) OK
+== V002: ürün araması (SY-6) ==
+V002 kontrol: çift tırnaklı ad  -> HTTP 200  (beklenen 200) OK
 == V003: sipariş takibi (envanter: reflected XSS, yol içinde) ==
-V003 kontrol: geçerli biçim        -> HTTP 200  (beklenen 200) OK
-V003 XSS (yol içinde iframe)       -> HTTP 403  (beklenen 403) OK
+V003 kontrol: geçerli biçim      -> HTTP 200  (beklenen 200) OK
+V003 XSS (yol içinde iframe)      -> HTTP 403  (beklenen 403) OK
 V003 yolu NoSQLi (' || true || ')  -> HTTP 403  (beklenen 403) OK
-
 == V005: PUT /api/Products (I-1 ile açılan yol), gövdede XSS ==
-V005 kontrol: zararsız açıklama    -> HTTP 404  (beklenen 404) OK
-V005 XSS (description alanı)       -> HTTP 403  (beklenen 403) OK
+V005 kontrol: zararsız açıklama -> HTTP 404  (beklenen 404) OK
+V005 XSS (description alanı)      -> HTTP 403  (beklenen 403) OK
+== V008: kayıt, gövdede rol alanı (mass assignment, SY-2) ==
+V008 kontrol: normal kayıt        -> HTTP 201  (beklenen 201) OK
+V008 rol alanı (role=admin)       -> HTTP 403  (beklenen 403) OK
+== V013: yönlendirme izin listesi (SY-3) ==
+V013 kontrol: izinli adres         -> HTTP 302  (beklenen 302) OK
+V013 eskimiş adres (kripto)       -> HTTP 403  (beklenen 403) OK
+V013 izinli adresi içeren hedef   -> HTTP 403  (beklenen 403) OK
+== V010: dosya yükleme, XML (SY-4) ==
+V010 kontrol: PDF yükleme         -> HTTP 204  (beklenen 204) OK
+V010 XML yükleme                  -> HTTP 403  (beklenen 403) OK
+== V012: profil güncelleme, başka siteden (CSRF, SY-5) ==
+V012 kontrol: kendi sitemizden     -> HTTP 302  (beklenen 302) OK
+V012 başka siteden (Origin)       -> HTTP 403  (beklenen 403) OK
+== V017, V021: güvenlik başlıkları ==
+V017 CSP (ana sayfa)               -> Content-Security-Policy: default-src 'self'; script-src 'sel OK
+V017 CSP (WAF 403 yanıtı)        -> Content-Security-Policy: default-src 'self'; script-src 'sel OK
+V021 COOP                          -> Cross-Origin-Opener-Policy: same-origin OK
+V021 COEP                          -> Cross-Origin-Embedder-Policy: require-corp OK
+V021 CORP                          -> Cross-Origin-Resource-Policy: same-origin OK
+V017 CSP özetleri: index.html     -> aa97229042ece5a3 OK
+V017 CSP özetleri: /promotion     -> 413043c1ccddc833 OK
+== V018: CORS ==
+V018 ACAO yok (GET)                -> (Access-Control-Allow-Origin yok) OK
+V018 ACAO yok (OPTIONS)            -> (Access-Control-Allow-Origin yok) OK
+== V016: hata sayfası ==
+V016 bilinmeyen yol (500)          -> HTTP 500, yığın izi yok OK
+V016 bilinmeyen yol, JSON (500)    -> HTTP 500, yığın izi yok OK
+V016 YAML yükleme (410)           -> HTTP 410, yığın izi yok OK
+V016 kontrol: giriş hatası 401   -> HTTP 401  (beklenen 401) OK
+== V015, V011: hız sınırı (en sonda; sonraki 2 dk girişler 429 alabilir) ==
+V015 ilk deneme 401                -> HTTP 401 OK
+V015 30 denemede 429 var           -> 19 tanesi 429 OK
+V011 sıfırlama, sahte XFF ile    -> HTTP 429 (sınır başlıkla atlatılamıyor) OK
+V015 kontrol: diğer yollar etkilenmez -> HTTP 200 OK
 
-Toplam 13 istek, 0 beklenmeyen sonuç.
+Toplam 41 istek, 0 beklenmeyen sonuç.

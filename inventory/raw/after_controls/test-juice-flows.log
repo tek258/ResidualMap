@@ -1,74 +1,83 @@
-== Vitrin ve arama akışları ==
-[OK ] 200  ana sayfa
-[OK ] 200  uygulama ayarları
-[OK ] 200  dil listesi
-[OK ] 200  socket.io polling GET
-[OK ] 200  socket.io text/plain POST (I-3 istisnası)
-[OK ] 200  ürün yorumları listesi
-[OK ] 200  arama: normal (apple)
-[OK ] 200  arama: türkçe karakter (çilek)
-[OK ] 200  arama: boşluklu (orange juice)
-[OK ] 200  arama: tireli (apple-pomace)
-[OK ] 200  arama: parantezli (juice (1000ml))
-[OK ] 200  arama: tek tırnaklı zararsız (king's)
-[OK ] 200  arama: sayısal (2026)
-[OK ] 200  arama: boş sorgu
+== Vitrin ve arama ==
+[OK ] 200 GET    /                                                            ana sayfa
+[OK ] 200 GET    /rest/admin/application-configuration                        uygulama ayari
+[OK ] 200 GET    /rest/languages                                              dil listesi
+[OK ] 200 GET    /rest/products/search?q=                                     bos arama (vitrin)
+[OK ] 200 GET    /rest/products/search?q=apple                                arama: apple
+[OK ] 200 GET    /rest/products/search?q=apple%20juice                        arama: apple juice
+[OK ] 200 GET    /rest/products/search?q=Juice%20%281000ml%29                 arama: Juice (1000ml)
+[OK ] 200 GET    /rest/products/search?q=elma%20suyu                          arama: elma suyu
+[OK ] 200 GET    /rest/products/search?q=%C3%A7ilek                           arama: çilek
+[OK ] 200 GET    /rest/products/search?q=T-Shirt                              arama: T-Shirt
+[OK ] 200 GET    /rest/products/search?q=Owasp%20Juice%20Shop%20Sticker       arama: Owasp Juice Shop Sticker
+[OK ] 200 GET    /rest/products/search?q=green%20smoothie%20500ml             arama: green smoothie 500ml
+[OK ] 200 GET    /rest/products/1/reviews                                     urun yorumlari
+[OK ] 200 GET    /socket.io/?EIO=4&transport=polling&t=973c77e8               socket.io polling (GET)
+[OK ] 200 POST   /socket.io/?EIO=4&transport=polling&t=973c77e8b&sid=MegRVH-h socket.io polling (POST text/plain)
+== Kayit ve giris ==
+[OK ] 200 GET    /api/SecurityQuestions/                                      guvenlik sorulari
+[OK ] 201 POST   /api/Users/                                                  kayit
+[OK ] 200 POST   /rest/user/login                                             giris
+[OK ] 200 GET    /rest/user/whoami                                            whoami
+[OK ] 401 POST   /rest/user/login                                             yanlis sifreyle giris (401 beklenir)
+== Sepet ==
+[OK ] 200 GET    /rest/basket/45                                              sepeti gor
+[OK ] 200 GET    /api/Quantitys/                                              stok bilgisi
+[OK ] 200 POST   /api/BasketItems/                                            sepete ekle
+[OK ] 200 POST   /api/BasketItems/                                            sepete ikinci urun
+[OK ] 200 PUT    /api/BasketItems/19                                          adet artir (PUT)
+[OK ] 200 DELETE /api/BasketItems/20                                          urunu sil (DELETE)
+[OK ] 200 GET    /rest/basket/45                                              sepeti tekrar gor
+== Yorum ==
+[OK ] 201 PUT    /rest/products/1/reviews                                     urun yorumu yaz (PUT)
+== Adres, kart, odeme ==
+[OK ] 201 POST   /api/Addresss/                                               adres ekle
+[OK ] 200 GET    /api/Addresss/                                               adresleri listele
+[OK ] 201 POST   /api/Cards/                                                  kart ekle
+[OK ] 200 GET    /api/Deliverys/                                              teslimat secenekleri
+[OK ] 200 GET    /rest/wallet/balance                                         cuzdan bakiyesi
+[OK ] 200 POST   /rest/basket/45/checkout                                     siparisi tamamla
+[OK ] 200 GET    /rest/order-history                                          siparis gecmisi
+== Sepet ek islemleri ==
+[OK ] 404 PUT    /rest/basket/45/coupon/WMNSDY2026                            kupon uygula (PUT, gecersiz kupon 404 beklenir)
+[OK ] 200 PUT    /rest/wallet/balance                                         cuzdana para yukle (PUT)
+[OK ] 200 GET    /rest/products/1/reviews                                     yorumlari tekrar oku
+[OK ] 200 PATCH  /rest/products/reviews                                       yorumu duzenle (PATCH)
+[OK ] 200 POST   /rest/products/reviews                                       yorumu begen (POST)
+== Adres ve kart yonetimi ==
+[OK ] 200 PUT    /api/Addresss/12                                             adresi duzenle (PUT)
+[OK ] 200 DELETE /api/Addresss/12                                             adresi sil (DELETE)
+[OK ] 200 DELETE /api/Cards/12                                                karti sil (DELETE)
+== Destek ve takip ==
+[OK ] 200 GET    /rest/captcha/                                               captcha al
+[OK ] 201 POST   /api/Feedbacks/                                              iletisim formu
+[OK ] 200 GET    /rest/order-history                                          siparisleri listele
+[OK ] 200 GET    /rest/track-order/df26-b39aeedb742177ca                      siparis takibi
+[OK ] 204 POST   /file-upload                                                 sikayet dosyasi yukle (multipart)
+[OK ] 200 GET    /rest/image-captcha/                                         veri disa aktarma captcha
+== Ozel karakterli sifreler ==
+[OK ] 201 POST   /api/Users/                                                  kayit, sifre: Ayşe'nin-Sifresi1
+[OK ] 200 POST   /rest/user/login                                             giris, sifre: Ayşe'nin-Sifresi1
+[OK ] 201 POST   /api/Users/                                                  kayit, sifre: kedi&kopek=2026
+[OK ] 200 POST   /rest/user/login                                             giris, sifre: kedi&kopek=2026
+[OK ] 201 POST   /api/Users/                                                  kayit, sifre: P@ss w0rd; <3
+[OK ] 200 POST   /rest/user/login                                             giris, sifre: P@ss w0rd; <3
+[OK ] 201 POST   /api/Users/                                                  kayit, sifre: Sifre"123"!
+[OK ] 200 POST   /rest/user/login                                             giris, sifre: Sifre"123"!
+[OK ] 201 POST   /api/Users/                                                  kayit, sifre: 1q2w3e4r--
+[OK ] 200 POST   /rest/user/login                                             giris, sifre: 1q2w3e4r--
+[OK ] 201 POST   /api/Users/                                                  kayit, sifre: admin123#
+[OK ] 200 POST   /rest/user/login                                             giris, sifre: admin123#
+== Profil ==
+[OK ] 200 GET    /rest/user/change-password?current=Gizli%21Sifre%232026&new= sifre degistir
+== Istisnalarin siniri (403 beklenir) ==
+[OK ] 403 PUT    /api/Users/1                                                 PUT listede olmayan yol
+[OK ] 403 DELETE /api/Products/1                                              DELETE listede olmayan yol
+[OK ] 403 PATCH  /api/BasketItems/1                                           PATCH listede olmayan yol
+[OK ] 403 PUT    /api/BasketItems/1/../../Users/1                             PUT yol sonuna ek
+[OK ] 405 TRACE  /                                                            TRACE metodu
+[OK ] 403 GET    /rest/user/whoami?cb=%3Bcat%20/etc/passwd                    whoami + komut parametresi
+[OK ] 403 POST   /rest/user/login                                             text/plain baska yolda
+[OK ] 403 GET    /rest/products/search?q=%3Bwhoami                            whoami baska yolda
 
-== Kayıt ve giriş akışları ==
-[OK ] 201  yeni kullanıcı kaydı
-[OK ] 200  kullanıcı girişi (JWT token alındı)
-[OK ] 200  whoami uç noktası (I-2 istisnası)
-[OK ] 401  yanlış şifreyle giriş denemesi
-
-== Sepet işlemleri ==
-[OK ] 200  sepet içeriğini görüntüleme
-[OK ] 200  sepete ürün ekleme
-[OK ] 200  sepet adedi değiştirme (PUT /api/BasketItems/1, I-1 istisnası)
-[OK ] 200  kupon kodu uygulama (PUT /rest/basket/1/coupon, I-1 istisnası)
-[OK ] 200  sepetten ürün silme (DELETE /api/BasketItems/1, I-1 istisnası)
-
-== Yorum işlemleri ==
-[OK ] 200  ürüne yorum yazma (PUT /rest/products/1/reviews, I-1 istisnası)
-[OK ] 200  yorum düzenleme (PATCH /rest/products/reviews, I-1 istisnası)
-[OK ] 200  yorum beğenme (POST /rest/products/reviews/like)
-
-== Adres, kart ve cüzdan işlemleri ==
-[OK ] 201  yeni teslimat adresi ekleme
-[OK ] 200  adres düzenleme (PUT /api/Addresss/1, I-1 istisnası)
-[OK ] 201  yeni ödeme kartı ekleme
-[OK ] 200  teslimat seçenekleri listesi
-[OK ] 200  cüzdan bakiyesi sorgulama
-[OK ] 200  cüzdana bakiye yükleme (PUT /rest/wallet/balance, I-1 istisnası)
-[OK ] 200  siparişi tamamlama ve ödeme
-[OK ] 200  sipariş geçmişi listesi
-[OK ] 200  sipariş takibi (SY-1 sanal yama geçerli biçim)
-[OK ] 200  kart silme (DELETE /api/Cards/1, I-1 istisnası)
-[OK ] 200  adres silme (DELETE /api/Addresss/1, I-1 istisnası)
-
-== Destek ve geri bildirim akışları ==
-[OK ] 200  iletişim formu captcha sorgusu
-[OK ] 201  iletişim formu ve geri bildirim gönderimi
-[OK ] 204  PDF şikayet dosyası yükleme (multipart/form-data)
-
-== Özel karakterli parolalar ile kayıt ve giriş ==
-[OK ] 200  özel parola 1: Ayşe'nin-Sifresi1
-[OK ] 200  özel parola 2: kedi&kopek=2026
-[OK ] 200  özel parola 3: P@ss w0rd; <3
-[OK ] 200  özel parola 4: Sifre"123"!
-[OK ] 200  özel parola 5: 1q2w3e4r--
-[OK ] 200  özel parola 6: admin123#
-
-== Profil işlemleri ==
-[OK ] 200  parola değiştirme işlemi
-
-== İstisnaların sınır testleri (beklenen HTTP 403/405) ==
-[OK ] 403  PUT /api/Users/1 (I-1 kapsamında değil, 911100 engeli)
-[OK ] 403  DELETE /api/Products/1 (I-1 PUT izni var, DELETE yok)
-[OK ] 403  PATCH /api/BasketItems/1 (I-1 PUT/DELETE var, PATCH yok)
-[OK ] 403  PUT /api/BasketItems/1/../../Users/1 (dizin geçişi ile atlatma denemesi)
-[OK ] 405  TRACE / (nginx seviyesinde engellendi)
-[OK ] 403  GET /rest/user/whoami?cb=;cat /etc/passwd (I-2 parametre denetimi aktif)
-[OK ] 403  GET /rest/products/search?q=;whoami (I-2 sadece whoami yolunda geçerli)
-[OK ] 403  POST /rest/user/login (text/plain, I-3 socket.io dışına sızmıyor)
-
-Toplam 70 istek (62 normal akış + 8 sınır testi), 0 beklenmeyen sonuç.
+Toplam 70 istek, 0 beklenmeyen sonuc.

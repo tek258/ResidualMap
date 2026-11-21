@@ -4,32 +4,32 @@
     "target": "V001",
     "relation": "Entry Point",
     "technique_name": "Access via login",
-    "status": "zayifladi",
-    "cutting_control": "waf"
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   },
   {
     "source": "V001",
     "target": "node_target_admin",
     "relation": "Leads To",
     "technique_name": "Unauthorized Administrator Access",
-    "status": "zayifladi",
-    "cutting_control": "waf"
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   },
   {
     "source": "node_entry_search",
     "target": "V002",
     "relation": "Entry Point",
     "technique_name": "Access via search",
-    "status": "zayifladi",
-    "cutting_control": "waf"
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   },
   {
     "source": "V002",
     "target": "node_target_leak",
     "relation": "Leads To",
     "technique_name": "Sensitive Data Exfiltration & Database Exposure",
-    "status": "zayifladi",
-    "cutting_control": "waf"
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   },
   {
     "source": "node_entry_web",
@@ -116,16 +116,16 @@
     "target": "V008",
     "relation": "Entry Point",
     "technique_name": "Access via web",
-    "status": "acik",
-    "cutting_control": null
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   },
   {
     "source": "V008",
     "target": "node_target_admin",
     "relation": "Leads To",
     "technique_name": "Unauthorized Administrator Access",
-    "status": "acik",
-    "cutting_control": null
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   },
   {
     "source": "node_entry_web",
@@ -148,16 +148,16 @@
     "target": "V010",
     "relation": "Entry Point",
     "technique_name": "Access via api",
-    "status": "zayifladi",
-    "cutting_control": "waf"
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   },
   {
     "source": "V010",
     "target": "node_target_leak",
     "relation": "Leads To",
     "technique_name": "Sensitive Data Exfiltration & Database Exposure",
-    "status": "zayifladi",
-    "cutting_control": "waf"
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   },
   {
     "source": "node_entry_web",
@@ -180,32 +180,32 @@
     "target": "V012",
     "relation": "Entry Point",
     "technique_name": "Access via web",
-    "status": "acik",
-    "cutting_control": null
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   },
   {
     "source": "V012",
     "target": "node_target_account_takeover",
     "relation": "Leads To",
     "technique_name": "Account Takeover via Client-Side Attack",
-    "status": "acik",
-    "cutting_control": null
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   },
   {
     "source": "node_entry_web",
     "target": "V013",
     "relation": "Entry Point",
     "technique_name": "Access via web",
-    "status": "acik",
-    "cutting_control": null
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   },
   {
     "source": "V013",
     "target": "node_target_account_takeover",
     "relation": "Leads To",
     "technique_name": "Account Takeover via Client-Side Attack",
-    "status": "acik",
-    "cutting_control": null
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   },
   {
     "source": "node_entry_web",
@@ -229,7 +229,7 @@
     "relation": "Entry Point",
     "technique_name": "Access via login",
     "status": "zayifladi",
-    "cutting_control": "ids"
+    "cutting_control": "waf"
   },
   {
     "source": "V015",
@@ -237,55 +237,55 @@
     "relation": "Leads To",
     "technique_name": "Unauthorized Administrator Access",
     "status": "zayifladi",
-    "cutting_control": "ids"
+    "cutting_control": "waf"
   },
   {
     "source": "node_entry_web",
     "target": "V016",
     "relation": "Entry Point",
     "technique_name": "Access via web",
-    "status": "acik",
-    "cutting_control": null
+    "status": "zayifladi",
+    "cutting_control": "waf"
   },
   {
     "source": "V016",
     "target": "node_target_leak",
     "relation": "Leads To",
     "technique_name": "Sensitive Data Exfiltration & Database Exposure",
-    "status": "acik",
-    "cutting_control": null
+    "status": "zayifladi",
+    "cutting_control": "waf"
   },
   {
     "source": "node_entry_web",
     "target": "V017",
     "relation": "Entry Point",
     "technique_name": "Access via web",
-    "status": "acik",
-    "cutting_control": null
+    "status": "zayifladi",
+    "cutting_control": "waf"
   },
   {
     "source": "V017",
     "target": "node_target_account_takeover",
     "relation": "Leads To",
     "technique_name": "Account Takeover via Client-Side Attack",
-    "status": "acik",
-    "cutting_control": null
+    "status": "zayifladi",
+    "cutting_control": "waf"
   },
   {
     "source": "node_entry_web",
     "target": "V018",
     "relation": "Entry Point",
     "technique_name": "Access via web",
-    "status": "acik",
-    "cutting_control": null
+    "status": "kesildi",
+    "cutting_control": "waf"
   },
   {
     "source": "V018",
     "target": "node_target_leak",
     "relation": "Leads To",
     "technique_name": "Sensitive Data Exfiltration & Database Exposure",
-    "status": "acik",
-    "cutting_control": null
+    "status": "kesildi",
+    "cutting_control": "waf"
   },
   {
     "source": "node_entry_web",
@@ -324,16 +324,16 @@
     "target": "V021",
     "relation": "Entry Point",
     "technique_name": "Access via web",
-    "status": "acik",
-    "cutting_control": null
+    "status": "kesildi",
+    "cutting_control": "waf"
   },
   {
     "source": "V021",
     "target": "node_target_account_takeover",
     "relation": "Leads To",
     "technique_name": "Account Takeover via Client-Side Attack",
-    "status": "acik",
-    "cutting_control": null
+    "status": "kesildi",
+    "cutting_control": "waf"
   },
   {
     "source": "node_entry_dependency",
@@ -572,7 +572,7 @@
     "target": "V025",
     "relation": "Chains To",
     "technique_name": "password_hashes elde edilince mümkün olur",
-    "status": "zayifladi",
-    "cutting_control": "waf"
+    "status": "kesildi",
+    "cutting_control": "sanal_yama"
   }
 ]

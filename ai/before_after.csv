@@ -1,25 +1,25 @@
 vuln_id,risk_before,risk_after,fark,kontrol,durum,dayanak
-V001,9.5,3.8,5.7,"waf:azaltir, ids:tespit_eder",azaltildi,test
-V002,7.5,3.0,4.5,"waf:azaltir, ids:tespit_eder",azaltildi,test
+V001,9.5,0.38,9.12,"waf:azaltir, sanal_yama:engeller, ids:tespit_eder",engellendi,test
+V002,7.5,0.3,7.2,"waf:azaltir, sanal_yama:engeller, ids:tespit_eder",engellendi,test
 V003,6.8,0.68,6.12,sanal_yama:engeller,engellendi,test
 V004,7.0,6.02,0.98,ids:tespit_eder,test_edilmedi,gerekce
 V005,6.8,0.544,6.256,"waf:engeller, ids:tespit_eder",engellendi,test
 V006,5.8,5.8,0.0,yok,test_edilmedi,gerekce
 V007,5.8,5.8,0.0,yok,test_edilmedi,gerekce
-V008,9.5,9.5,0.0,yok,test_edilmedi,gerekce
+V008,9.5,0.95,8.55,sanal_yama:engeller,engellendi,test
 V009,7.5,0.75,6.75,iam:engeller,engellendi,test
-V010,5.8,2.1074,3.6926,"waf:azaltir, ids:tespit_eder, segmentasyon:azaltir",test_edilmedi,gerekce
+V010,5.8,0.116,5.684,"waf:azaltir, sanal_yama:engeller, ids:tespit_eder, segmentasyon:azaltir",engellendi,test
 V011,7.8,7.8,0.0,yok,test_edilmedi,gerekce
-V012,5.5,5.5,0.0,yok,test_edilmedi,gerekce
-V013,5.5,5.5,0.0,yok,test_edilmedi,gerekce
+V012,5.5,0.55,4.95,sanal_yama:engeller,engellendi,test
+V013,5.5,0.55,4.95,sanal_yama:engeller,engellendi,test
 V014,7.5,7.5,0.0,yok,test_edilmedi,gerekce
-V015,7.9,6.794,1.106,ids:tespit_eder,test_edilmedi,gerekce
-V016,3.8,3.8,0.0,yok,test_edilmedi,gerekce
-V017,2.8,2.8,0.0,yok,erisilebilir,test
-V018,4.5,4.5,0.0,yok,erisilebilir,test
+V015,7.9,3.16,4.74,"waf:azaltir, ids:tespit_eder",azaltildi,test
+V016,3.8,1.9,1.9,waf:azaltir,azaltildi,test
+V017,2.8,1.4,1.4,waf:azaltir,azaltildi,test
+V018,4.5,0.45,4.05,waf:engeller,engellendi,test
 V019,2.5,0.25,2.25,waf:engeller,engellendi,test
 V020,3.8,3.8,0.0,yok,erisilebilir,gerekce
-V021,2.3,2.3,0.0,yok,erisilebilir,test
+V021,2.3,0.23,2.07,waf:engeller,engellendi,test
 V022,9.3,9.3,0.0,yok,erisilebilir,varsayim
 V023,7.6,7.6,0.0,yok,erisilebilir,varsayim
 V024,7.8,7.8,0.0,yok,erisilebilir,varsayim

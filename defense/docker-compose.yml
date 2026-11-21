@@ -32,7 +32,7 @@ services:
       SERVER_HEADER: ""
       PARANOIA: "1"
       BLOCKING_PARANOIA: "1"
-      ANOMALY_INBOUND: "5"
+      ANOMALY_INBOUND: "${WAF_ANOMALY_INBOUND:-5}"  # yalnizca guvenlik payi denemesi icin degistirilir
       ANOMALY_OUTBOUND: "4"
       ALLOWED_METHODS: "GET HEAD POST OPTIONS"   # PUT/PATCH/DELETE yalnizca istisna dosyasindaki yollarda
       ACCESSLOG: /var/log/nginx/access.log

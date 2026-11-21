@@ -9,8 +9,10 @@ Kullanim:  python3 test-juice-flows.py [http://localhost:8080]
 Cikis kodu: tum adimlar beklenen kodu donerse 0, aksi halde 1.
 Sadece standart kutuphane kullanir.
 """
+import gzip
 import json
 import sys
+import zlib
 import time
 import uuid
 import urllib.error
@@ -45,9 +47,16 @@ def call(label, method, path, body=None, ctype="application/json", ok=(200, 201)
     req = urllib.request.Request(BASE + path, data=data, method=method, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=15) as r:
-            code, raw = r.status, r.read()
+            code, raw, enc = r.status, r.read(), r.headers.get("Content-Encoding", "")
     except urllib.error.HTTPError as e:
-        code, raw = e.code, e.read()
+        code, raw, enc = e.code, e.read(), e.headers.get("Content-Encoding", "")
+    # Tarayici gibi Accept-Encoding gonderiyoruz; Juice Shop 1 KB'tan buyuk yanitlari
+    # sikistiriyor ve urllib bunu kendisi acmiyor. Acmazsak JSON okunamaz (or. yorum
+    # listesi buyuyunce "yorum bulunamadi").
+    if "gzip" in enc:
+        raw = gzip.decompress(raw)
+    elif "deflate" in enc:
+        raw = zlib.decompress(raw)
     status = "OK " if code in ok else "HATA"
     results.append((status, code, method, path, label))
     print(f"[{status}] {code} {method:6} {path[:60]:60} {label}")
@@ -151,6 +160,15 @@ if rid:
     call("yorumu duzenle (PATCH)", "PATCH", "/rest/products/reviews",
          {"id": rid, "message": "Guncelleme: hala cok begeniyorum."})
     call("yorumu begen (POST)", "POST", "/rest/products/reviews", {"id": rid})
+else:
+    # Adimlar sessizce atlanmasin: yazilan yorum listede yoksa HATA say.
+    veri = yorumlar.get("data", []) if isinstance(yorumlar, dict) else []
+    bizim = [r for r in veri if "ornek.com.tr" in str(r.get("author", ""))]
+    print(f"  ! yorum bulunamadi: listede {len(veri)} yorum, bu scriptin yazdiklari {len(bizim)}, "
+          f"son yazar: {veri[-1].get('author') if veri else '-'}, aranan: {email}")
+    for label in ("yorumu duzenle (PATCH)", "yorumu begen (POST)"):
+        results.append(("HATA", 0, "-", "/rest/products/reviews", label + " - yorum bulunamadi"))
+        print(f"[HATA]   0 -      {'/rest/products/reviews':60} {label} - yorum bulunamadi")
 
 print("== Adres ve kart yonetimi ==")
 if aid:

@@ -99,7 +99,7 @@ def _aciklama(s):
     if s["fark"] > 0:
         neden = {
             "engellendi": "kontroller açıkken saldırı isteği engelleniyor",
-            "azaltildi": "saldırı isteği engelleniyor ama tam eşikte, güvenlik payı yok",
+            "azaltildi": "kontrol saldırıyı yalnızca kısmen karşılıyor (ayrıntı control_mapping.csv kanıtında)",
         }.get(d, "eşlemedeki beklenen etkiye göre azaldı, kontroller açıkken test edilmedi")
         return f"{s['kontrol']}: {neden}."
     if s["_kaynak"] == "Trivy":
