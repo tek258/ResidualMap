@@ -4,8 +4,9 @@ import datetime
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
-from config import GRAFANA_PANO, GRAFANA_URL, TARGETS
+from config import GRAFANA_PANO, GRAFANA_URL, GRAPH_DIR, TARGETS
 from pipeline import ai_skor, runs, saldiri_testi
 from steps import ortak
 
@@ -64,3 +65,26 @@ def render():
         if pano.ok:
             st.caption("Panoda olayların görünmesi 5-10 saniye sürebilir; zaman aralığını "
                        "\"Son 15 dakika\" seçin.")
+
+    _once_sonra_grafik()
+
+
+def _once_sonra_grafik():
+    """Ekibin sonuç dosyalarından kontroller öncesi ve sonrası grafik (graph/attack_graph_v2.html,
+    graph/attack_graph_after.html). İki grafik aynı yerleşimde çizildiği için sekmeler arasında
+    geçince yalnızca kenar ve düğüm durumları değişir."""
+    once, sonra = GRAPH_DIR / "attack_graph_v2.html", GRAPH_DIR / "attack_graph_after.html"
+    st.divider()
+    st.subheader("Kontroller öncesi ve sonrası grafik")
+    if not (once.exists() and sonra.exists()):
+        st.caption("Grafikler henüz üretilmedi: `python graph/visualize_graph.py` ve "
+                   "`python graph/visualize_graph.py --after`.")
+        return
+    st.caption("Ekibin dondurulmuş sonuçları (testle doğrulanmış kontroller). Sonra grafiğinde kesilen "
+               "kenarlar gri ve kesikli, zayıflayanlar turuncu; düğüm rengi kontrol sonrası risk. "
+               "İki grafik aynı yerleşimde: sekme değiştirince yalnızca durumlar değişir.")
+    t1, t2 = st.tabs(["Kontroller öncesi", "Kontroller sonrası"])
+    with t1:
+        components.html(ortak.grafik_html(once.read_text(encoding="utf-8")), height=980, scrolling=True)
+    with t2:
+        components.html(ortak.grafik_html(sonra.read_text(encoding="utf-8")), height=980, scrolling=True)

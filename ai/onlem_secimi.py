@@ -180,6 +180,82 @@ class Model:
                 "yol_riski": s["yol_riski"], "zafiyet_riski": s["zafiyet_riski"], "yol_durum": s["yol_durum"]}
 
 
+def senaryo_grafigi(m, onlem_idleri, guven, klasor, top_n=5):
+    """Seçilen önlemlerden sonraki saldırı grafiği (uygulamadaki 6. adım).
+
+    graph/cut_edges.py ve graph/paths_after.py ile aynı kurallar: kenarın zafiyeti
+    (girişte hedef, diğerlerinde kaynak) e >= 0.9 ise kesildi, > 0 ise zayıfladı. Kenar ve yol
+    dosyaları `klasor`'e yazılır, grafik graph/visualize_graph.py'nin kontrol sonrası moduyla
+    çizilir. Repodaki sonuç dosyalarına dokunulmaz. Dönüş: HTML dosyasının yolu."""
+    klasor = Path(klasor)
+    klasor.mkdir(parents=True, exist_ok=True)
+    s = m.senaryo(onlem_idleri, guven)
+    etk = s["etkinlik"]
+    secili = [o for o in m.katalog if o["onlem_id"] in set(onlem_idleri)]
+    onlem_of = {}
+    for o in secili:
+        for v in o["hedefler"]:
+            onlem_of.setdefault(v, []).append(o["onlem_id"])
+    bugun = {(e["source"], e["target"]): e.get("cutting_control")
+             for e in json.loads((KOK / "graph" / "edges_after.json").read_text(encoding="utf-8"))}
+
+    def kenar_zafiyeti(e):
+        src, tgt = e["source"], e["target"]
+        if src.startswith("node_entry_"):
+            return tgt if not tgt.startswith("node_target_") else None
+        return src if not src.startswith("node_target_") else None
+
+    def durum(x):
+        return "kesildi" if x >= KESILDI_ESIK else ("zayifladi" if x > 0 else "acik")
+
+    kenarlar = []
+    for e in json.loads((KOK / "graph" / "edges.json").read_text(encoding="utf-8")):
+        v = kenar_zafiyeti(e)
+        st = durum(etk.get(v, 0.0)) if v else "acik"
+        kontrol = ", ".join(onlem_of.get(v, [])) or bugun.get((e["source"], e["target"]))
+        kenarlar.append({**e, "status": st, "cutting_control": kontrol if st != "acik" else None})
+
+    yollar = []
+    for p in json.loads(PATHS.read_text(encoding="utf-8")):
+        zaf = [n for n in p["path"] if n.startswith("V")]
+        y = next((y for y in m.yollar if y["yol"] == p["path"]), None)
+        risk = (round(math.prod(pi * (1 - etk.get(v, 0.0)) for pi, v in zip(y["P"], zaf)) * y["C"], 4)
+                if y else None)
+        e = [etk.get(v, 0.0) for v in zaf]
+        yollar.append({**p, "path_risk_after": risk,
+                       "status": "kesildi" if any(x >= KESILDI_ESIK for x in e)
+                       else ("zayifladi" if any(x > 0 for x in e) else "acik")})
+    yollar.sort(key=lambda p: (p["path_risk_after"] is not None, p["path_risk_after"] or 0,
+                               p.get("secondary_v2_score", 0)), reverse=True)
+
+    (klasor / "edges_senaryo.json").write_text(json.dumps(kenarlar, ensure_ascii=False), encoding="utf-8")
+    (klasor / "paths_senaryo.json").write_text(json.dumps(yollar, ensure_ascii=False), encoding="utf-8")
+    with open(klasor / "residual_senaryo.csv", "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["vuln_id", "risk_before", "risk_after", "etkinlik", "kontroller"])
+        for v, rb in m.risk_before.items():
+            w.writerow([v, rb, round(rb * (1 - etk.get(v, 0.0)), 4), round(etk.get(v, 0.0), 4),
+                        ", ".join(onlem_of.get(v, [])) or "-"])
+    with open(klasor / "durum_senaryo.csv", "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["vuln_id", "durum"])
+        for v in m.risk_before:
+            w.writerow([v, {"kesildi": "kesildi (senaryo)", "zayifladi": "zayıfladı (senaryo)",
+                            "acik": "açık"}[durum(etk.get(v, 0.0))]])
+
+    spec = importlib.util.spec_from_file_location("visualize_graph", KOK / "graph" / "visualize_graph.py")
+    vg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(vg)
+    html = klasor / "attack_graph_senaryo.html"
+    vg.visualize_graph(edges_file=str(KOK / "graph" / "edges.json"), output_html=str(html),
+                       edges_after_file=str(klasor / "edges_senaryo.json"),
+                       paths_after_file=str(klasor / "paths_senaryo.json"),
+                       residual_csv=str(klasor / "residual_senaryo.csv"),
+                       after_csv=str(klasor / "durum_senaryo.csv"),
+                       baslik="Seçilen önlemlerden sonra (senaryo)", top_n=top_n)
+    return html
+
+
 def dogrula(m):
     """Uygulanmış kontrolleri (control_mapping.csv) önlem gibi sıfırdan ekleyip
     ai/residual_risk.csv'yi birebir üretmeli: motorun birleştirme mantığının kanıtı."""

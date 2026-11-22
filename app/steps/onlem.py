@@ -8,10 +8,15 @@ ile aynı motordan gelir; lab'a hiçbir şey uygulanmaz, istek gönderilmez.
 import importlib.util
 import math
 
+import tempfile
+from pathlib import Path
+
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
-from config import AI_DIR
+from config import AI_DIR, GRAPH_DIR
+from steps import ortak
 
 KESINTI_ADI = {"yok": "yok", "dusuk": "düşük", "var": "var"}
 TUR_ADI = {"yama": "Paket yaması", "kod": "Kod düzeltmesi", "yapilandirma": "Yapılandırma"}
@@ -26,6 +31,14 @@ def _motor():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod, mod.Model()
+
+
+@st.cache_data(show_spinner=False, max_entries=32)
+def _senaryo_html(secim, guven):
+    """Seçilen önlemlerden sonraki grafik (HTML metni). Geçici klasöre yazılır, repo değişmez."""
+    mod, m = _motor()
+    with tempfile.TemporaryDirectory() as d:
+        return Path(mod.senaryo_grafigi(m, list(secim), guven, d)).read_text(encoding="utf-8")
 
 
 @st.cache_data(show_spinner=False)
@@ -141,6 +154,21 @@ def render():
     df = pd.DataFrame(yollar).sort_values(["Sonra", "Önce"], ascending=False)
     yalniz = st.checkbox("Yalnızca bu önlemlerle değişen yollar", value=True)
     st.dataframe(df[df["Değişti"] == "evet"] if yalniz else df, hide_index=True, width="stretch")
+
+    st.subheader("Grafik")
+    st.caption("Kesilen kenarlar gri ve kesikli, zayıflayanlar turuncu; kırmızı yollar kalan en riskli 5 yol. "
+               "Düğüm rengi kalan risk. Üç grafik aynı yerleşimde: sekme değiştirince yalnızca durumlar değişir.")
+    t1, t2, t3 = st.tabs(["Seçilen önlemlerden sonra", "Bugün (kontroller açık)", "Kontroller öncesi"])
+    with t1:
+        with st.spinner("Grafik çiziliyor..."):
+            components.html(ortak.grafik_html(_senaryo_html(tuple(sorted(secim)), guven)), height=980, scrolling=True)
+    for sekme, dosya in ((t2, "attack_graph_after.html"), (t3, "attack_graph_v2.html")):
+        with sekme:
+            yol = GRAPH_DIR / dosya
+            if yol.exists():
+                components.html(ortak.grafik_html(yol.read_text(encoding="utf-8")), height=980, scrolling=True)
+            else:
+                st.caption(f"`graph/{dosya}` henüz üretilmedi.")
 
     with st.expander("Bütçeye göre kalan yol riski (ekibin raporundaki eğri)"):
         png = AI_DIR.parent / "report" / "img" / "onlem-butce.png"

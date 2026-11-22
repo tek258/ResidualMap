@@ -278,6 +278,9 @@ def visualize_graph(
     top_n=5,
     edges_after_file=None,
     paths_after_file=None,
+    residual_csv=None,
+    after_csv=None,
+    baslik=None,
 ):
     """edges_after_file verilirse kontrol sonrası grafik çizilir (S6-K3): kenarlar durumlarına göre
     renklenir, düğüm tonu kontrol sonrası riskten gelir, panel paths_after.json'daki sıralamayı
@@ -303,8 +306,9 @@ def visualize_graph(
         with open(edges_after_file, "r", encoding="utf-8") as f:
             edges = json.load(f)
         paths_file = paths_after_file or os.path.join(base_dir, "paths_after.json")
-        sonra_bilgi = _sonra_bilgileri(os.path.join(repo_root, "ai", "residual_risk.csv"),
-                                       os.path.join(repo_root, "inventory", "after_controls.csv"))
+        # residual_csv / after_csv: uygulamadaki senaryo grafiği kendi geçici dosyalarını verir
+        sonra_bilgi = _sonra_bilgileri(residual_csv or os.path.join(repo_root, "ai", "residual_risk.csv"),
+                                       after_csv or os.path.join(repo_root, "inventory", "after_controls.csv"))
 
     paths_data = []
     if os.path.exists(paths_file):
@@ -550,7 +554,7 @@ def visualize_graph(
         legend_html = legend_html.replace("__DURUM_SATIRLARI__", "").replace(
             "__RENK_KAYNAGI__", "AI skoru (yoksa CVSS)")
 
-    baslik = "Kontroller sonrası" if sonra else "Kontroller öncesi"
+    baslik = baslik or ("Kontroller sonrası" if sonra else "Kontroller öncesi")
     extra_html = (f'<div id="graph-title" style="position: fixed; top: 14px; left: 14px; z-index: 9999; '
                   f'color: #f5f7fa; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold;">'
                   f'Saldırı grafiği: {baslik}</div>\n')

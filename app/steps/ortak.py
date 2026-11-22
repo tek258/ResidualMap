@@ -20,3 +20,25 @@ def grafana(url):
 def ollama():
     from pipeline import ai_skor
     return ai_skor.ollama_durumu()
+
+
+_SIGDIR = """
+<script>
+// Uygulama ekliyor: sekmedeki grafik gizliyken sıfır genişlikle çiziliyor; görünür olunca
+// (iframe boyutu değişince) ve fizik yerleşimi bitince yeniden sığdırılır.
+(function () {
+  if (typeof network === "undefined") return;
+  var w = window.innerWidth;
+  function sigdir() { if (window.innerWidth > 0) network.fit({animation: false}); }
+  network.once("stabilizationIterationsDone", sigdir);
+  window.addEventListener("resize", function () {
+    if (window.innerWidth !== w) { w = window.innerWidth; sigdir(); }
+  });
+})();
+</script>
+"""
+
+
+def grafik_html(metin):
+    """pyvis HTML'ine sekme içinde doğru sığdırma betiğini ekler (dosyaya yazılmaz)."""
+    return metin.replace("</body>", _SIGDIR + "</body>") if "</body>" in metin else metin + _SIGDIR
