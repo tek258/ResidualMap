@@ -9,6 +9,7 @@ Lab hedefinin seçilmesinden saldırı grafiğine ve savunma testine kadar olan 
 | 3. Bulgular | Ham çıktıları ayrıştırır, dondurulmuş envanterle karşılaştırır, grafiğe girecek bulguları seçtirir |
 | 4. Grafik | Kenarları, saldırı yollarını ve etkileşimli grafiği üretir; CVSS ve AI (model v2) sıralamasını yan yana gösterir |
 | 5. Savunma testi | Lab'ın WAF doğrulama testini çalıştırır; sonuçlar savunma panosunda (Grafana) da görünür |
+| 6. Önlem seçimi | Aday önlemlerden (yama, kod düzeltmesi, yapılandırma) efor bütçesine göre en iyi bileşimi önerir; seçilen önlemlerle kalan riski ve değişen yolları gösterir. Ekibin sonuç dosyalarıyla çalışır, çalıştırma ve Docker gerektirmez |
 
 ## Değişmez kurallar
 
@@ -59,7 +60,8 @@ streamlit run app/main.py
 - **1. Hedef:** Docker ve Juice Shop konteyneri yeşil görünmeli → "Yeni çalıştırma başlat".
 - **2. Tarama:** "Canlı topla". İlk çalıştırmada ZAP (~1.5 GB) ve Trivy imajları indirilir. ZAP taraması birkaç dakika sürer. ZAP baseline pasiftir: hedefe saldırı isteği göndermez.
 - **3. ve 4. adım:** Örnek veriyle aynı.
-- **5. Savunma testi:** "Saldırı testlerini çalıştır". 13 istek gönderilir, beklenen sonuç 8 engelleme ve 0 beklenmeyen sonuçtur.
+- **5. Savunma testi:** "Saldırı testlerini çalıştır". 41 kontrol yapılır, beklenen sonuç 14 WAF engellemesi ve 0 beklenmeyen sonuçtur. Test en sonda hız sınırını denediği için ardından ~2 dakika giriş istekleri 429 alabilir.
+- **6. Önlem seçimi:** Lab gerektirmez. Bütçe kaydırıcısı en iyi bileşimi bulur (bütün alt kümeler denenir, ~1 sn); seçim elle değiştirilebilir.
 - **Savunma panosu:** Yan menüdeki "Savunma panosu (Grafana)" düğmesi panoyu yeni sekmede açar (`admin` / compose dosyasındaki lab şifresi).
 
 ### AI skoru (isteğe bağlı)

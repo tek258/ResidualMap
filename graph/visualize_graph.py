@@ -218,60 +218,6 @@ def _strip_bootstrap_cdn(html_content):
     return html_content
 
 
-HEDEF_SIRASI = ["node_target_admin", "node_target_rce", "node_target_account_takeover",
-                "node_target_leak", "node_target_dos"]
-
-
-def sabit_konumlar(edges, sutun=3, satir_araligi=78, sutun_araligi=230, grup_boslugu=1):
-    """Önce ve sonra grafiklerinin aynı yerleşimi kullanması için deterministik konumlar.
-
-    Girişler solda, zafiyetler ortada hedeflerine göre gruplanmış (her grup `sutun` sütunlu),
-    hedefler sağda. Konumlar yalnızca kenar listesinden hesaplanır; aynı edges.json her zaman
-    aynı resmi verir.
-    """
-    hedef_of, giris_of = {}, {}
-    for e in edges:
-        src, tgt, rel = e.get("source", ""), e.get("target", ""), e.get("relation", "")
-        if rel == "Leads To":
-            hedef_of[src] = tgt
-        elif rel == "Entry Point":
-            giris_of.setdefault(tgt, src)
-    zafiyetler = sorted(hedef_of, key=lambda v: (
-        HEDEF_SIRASI.index(hedef_of[v]) if hedef_of[v] in HEDEF_SIRASI else 99,
-        giris_of.get(v, "node_entry_~"), v))
-
-    gruplar = {}
-    for v in zafiyetler:
-        gruplar.setdefault(hedef_of[v], []).append(v)
-
-    konum, grup_y, satir = {}, {}, 0
-    for h, uyeler in gruplar.items():
-        for i, v in enumerate(uyeler):
-            x = (i % sutun - (sutun - 1) / 2) * sutun_araligi
-            y = (satir + i // sutun) * satir_araligi
-            konum[v] = (x, y)
-            grup_y.setdefault(h, []).append(y)
-        satir += -(-len(uyeler) // sutun) + grup_boslugu
-
-    orta_x = sutun_araligi * (sutun + 1) / 2 + 220
-    for h, ys in grup_y.items():
-        konum[h] = (orta_x, sum(ys) / len(ys))
-
-    girisler = {}
-    for v, g in giris_of.items():
-        if v in konum:
-            girisler.setdefault(g, []).append(konum[v][1])
-    sirali = sorted(girisler.items(), key=lambda kv: sum(kv[1]) / len(kv[1]))
-    son_y = None
-    for g, ys in sirali:
-        y = sum(ys) / len(ys)
-        if son_y is not None and y - son_y < 110:
-            y = son_y + 110
-        konum[g] = (-orta_x, y)
-        son_y = y
-    return konum
-
-
 def _write_html_utf8(net, output_html):
     if hasattr(net, "generate_html"):
         html_str = _strip_bootstrap_cdn(net.generate_html(notebook=False))
@@ -332,10 +278,14 @@ def visualize_graph(
     top_n=5,
     edges_after_file=None,
     paths_after_file=None,
+    residual_csv=None,
+    after_csv=None,
+    baslik=None,
 ):
     """edges_after_file verilirse kontrol sonrası grafik çizilir (S6-K3): kenarlar durumlarına göre
     renklenir, düğüm tonu kontrol sonrası riskten gelir, panel paths_after.json'daki sıralamayı
-    gösterir. Her iki modda da düğüm konumları edges.json'dan hesaplanır, iki grafik üst üste oturur."""
+    gösterir. Yerleşim fizik tabanlı (K3'ün barnes-hut ayarları); iki grafik aynı randomSeed ve
+    aynı düğüm/kenar sırasıyla çizildiği için aynı yerleşime oturur."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
     repo_root = os.path.abspath(os.path.join(base_dir, ".."))
     sonra = edges_after_file is not None
@@ -350,15 +300,15 @@ def visualize_graph(
 
     with open(edges_file, "r", encoding="utf-8") as f:
         edges = json.load(f)
-    konumlar = sabit_konumlar(edges)   # her iki modda edges.json'dan: aynı yerleşim
 
     sonra_bilgi = {}
     if sonra:
         with open(edges_after_file, "r", encoding="utf-8") as f:
             edges = json.load(f)
         paths_file = paths_after_file or os.path.join(base_dir, "paths_after.json")
-        sonra_bilgi = _sonra_bilgileri(os.path.join(repo_root, "ai", "residual_risk.csv"),
-                                       os.path.join(repo_root, "inventory", "after_controls.csv"))
+        # residual_csv / after_csv: uygulamadaki senaryo grafiği kendi geçici dosyalarını verir
+        sonra_bilgi = _sonra_bilgileri(residual_csv or os.path.join(repo_root, "ai", "residual_risk.csv"),
+                                       after_csv or os.path.join(repo_root, "inventory", "after_controls.csv"))
 
     paths_data = []
     if os.path.exists(paths_file):
@@ -398,12 +348,20 @@ def visualize_graph(
             top_edges.add((p_nodes[i], p_nodes[i + 1]))
 
     net = Network(
-        height="100vh",
+        height="900px",
         width="100%",
         directed=True,
         bgcolor="#141820",
         font_color="#f5f7fa",
         cdn_resources="in_line",   # vis.js sayfanın içinde: grafik internetsiz açılır
+    )
+
+    net.barnes_hut(
+        gravity=-4500,
+        central_gravity=0.3,
+        spring_length=160,
+        spring_strength=0.05,
+        damping=0.09,
     )
 
     added_nodes = set()
@@ -472,7 +430,6 @@ def visualize_graph(
         if node_id in path_rank_map:
             tooltip += f"\nTop-{top_n} Yol Sırası: {', '.join(path_rank_map[node_id])}"
 
-        x, y = konumlar.get(node_id, (0, 0))
         net.add_node(
             node_id,
             label=label,
@@ -480,8 +437,6 @@ def visualize_graph(
             color=color,
             shape=shape,
             size=size,
-            x=x,
-            y=y,
         )
 
     for edge in edges:
@@ -532,15 +487,21 @@ def visualize_graph(
             width=edge_width,
             dashes=dashes,
             arrows="to",
-            # zincir kenarı aynı sütundaki düğümlerin üstünden geçmesin: yana kavis
-            **({"smooth": {"enabled": True, "type": "curvedCW", "roundness": 0.35}}
-               if relation == "Chains To" else {}),
         )
 
     net.set_options("""
     {
-      "physics": {"enabled": false},
-      "edges": {"smooth": {"enabled": true, "type": "continuous", "roundness": 0.3}},
+      "physics": {
+        "enabled": true,
+        "barnesHut": {
+          "gravitationalConstant": -4500,
+          "centralGravity": 0.3,
+          "springLength": 160,
+          "springConstant": 0.05,
+          "damping": 0.09
+        }
+      },
+      "layout": {"randomSeed": 42},
       "interaction": {
         "dragNodes": true,
         "zoomView": true,
@@ -593,7 +554,7 @@ def visualize_graph(
         legend_html = legend_html.replace("__DURUM_SATIRLARI__", "").replace(
             "__RENK_KAYNAGI__", "AI skoru (yoksa CVSS)")
 
-    baslik = "Kontroller sonrası" if sonra else "Kontroller öncesi"
+    baslik = baslik or ("Kontroller sonrası" if sonra else "Kontroller öncesi")
     extra_html = (f'<div id="graph-title" style="position: fixed; top: 14px; left: 14px; z-index: 9999; '
                   f'color: #f5f7fa; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold;">'
                   f'Saldırı grafiği: {baslik}</div>\n')
@@ -628,18 +589,6 @@ def visualize_graph(
 
     with open(output_html, "r", encoding="utf-8") as f:
         html_content = _strip_bootstrap_cdn(f.read())
-    # Açılışta grafiği sola yasla: sağ üstteki panel düğümlerin üstüne binmesin.
-    extra_html += """
-    <script>
-    if (typeof network !== "undefined") {
-      // vis.js ilk çizimde kendi sığdırmasını yapıyor; ayarı ondan sonra uygula
-      setTimeout(function () {
-        network.fit({animation: false});
-        var s = network.getScale() * 0.9, p = network.getViewPosition();
-        network.moveTo({scale: s, position: {x: p.x + 190 / s, y: p.y + 20 / s}, animation: false});
-      }, 400);
-    }
-    </script>"""
     if "</body>" in html_content:
         html_content = html_content.replace("</body>", extra_html + "\n</body>")
     with open(output_html, "w", encoding="utf-8") as f:

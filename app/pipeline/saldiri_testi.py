@@ -17,7 +17,11 @@ from pathlib import Path
 from config import REPO_ROOT
 
 BETIK = REPO_ROOT / "defense" / "test-waf.sh"
-SATIR_RE = re.compile(r"^(?P<etiket>.*?)\s+-> HTTP (?P<kod>\d{3})\s+\(beklenen (?P<bek>\d{3})\) (?P<durum>OK|HATA)\s*$")
+# İki satır biçimi: "etiket -> HTTP 403  (beklenen 403) OK" (istek satırları) ve
+# "etiket -> <ayrıntı> OK" (başlık, hata sayfası, hız sınırı kontrolleri).
+SATIR_RE = re.compile(r"^(?P<etiket>.*?)\s+-> (?P<detay>.*?)\s(?P<durum>OK|HATA)\s*$")
+KOD_RE = re.compile(r"HTTP (?P<kod>\d{3})")
+BEK_RE = re.compile(r"\(beklenen (?P<bek>\d{3})\)")
 BOLUM_RE = re.compile(r"^== (?P<ad>.+?) ==$")
 ZAFIYET_RE = re.compile(r"\bV\d{3}\b")
 # Etiketinde kayıt numarası olmayan satırlar: S5-K2 README'sindeki eşleme
@@ -73,15 +77,21 @@ def ayristir(cikti):
             continue
         m = SATIR_RE.match(line.rstrip())
         if m:
-            kod = m["kod"]
+            km, bm = KOD_RE.search(m["detay"]), BEK_RE.search(m["detay"])
+            kod = km["kod"] if km else None
             vid = ZAFIYET_RE.search(m["etiket"])
+            if bm:   # istek satırı
+                sonuc = ("engellendi (WAF)" if kod == "403" else "sınırlandı (429)" if kod == "429"
+                         else "geçti" if kod and kod.startswith(("2", "3", "4")) else "hata")
+            else:    # kontrol satırı: ayrıntı olduğu gibi (başlık değeri, 429 sayısı, yığın izi)
+                sonuc = re.sub(r"\s+", " ", m["detay"]).strip()[:70]
             satirlar.append({
                 "Bölüm": bolum,
                 "İstek": m["etiket"].strip(),
                 "Zafiyet": vid.group(0) if vid else ETIKET_ZAFIYET.get(m["etiket"].strip(), "-"),
-                "HTTP": int(kod),
-                "Beklenen": int(m["bek"]),
-                "Sonuç": "engellendi (WAF)" if kod == "403" else ("geçti" if kod.startswith(("2", "4")) else "hata"),
+                "HTTP": int(kod) if kod else None,
+                "Beklenen": int(bm["bek"]) if bm else None,
+                "Sonuç": sonuc,
                 "Durum": "✅" if m["durum"] == "OK" else "❌",
             })
     return satirlar
@@ -103,6 +113,6 @@ def calistir(target, timeout=120):
         return Sonuc(False, "Test çıktısı okunamadı.", cikti=r.stdout + r.stderr, sure=time.time() - t0)
     beklenmeyen = sum(s["Durum"] == "❌" for s in satirlar)
     engellenen = sum(s["HTTP"] == 403 for s in satirlar)
-    mesaj = (f"{len(satirlar)} istek gönderildi: {engellenen} tanesi WAF tarafından engellendi, "
+    mesaj = (f"{len(satirlar)} kontrol: {engellenen} saldırı isteği WAF tarafından engellendi, "
              f"{beklenmeyen} beklenmeyen sonuç.")
     return Sonuc(beklenmeyen == 0, mesaj, satirlar, r.stdout, time.time() - t0)
