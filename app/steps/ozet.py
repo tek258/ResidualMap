@@ -4,7 +4,6 @@ import csv
 import json
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 from config import AI_DIR, GRAPH_DIR
 from steps import ortak, tema
@@ -54,13 +53,9 @@ def render():
     st.write("")
     st.markdown("#### Saldırı grafiği: kontroller öncesi ve sonrası")
     st.caption("Kesilen kenarlar gri ve kesikli, zayıflayanlar turuncu. Düğümlerin üstüne gelince ayrıntı görünür.")
-    t1, t2 = st.tabs(["Kontroller sonrası", "Kontroller öncesi"])
-    for sekme, dosya in ((t1, "attack_graph_after.html"), (t2, "attack_graph_v2.html")):
-        with sekme:
-            yol = GRAPH_DIR / dosya
-            if yol.exists():
-                components.html(ortak.grafik_html(yol.read_text(encoding="utf-8"), yukseklik=620),
-                                height=700, scrolling=False)
+    dosyalar = {"Kontroller sonrası": "attack_graph_after.html", "Kontroller öncesi": "attack_graph_v2.html"}
+    secili = ortak.grafik_secici(list(dosyalar), "ozet_grafik")
+    ortak.grafik_goster(GRAPH_DIR / dosyalar[secili], yukseklik=700, tuval=620)
     st.write("")
     a, b, _ = st.columns([1, 1, 3])
     a.button("Demoyu başlat →", type="primary", width="stretch", on_click=_git, args=("1. Hedef",))

@@ -81,9 +81,6 @@ def _once_sonra_grafik():
         return
     st.caption("Ekibin dondurulmuş sonuçları (testle doğrulanmış kontroller). Sonra grafiğinde kesilen "
                "kenarlar gri ve kesikli, zayıflayanlar turuncu; düğüm rengi kontrol sonrası risk. "
-               "İki grafik aynı yerleşimde: sekme değiştirince yalnızca durumlar değişir.")
-    t1, t2 = st.tabs(["Kontroller öncesi", "Kontroller sonrası"])
-    with t1:
-        components.html(ortak.grafik_html(once.read_text(encoding="utf-8")), height=980, scrolling=True)
-    with t2:
-        components.html(ortak.grafik_html(sonra.read_text(encoding="utf-8")), height=980, scrolling=True)
+               "İki grafik aynı yerleşimde: seçimi değiştirince yalnızca durumlar değişir.")
+    dosyalar = {"Kontroller öncesi": once, "Kontroller sonrası": sonra}
+    ortak.grafik_goster(dosyalar[ortak.grafik_secici(list(dosyalar), "savunma_grafik")])
