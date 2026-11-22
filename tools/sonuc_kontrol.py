@@ -49,6 +49,11 @@ DOSYALAR = [
      "Rapor görseli"),
     ("report/img/graf-sonra.png", "tarayıcı ekran görüntüsü", "attack_graph_after.html, 1600×1000, ölçek 2",
      "Rapor görseli"),
+    ("inventory/onlem_katalogu.csv", "elle (ek savunma)", "-", "Aday önlemler: etki, efor, kesinti, gerekçe"),
+    ("ai/onlem_tekil.csv", "ai/onlem_secimi.py", "python ai/onlem_secimi.py", "Önlemler tek başına"),
+    ("ai/onlem_secimi.json", "ai/onlem_secimi.py", "python ai/onlem_secimi.py", "Bütçeye göre en iyi bileşim"),
+    ("docs/onlem-secimi.md", "ai/onlem_secimi.py", "python ai/onlem_secimi.py", "Önlem seçimi özeti"),
+    ("report/img/onlem-butce.png", "ai/onlem_secimi.py", "python ai/onlem_secimi.py", "Rapor grafiği"),
 ]
 METIN = {".csv", ".json", ".md", ".html", ".py", ".txt"}
 
@@ -136,6 +141,27 @@ def tutarlilik_kontrolleri():
     notlar.append(f"Toplam artık risk: {once:.2f} -> {sonra:.2f} (%{(once - sonra) / once * 100:.2f})")
 
 
+def onlem_kontrolleri():
+    """Önlem motoru, uygulanmış kontrolleri sıfırdan ekleyince residual_risk.csv'yi üretmeli;
+    onlem_secimi.json'daki taban mevcut sonuçlarla aynı olmalı."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("onlem_secimi", KOK / "ai" / "onlem_secimi.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    m = mod.Model()
+    fark, _, sonra, _ = mod.dogrula(m)
+    kontrol(not fark, f"onlem_secimi doğrulaması residual_risk.csv ile farklı: {sorted(fark)}")
+    secim = json_oku("ai/onlem_secimi.json")
+    kontrol(abs(secim["taban"]["yol_riski"] - sonra["yol_riski"]) < 1e-6,
+            "onlem_secimi.json tabanı güncel değil: python ai/onlem_secimi.py")
+    katalog = {r["onlem_id"] for r in csv_oku("inventory/onlem_katalogu.csv")}
+    tekil = {r["onlem_id"] for r in csv_oku("ai/onlem_tekil.csv")}
+    kontrol(katalog == tekil, "onlem_tekil.csv katalogla uyuşmuyor: python ai/onlem_secimi.py")
+    en = secim["egri"]["tum"]["kesin"][-1]
+    notlar.append(f"Önlem seçimi: {len(katalog)} aday, bütün önlemlerle ({en['efor_saat']:.0f} sa) yol riski "
+                  f"{secim['taban']['yol_riski']:.2f} -> {en['yol_riski']:.2f}")
+
+
 def kayit_sayisi(yol):
     p = KOK / yol
     if p.suffix == ".csv":
@@ -184,7 +210,8 @@ def belge_yaz():
         "5. `python ai/before_after.py`",
         "6. `python graph/visualize_graph.py` ve `python graph/visualize_graph.py --after`; "
         "PNG'ler tarayıcıdan 1600×1000 pencerede alınır",
-        "7. `python tools/sonuc_kontrol.py`",
+        "7. `python ai/onlem_secimi.py` (önlem kataloğu ya da residual_risk değişirse)",
+        "8. `python tools/sonuc_kontrol.py`",
         "",
         "## Kontrol sonucu",
         "",
@@ -205,6 +232,7 @@ def main():
     if not eksik:
         zafiyet_kontrolleri()
         tutarlilik_kontrolleri()
+        onlem_kontrolleri()
 
     for n in notlar:
         print(n)

@@ -15,10 +15,12 @@ def render():
     meta = runs.load_meta(run_id)
     st.header("5. Savunma testi")
     st.markdown("**Kontroller bu zafiyetleri yakalıyor mu?**")
-    st.caption("Lab'ın WAF doğrulama testini (`defense/test-waf.sh`) çalıştırır: grafikteki "
-               "V001, V003 ve V005 başta olmak üzere SQLi, XSS, dizin geçişi ve tarayıcı yükleri "
-               "yalnızca kendi lab hedefimize gönderilir. Her saldırının yanında aynı uç noktaya "
-               "zararsız bir kontrol isteği vardır (yanlış pozitif olmadığını gösterir).")
+    st.caption("Lab'ın savunma doğrulama testini (`defense/test-waf.sh`) çalıştırır: grafikteki "
+               "zafiyetlere (SQLi, XSS, rol atama, XXE, CSRF, açık yönlendirme) ait test istekleri, "
+               "güvenlik başlıkları, hata sayfası ve hız sınırı kontrolleri yalnızca kendi lab "
+               "hedefimize gönderilir. Her saldırının yanında aynı uç noktaya zararsız bir kontrol "
+               "isteği vardır (yanlış pozitif olmadığını gösterir). Test en sonda hız sınırını "
+               "denediği için ardından ~2 dakika giriş istekleri 429 alabilir.")
     target = TARGETS[st.session_state["target"]]
     docker, konteyner = ortak.durumlar(target["konteyner"])
     hazir, neden = saldiri_testi.hazir_mi()
@@ -53,6 +55,9 @@ def render():
         rdir = runs.run_dir(run_id)
         bilgi = {r["Kayıt"]: r for r in ai_skor.tablo(rdir)} if (rdir / "inventory.csv").exists() else {}
         df = pd.DataFrame(son["satirlar"])
+        for sutun in ("HTTP", "Beklenen"):   # kontrol satırlarında boş
+            if sutun in df:
+                df[sutun] = df[sutun].astype("Int64")
         df.insert(3, "Zafiyet adı", df["Zafiyet"].map(lambda v: bilgi.get(v, {}).get("Ad", "")))
         df.insert(4, "AI skoru", df["Zafiyet"].map(lambda v: bilgi.get(v, {}).get("AI skoru")))
         st.dataframe(df, hide_index=True, use_container_width=True)

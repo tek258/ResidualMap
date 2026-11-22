@@ -9,11 +9,11 @@ import streamlit as st
 
 from config import GRAFANA_PANO, GRAFANA_URL, TARGETS
 from pipeline import runs
-from steps import bulgular, grafik, hedef, ortak, savunma, tarama
+from steps import bulgular, grafik, hedef, onlem, ortak, savunma, tarama
 
 st.set_page_config(page_title="ResidualMap", page_icon="🛡️", layout="wide")
 
-ADIMLAR = ["1. Hedef", "2. Tarama", "3. Bulgular", "4. Grafik", "5. Savunma testi"]
+ADIMLAR = ["1. Hedef", "2. Tarama", "3. Bulgular", "4. Grafik", "5. Savunma testi", "6. Önlem seçimi"]
 
 st.session_state.setdefault("run_id", None)
 st.session_state.setdefault("target", None)
@@ -42,6 +42,8 @@ with st.sidebar:
 
 if adim == "1. Hedef":
     hedef.render()
+elif adim == "6. Önlem seçimi":
+    onlem.render()  # ekibin dondurulmuş sonuçlarıyla çalışır, çalıştırma gerektirmez
 elif not st.session_state["run_id"]:
     st.header(adim)
     st.warning("Önce 1. adımda bir çalıştırma başlatın ya da önceki bir çalıştırmayı açın.")

@@ -1,0 +1,16 @@
+onlem_id,ad,tur,hedefler,efor_saat,kesinti,yol_riski_dususu,zafiyet_riski_dususu,verim_saat_basina,kapanan_yol_test_edilirse
+K02,Ön yüzdeki gömülü kimlik bilgisini kaldırma,kod,V014,1.0,dusuk,6.3,4.725,6.3,1
+Y10,Taban imaj güncellemesi (libc6),yama,V035;V036,3.0,var,12.6,9.513,4.2,2
+Y07,moment yükseltmesi,yama,V031;V032,3.0,dusuk,10.08,9.45,3.36,2
+Y04,decompress yükseltmesi,yama,V027,2.0,dusuk,6.3,4.914,3.15,1
+K04,Arama sonucunu güvenli gösterme (bypassSecurityTrustHtml kaldırma),kod,V004;V020,2.0,dusuk,5.2622,6.1866,2.6311,2
+Y06,tar yükseltmesi,yama,V029,2.0,dusuk,4.5952,4.599,2.2976,1
+Y05,express ve proxy-addr yükseltmesi,yama,V028,3.0,dusuk,6.3,4.599,2.1,1
+Y02,lodash yükseltmesi,yama,V023;V024,4.0,dusuk,8.3015,9.702,2.0754,2
+Y09,multer yükseltmesi,yama,V034,2.0,dusuk,3.78,4.41,1.89,1
+K01,Sepet sahiplik kontrolü (IDOR),kod,V006;V007,4.0,dusuk,7.3524,7.308,1.8381,2
+Y03,crypto-js yükseltmesi,yama,V025;V026,2.0,dusuk,3.1319,9.198,1.5659,1
+K05,Admin parolası değişimi ve parola politikası,yapilandirma,V015,1.0,yok,1.4399,1.9908,1.4399,1
+Y08,ws (socket.io) yükseltmesi,yama,V033,3.0,dusuk,3.78,4.914,1.26,1
+Y01,jsonwebtoken ve express-jwt yükseltmesi,yama,V022;V030,8.0,var,8.4004,10.773,1.0501,2
+K03,Güvenlik sorusu yerine e-posta doğrulamalı sıfırlama,kod,V011,8.0,dusuk,2.8799,4.914,0.36,1

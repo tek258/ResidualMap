@@ -1,0 +1,4322 @@
+{
+ "guven": "gerekce",
+ "taban": {
+  "zafiyet_riski": 163.32999999999998,
+  "yol_riski": 154.84796399999996,
+  "yol_durum": {
+   "kesildi": 13,
+   "acik": 19,
+   "zayifladi": 4
+  }
+ },
+ "toplam_efor": 48.0,
+ "egri": {
+  "tum": {
+   "kesin": [
+    {
+     "butce": 0,
+     "onlemler": [],
+     "efor_saat": 0,
+     "yol_riski": 154.84796399999996,
+     "zafiyet_riski": 163.32999999999998,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 19,
+      "zayifladi": 4
+     }
+    },
+    {
+     "butce": 1,
+     "onlemler": [
+      "K02"
+     ],
+     "efor_saat": 1.0,
+     "yol_riski": 148.54796399999998,
+     "zafiyet_riski": 158.605,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 18,
+      "zayifladi": 5
+     }
+    },
+    {
+     "butce": 2,
+     "onlemler": [
+      "K02",
+      "K05"
+     ],
+     "efor_saat": 2.0,
+     "yol_riski": 147.10803599999997,
+     "zafiyet_riski": 156.61419999999998,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 18,
+      "zayifladi": 5
+     }
+    },
+    {
+     "butce": 3,
+     "onlemler": [
+      "Y04",
+      "K02"
+     ],
+     "efor_saat": 3.0,
+     "yol_riski": 142.24796399999997,
+     "zafiyet_riski": 153.691,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 17,
+      "zayifladi": 6
+     }
+    },
+    {
+     "butce": 4,
+     "onlemler": [
+      "Y10",
+      "K02"
+     ],
+     "efor_saat": 4.0,
+     "yol_riski": 135.94796399999998,
+     "zafiyet_riski": 149.09199999999998,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 16,
+      "zayifladi": 7
+     }
+    },
+    {
+     "butce": 5,
+     "onlemler": [
+      "Y10",
+      "K02",
+      "K05"
+     ],
+     "efor_saat": 5.0,
+     "yol_riski": 134.50803599999998,
+     "zafiyet_riski": 147.1012,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 16,
+      "zayifladi": 7
+     }
+    },
+    {
+     "butce": 6,
+     "onlemler": [
+      "Y04",
+      "Y10",
+      "K02"
+     ],
+     "efor_saat": 6.0,
+     "yol_riski": 129.647964,
+     "zafiyet_riski": 144.178,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 15,
+      "zayifladi": 8
+     }
+    },
+    {
+     "butce": 7,
+     "onlemler": [
+      "Y07",
+      "Y10",
+      "K02"
+     ],
+     "efor_saat": 7.0,
+     "yol_riski": 125.86796399999999,
+     "zafiyet_riski": 139.642,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 14,
+      "zayifladi": 9
+     }
+    },
+    {
+     "butce": 8,
+     "onlemler": [
+      "Y04",
+      "Y10",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 8.0,
+     "yol_riski": 124.38578064,
+     "zafiyet_riski": 137.9914,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 14,
+      "zayifladi": 9
+     }
+    },
+    {
+     "butce": 9,
+     "onlemler": [
+      "Y04",
+      "Y07",
+      "Y10",
+      "K02"
+     ],
+     "efor_saat": 9.0,
+     "yol_riski": 119.56796399999998,
+     "zafiyet_riski": 134.728,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 13,
+      "zayifladi": 10
+     }
+    },
+    {
+     "butce": 10,
+     "onlemler": [
+      "Y04",
+      "Y07",
+      "Y10",
+      "K02",
+      "K05"
+     ],
+     "efor_saat": 10.0,
+     "yol_riski": 118.12803599999997,
+     "zafiyet_riski": 132.7372,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 13,
+      "zayifladi": 10
+     }
+    },
+    {
+     "butce": 11,
+     "onlemler": [
+      "Y04",
+      "Y07",
+      "Y10",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 11.0,
+     "yol_riski": 114.30578063999998,
+     "zafiyet_riski": 128.5414,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 12,
+      "zayifladi": 11
+     }
+    },
+    {
+     "butce": 12,
+     "onlemler": [
+      "Y04",
+      "Y07",
+      "Y10",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 12.0,
+     "yol_riski": 112.86585263999997,
+     "zafiyet_riski": 126.5506,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 12,
+      "zayifladi": 11
+     }
+    },
+    {
+     "butce": 13,
+     "onlemler": [
+      "Y04",
+      "Y06",
+      "Y07",
+      "Y10",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 13.0,
+     "yol_riski": 109.71056064,
+     "zafiyet_riski": 123.94239999999999,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 11,
+      "zayifladi": 12
+     }
+    },
+    {
+     "butce": 14,
+     "onlemler": [
+      "Y04",
+      "Y05",
+      "Y07",
+      "Y10",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 14.0,
+     "yol_riski": 108.00578064,
+     "zafiyet_riski": 123.94239999999999,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 11,
+      "zayifladi": 12
+     }
+    },
+    {
+     "butce": 15,
+     "onlemler": [
+      "Y04",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 15.0,
+     "yol_riski": 105.93056064,
+     "zafiyet_riski": 119.5324,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 10,
+      "zayifladi": 13
+     }
+    },
+    {
+     "butce": 16,
+     "onlemler": [
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y10",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 16.0,
+     "yol_riski": 103.41056063999999,
+     "zafiyet_riski": 119.3434,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 10,
+      "zayifladi": 13
+     }
+    },
+    {
+     "butce": 17,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y06",
+      "Y07",
+      "Y10",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 17.0,
+     "yol_riski": 101.40905063999998,
+     "zafiyet_riski": 114.2404,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 9,
+      "zayifladi": 14
+     }
+    },
+    {
+     "butce": 18,
+     "onlemler": [
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 18.0,
+     "yol_riski": 99.63056063999998,
+     "zafiyet_riski": 114.93339999999999,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 9,
+      "zayifladi": 14
+     }
+    },
+    {
+     "butce": 19,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 19.0,
+     "yol_riski": 97.62905063999997,
+     "zafiyet_riski": 109.8304,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 8,
+      "zayifladi": 15
+     }
+    },
+    {
+     "butce": 20,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y10",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 20.0,
+     "yol_riski": 95.10905063999998,
+     "zafiyet_riski": 109.6414,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 8,
+      "zayifladi": 15
+     }
+    },
+    {
+     "butce": 21,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y10",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 21.0,
+     "yol_riski": 93.66912263999997,
+     "zafiyet_riski": 107.6506,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 8,
+      "zayifladi": 15
+     }
+    },
+    {
+     "butce": 22,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 22.0,
+     "yol_riski": 91.32905063999998,
+     "zafiyet_riski": 105.2314,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 7,
+      "zayifladi": 16
+     }
+    },
+    {
+     "butce": 23,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 23.0,
+     "yol_riski": 89.88912263999997,
+     "zafiyet_riski": 103.2406,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 7,
+      "zayifladi": 16
+     }
+    },
+    {
+     "butce": 24,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y10",
+      "K01",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 24.0,
+     "yol_riski": 87.75669863999998,
+     "zafiyet_riski": 102.3334,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 6,
+      "zayifladi": 17
+     }
+    },
+    {
+     "butce": 25,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 25.0,
+     "yol_riski": 86.31677063999997,
+     "zafiyet_riski": 100.3426,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 6,
+      "zayifladi": 17
+     }
+    },
+    {
+     "butce": 26,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 26.0,
+     "yol_riski": 83.97669864,
+     "zafiyet_riski": 97.9234,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 27,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 27.0,
+     "yol_riski": 82.53677063999999,
+     "zafiyet_riski": 95.9326,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 28,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 28.0,
+     "yol_riski": 80.84484264,
+     "zafiyet_riski": 88.7254,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 29,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 79.40491463999999,
+     "zafiyet_riski": 86.7346,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 30,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 30.0,
+     "yol_riski": 78.75677064,
+     "zafiyet_riski": 91.0186,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 31,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 31.0,
+     "yol_riski": 77.06484264,
+     "zafiyet_riski": 83.8114,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 3,
+      "zayifladi": 20
+     }
+    },
+    {
+     "butce": 32,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 32.0,
+     "yol_riski": 75.62491464,
+     "zafiyet_riski": 81.8206,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 3,
+      "zayifladi": 20
+     }
+    },
+    {
+     "butce": 33,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 32.0,
+     "yol_riski": 75.62491464,
+     "zafiyet_riski": 81.8206,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 3,
+      "zayifladi": 20
+     }
+    },
+    {
+     "butce": 34,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 34.0,
+     "yol_riski": 75.57627864,
+     "zafiyet_riski": 87.1504,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 20,
+      "acik": 3
+     }
+    },
+    {
+     "butce": 35,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 35.0,
+     "yol_riski": 74.13635063999999,
+     "zafiyet_riski": 85.1596,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 20,
+      "acik": 3
+     }
+    },
+    {
+     "butce": 36,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 36.0,
+     "yol_riski": 72.44442264,
+     "zafiyet_riski": 77.9524,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 21,
+      "acik": 2
+     }
+    },
+    {
+     "butce": 37,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 71.00449463999999,
+     "zafiyet_riski": 75.9616,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 21,
+      "acik": 2
+     }
+    },
+    {
+     "butce": 38,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 38.0,
+     "yol_riski": 70.35635063999999,
+     "zafiyet_riski": 80.2456,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 21,
+      "acik": 2
+     }
+    },
+    {
+     "butce": 39,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 39.0,
+     "yol_riski": 68.66442264,
+     "zafiyet_riski": 73.0384,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 40,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 41,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 42,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 43,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 44,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 45,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 46,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 47,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K03",
+      "K04"
+     ],
+     "efor_saat": 47.0,
+     "yol_riski": 65.78456664000001,
+     "zafiyet_riski": 68.1244,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 23
+     }
+    },
+    {
+     "butce": 48,
+     "onlemler": [
+      "Y01",
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "Y10",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 48.0,
+     "yol_riski": 64.34463864,
+     "zafiyet_riski": 66.1336,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 23
+     }
+    }
+   ],
+   "acgozlu": [
+    {
+     "butce": 0,
+     "onlemler": [],
+     "efor_saat": 0.0,
+     "yol_riski": 154.84796399999996,
+     "zafiyet_riski": 163.32999999999998,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 19,
+      "zayifladi": 4
+     }
+    },
+    {
+     "butce": 1,
+     "onlemler": [
+      "K02"
+     ],
+     "efor_saat": 1.0,
+     "yol_riski": 148.54796399999998,
+     "zafiyet_riski": 158.605,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 18,
+      "zayifladi": 5
+     }
+    },
+    {
+     "butce": 2,
+     "onlemler": [
+      "K02",
+      "K05"
+     ],
+     "efor_saat": 2.0,
+     "yol_riski": 147.10803599999997,
+     "zafiyet_riski": 156.61419999999998,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 18,
+      "zayifladi": 5
+     }
+    },
+    {
+     "butce": 3,
+     "onlemler": [
+      "K02",
+      "Y04"
+     ],
+     "efor_saat": 3.0,
+     "yol_riski": 142.24796399999997,
+     "zafiyet_riski": 153.691,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 17,
+      "zayifladi": 6
+     }
+    },
+    {
+     "butce": 4,
+     "onlemler": [
+      "K02",
+      "Y10"
+     ],
+     "efor_saat": 4.0,
+     "yol_riski": 135.94796399999998,
+     "zafiyet_riski": 149.09199999999998,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 16,
+      "zayifladi": 7
+     }
+    },
+    {
+     "butce": 5,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "K05"
+     ],
+     "efor_saat": 5.0,
+     "yol_riski": 134.50803599999998,
+     "zafiyet_riski": 147.1012,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 16,
+      "zayifladi": 7
+     }
+    },
+    {
+     "butce": 6,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y04"
+     ],
+     "efor_saat": 6.0,
+     "yol_riski": 129.647964,
+     "zafiyet_riski": 144.178,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 15,
+      "zayifladi": 8
+     }
+    },
+    {
+     "butce": 7,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07"
+     ],
+     "efor_saat": 7.0,
+     "yol_riski": 125.86796399999999,
+     "zafiyet_riski": 139.642,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 14,
+      "zayifladi": 9
+     }
+    },
+    {
+     "butce": 8,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "K05"
+     ],
+     "efor_saat": 8.0,
+     "yol_riski": 124.42803599999998,
+     "zafiyet_riski": 137.6512,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 14,
+      "zayifladi": 9
+     }
+    },
+    {
+     "butce": 9,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04"
+     ],
+     "efor_saat": 9.0,
+     "yol_riski": 119.56796399999998,
+     "zafiyet_riski": 134.728,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 13,
+      "zayifladi": 10
+     }
+    },
+    {
+     "butce": 10,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K05"
+     ],
+     "efor_saat": 10.0,
+     "yol_riski": 118.12803599999997,
+     "zafiyet_riski": 132.7372,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 13,
+      "zayifladi": 10
+     }
+    },
+    {
+     "butce": 11,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04"
+     ],
+     "efor_saat": 11.0,
+     "yol_riski": 114.30578063999998,
+     "zafiyet_riski": 128.5414,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 12,
+      "zayifladi": 11
+     }
+    },
+    {
+     "butce": 12,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 12.0,
+     "yol_riski": 112.86585263999997,
+     "zafiyet_riski": 126.5506,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 12,
+      "zayifladi": 11
+     }
+    },
+    {
+     "butce": 13,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06"
+     ],
+     "efor_saat": 13.0,
+     "yol_riski": 109.71056064,
+     "zafiyet_riski": 123.94239999999999,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 11,
+      "zayifladi": 12
+     }
+    },
+    {
+     "butce": 14,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "K05"
+     ],
+     "efor_saat": 14.0,
+     "yol_riski": 108.27063263999999,
+     "zafiyet_riski": 121.9516,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 11,
+      "zayifladi": 12
+     }
+    },
+    {
+     "butce": 15,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y09"
+     ],
+     "efor_saat": 15.0,
+     "yol_riski": 105.93056064,
+     "zafiyet_riski": 119.5324,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 10,
+      "zayifladi": 13
+     }
+    },
+    {
+     "butce": 16,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05"
+     ],
+     "efor_saat": 16.0,
+     "yol_riski": 103.41056063999999,
+     "zafiyet_riski": 119.3434,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 10,
+      "zayifladi": 13
+     }
+    },
+    {
+     "butce": 17,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "K05"
+     ],
+     "efor_saat": 17.0,
+     "yol_riski": 101.97063263999998,
+     "zafiyet_riski": 117.3526,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 10,
+      "zayifladi": 13
+     }
+    },
+    {
+     "butce": 18,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y09"
+     ],
+     "efor_saat": 18.0,
+     "yol_riski": 99.63056063999998,
+     "zafiyet_riski": 114.93339999999999,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 9,
+      "zayifladi": 14
+     }
+    },
+    {
+     "butce": 19,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y09",
+      "K05"
+     ],
+     "efor_saat": 19.0,
+     "yol_riski": 98.19063263999998,
+     "zafiyet_riski": 112.9426,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 9,
+      "zayifladi": 14
+     }
+    },
+    {
+     "butce": 20,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02"
+     ],
+     "efor_saat": 20.0,
+     "yol_riski": 95.10905063999998,
+     "zafiyet_riski": 109.6414,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 8,
+      "zayifladi": 15
+     }
+    },
+    {
+     "butce": 21,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "K05"
+     ],
+     "efor_saat": 21.0,
+     "yol_riski": 93.66912263999997,
+     "zafiyet_riski": 107.6506,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 8,
+      "zayifladi": 15
+     }
+    },
+    {
+     "butce": 22,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09"
+     ],
+     "efor_saat": 22.0,
+     "yol_riski": 91.32905063999998,
+     "zafiyet_riski": 105.2314,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 7,
+      "zayifladi": 16
+     }
+    },
+    {
+     "butce": 23,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K05"
+     ],
+     "efor_saat": 23.0,
+     "yol_riski": 89.88912263999997,
+     "zafiyet_riski": 103.2406,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 7,
+      "zayifladi": 16
+     }
+    },
+    {
+     "butce": 24,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "Y03"
+     ],
+     "efor_saat": 24.0,
+     "yol_riski": 88.19719463999998,
+     "zafiyet_riski": 96.0334,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 6,
+      "zayifladi": 17
+     }
+    },
+    {
+     "butce": 25,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "Y03",
+      "K05"
+     ],
+     "efor_saat": 25.0,
+     "yol_riski": 86.75726663999997,
+     "zafiyet_riski": 94.0426,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 6,
+      "zayifladi": 17
+     }
+    },
+    {
+     "butce": 26,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01"
+     ],
+     "efor_saat": 26.0,
+     "yol_riski": 83.97669864,
+     "zafiyet_riski": 97.9234,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 27,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "K05"
+     ],
+     "efor_saat": 27.0,
+     "yol_riski": 82.53677063999999,
+     "zafiyet_riski": 95.9326,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 28,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03"
+     ],
+     "efor_saat": 28.0,
+     "yol_riski": 80.84484264,
+     "zafiyet_riski": 88.7254,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 29,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 79.40491463999999,
+     "zafiyet_riski": 86.7346,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 30,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 79.40491463999999,
+     "zafiyet_riski": 86.7346,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 31,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 79.40491463999999,
+     "zafiyet_riski": 86.7346,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 32,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 32.0,
+     "yol_riski": 75.62491464,
+     "zafiyet_riski": 81.8206,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 3,
+      "zayifladi": 20
+     }
+    },
+    {
+     "butce": 33,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 32.0,
+     "yol_riski": 75.62491464,
+     "zafiyet_riski": 81.8206,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 3,
+      "zayifladi": 20
+     }
+    },
+    {
+     "butce": 34,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 32.0,
+     "yol_riski": 75.62491464,
+     "zafiyet_riski": 81.8206,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 3,
+      "zayifladi": 20
+     }
+    },
+    {
+     "butce": 35,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 32.0,
+     "yol_riski": 75.62491464,
+     "zafiyet_riski": 81.8206,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 3,
+      "zayifladi": 20
+     }
+    },
+    {
+     "butce": 36,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 32.0,
+     "yol_riski": 75.62491464,
+     "zafiyet_riski": 81.8206,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 3,
+      "zayifladi": 20
+     }
+    },
+    {
+     "butce": 37,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 32.0,
+     "yol_riski": 75.62491464,
+     "zafiyet_riski": 81.8206,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 3,
+      "zayifladi": 20
+     }
+    },
+    {
+     "butce": 38,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 32.0,
+     "yol_riski": 75.62491464,
+     "zafiyet_riski": 81.8206,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 3,
+      "zayifladi": 20
+     }
+    },
+    {
+     "butce": 39,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 32.0,
+     "yol_riski": 75.62491464,
+     "zafiyet_riski": 81.8206,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 3,
+      "zayifladi": 20
+     }
+    },
+    {
+     "butce": 40,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "Y01"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 41,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "Y01"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 42,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "Y01"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 43,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "Y01"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 44,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "Y01"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 45,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "Y01"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 46,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "Y01"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 47,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "Y01"
+     ],
+     "efor_saat": 40.0,
+     "yol_riski": 67.22449463999999,
+     "zafiyet_riski": 71.0476,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 22,
+      "acik": 1
+     }
+    },
+    {
+     "butce": 48,
+     "onlemler": [
+      "K02",
+      "Y10",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "Y01",
+      "K03"
+     ],
+     "efor_saat": 48.0,
+     "yol_riski": 64.34463864,
+     "zafiyet_riski": 66.1336,
+     "yol_durum": {
+      "kesildi": 13,
+      "zayifladi": 23
+     }
+    }
+   ]
+  },
+  "kesintisiz": {
+   "kesin": [
+    {
+     "butce": 0,
+     "onlemler": [],
+     "efor_saat": 0,
+     "yol_riski": 154.84796399999996,
+     "zafiyet_riski": 163.32999999999998,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 19,
+      "zayifladi": 4
+     }
+    },
+    {
+     "butce": 1,
+     "onlemler": [
+      "K02"
+     ],
+     "efor_saat": 1.0,
+     "yol_riski": 148.54796399999998,
+     "zafiyet_riski": 158.605,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 18,
+      "zayifladi": 5
+     }
+    },
+    {
+     "butce": 2,
+     "onlemler": [
+      "K02",
+      "K05"
+     ],
+     "efor_saat": 2.0,
+     "yol_riski": 147.10803599999997,
+     "zafiyet_riski": 156.61419999999998,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 18,
+      "zayifladi": 5
+     }
+    },
+    {
+     "butce": 3,
+     "onlemler": [
+      "Y04",
+      "K02"
+     ],
+     "efor_saat": 3.0,
+     "yol_riski": 142.24796399999997,
+     "zafiyet_riski": 153.691,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 17,
+      "zayifladi": 6
+     }
+    },
+    {
+     "butce": 4,
+     "onlemler": [
+      "Y07",
+      "K02"
+     ],
+     "efor_saat": 4.0,
+     "yol_riski": 138.467964,
+     "zafiyet_riski": 149.155,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 16,
+      "zayifladi": 7
+     }
+    },
+    {
+     "butce": 5,
+     "onlemler": [
+      "Y04",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 5.0,
+     "yol_riski": 136.98578064,
+     "zafiyet_riski": 147.5044,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 16,
+      "zayifladi": 7
+     }
+    },
+    {
+     "butce": 6,
+     "onlemler": [
+      "Y04",
+      "Y07",
+      "K02"
+     ],
+     "efor_saat": 6.0,
+     "yol_riski": 132.16796399999998,
+     "zafiyet_riski": 144.24099999999999,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 15,
+      "zayifladi": 8
+     }
+    },
+    {
+     "butce": 7,
+     "onlemler": [
+      "Y04",
+      "Y07",
+      "K02",
+      "K05"
+     ],
+     "efor_saat": 7.0,
+     "yol_riski": 130.72803599999997,
+     "zafiyet_riski": 142.2502,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 15,
+      "zayifladi": 8
+     }
+    },
+    {
+     "butce": 8,
+     "onlemler": [
+      "Y04",
+      "Y07",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 8.0,
+     "yol_riski": 126.90578063999997,
+     "zafiyet_riski": 138.0544,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 14,
+      "zayifladi": 9
+     }
+    },
+    {
+     "butce": 9,
+     "onlemler": [
+      "Y04",
+      "Y07",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 9.0,
+     "yol_riski": 125.46585263999997,
+     "zafiyet_riski": 136.0636,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 14,
+      "zayifladi": 9
+     }
+    },
+    {
+     "butce": 10,
+     "onlemler": [
+      "Y04",
+      "Y06",
+      "Y07",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 10.0,
+     "yol_riski": 122.31056063999999,
+     "zafiyet_riski": 133.4554,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 13,
+      "zayifladi": 10
+     }
+    },
+    {
+     "butce": 11,
+     "onlemler": [
+      "Y04",
+      "Y05",
+      "Y07",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 11.0,
+     "yol_riski": 120.60578063999999,
+     "zafiyet_riski": 133.4554,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 13,
+      "zayifladi": 10
+     }
+    },
+    {
+     "butce": 12,
+     "onlemler": [
+      "Y04",
+      "Y06",
+      "Y07",
+      "Y09",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 12.0,
+     "yol_riski": 118.53056063999999,
+     "zafiyet_riski": 129.0454,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 12,
+      "zayifladi": 11
+     }
+    },
+    {
+     "butce": 13,
+     "onlemler": [
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 13.0,
+     "yol_riski": 116.01056063999998,
+     "zafiyet_riski": 128.8564,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 12,
+      "zayifladi": 11
+     }
+    },
+    {
+     "butce": 14,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y06",
+      "Y07",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 14.0,
+     "yol_riski": 114.00905063999998,
+     "zafiyet_riski": 123.7534,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 11,
+      "zayifladi": 12
+     }
+    },
+    {
+     "butce": 15,
+     "onlemler": [
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 15.0,
+     "yol_riski": 112.23056063999998,
+     "zafiyet_riski": 124.4464,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 11,
+      "zayifladi": 12
+     }
+    },
+    {
+     "butce": 16,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y06",
+      "Y07",
+      "Y09",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 16.0,
+     "yol_riski": 110.22905063999998,
+     "zafiyet_riski": 119.3434,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 10,
+      "zayifladi": 13
+     }
+    },
+    {
+     "butce": 17,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 17.0,
+     "yol_riski": 107.70905063999999,
+     "zafiyet_riski": 119.1544,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 10,
+      "zayifladi": 13
+     }
+    },
+    {
+     "butce": 18,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 18.0,
+     "yol_riski": 106.26912263999998,
+     "zafiyet_riski": 117.1636,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 10,
+      "zayifladi": 13
+     }
+    },
+    {
+     "butce": 19,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 19.0,
+     "yol_riski": 103.92905063999999,
+     "zafiyet_riski": 114.7444,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 9,
+      "zayifladi": 14
+     }
+    },
+    {
+     "butce": 20,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 20.0,
+     "yol_riski": 102.48912263999998,
+     "zafiyet_riski": 112.75359999999999,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 9,
+      "zayifladi": 14
+     }
+    },
+    {
+     "butce": 21,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "K01",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 21.0,
+     "yol_riski": 100.35669863999999,
+     "zafiyet_riski": 111.8464,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 8,
+      "zayifladi": 15
+     }
+    },
+    {
+     "butce": 22,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 22.0,
+     "yol_riski": 98.91677063999998,
+     "zafiyet_riski": 109.8556,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 8,
+      "zayifladi": 15
+     }
+    },
+    {
+     "butce": 23,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "K01",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 23.0,
+     "yol_riski": 96.57669863999999,
+     "zafiyet_riski": 107.43639999999999,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 7,
+      "zayifladi": 16
+     }
+    },
+    {
+     "butce": 24,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 24.0,
+     "yol_riski": 95.13677063999998,
+     "zafiyet_riski": 105.4456,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 7,
+      "zayifladi": 16
+     }
+    },
+    {
+     "butce": 25,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "K01",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 25.0,
+     "yol_riski": 93.44484263999999,
+     "zafiyet_riski": 98.2384,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 6,
+      "zayifladi": 17
+     }
+    },
+    {
+     "butce": 26,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y09",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 26.0,
+     "yol_riski": 92.00491463999998,
+     "zafiyet_riski": 96.2476,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 6,
+      "zayifladi": 17
+     }
+    },
+    {
+     "butce": 27,
+     "onlemler": [
+      "Y02",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 27.0,
+     "yol_riski": 91.35677063999998,
+     "zafiyet_riski": 100.5316,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 6,
+      "zayifladi": 17
+     }
+    },
+    {
+     "butce": 28,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K04"
+     ],
+     "efor_saat": 28.0,
+     "yol_riski": 89.66484263999999,
+     "zafiyet_riski": 93.3244,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 29,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 30,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 31,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 32,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 33,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 34,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 35,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 36,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04"
+     ],
+     "efor_saat": 36.0,
+     "yol_riski": 86.78498663999999,
+     "zafiyet_riski": 88.4104,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 37,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 38,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 39,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 40,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 41,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 42,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 43,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 44,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 45,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 46,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 47,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 48,
+     "onlemler": [
+      "Y02",
+      "Y03",
+      "Y04",
+      "Y05",
+      "Y06",
+      "Y07",
+      "Y08",
+      "Y09",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    }
+   ],
+   "acgozlu": [
+    {
+     "butce": 0,
+     "onlemler": [],
+     "efor_saat": 0.0,
+     "yol_riski": 154.84796399999996,
+     "zafiyet_riski": 163.32999999999998,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 19,
+      "zayifladi": 4
+     }
+    },
+    {
+     "butce": 1,
+     "onlemler": [
+      "K02"
+     ],
+     "efor_saat": 1.0,
+     "yol_riski": 148.54796399999998,
+     "zafiyet_riski": 158.605,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 18,
+      "zayifladi": 5
+     }
+    },
+    {
+     "butce": 2,
+     "onlemler": [
+      "K02",
+      "K05"
+     ],
+     "efor_saat": 2.0,
+     "yol_riski": 147.10803599999997,
+     "zafiyet_riski": 156.61419999999998,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 18,
+      "zayifladi": 5
+     }
+    },
+    {
+     "butce": 3,
+     "onlemler": [
+      "K02",
+      "Y04"
+     ],
+     "efor_saat": 3.0,
+     "yol_riski": 142.24796399999997,
+     "zafiyet_riski": 153.691,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 17,
+      "zayifladi": 6
+     }
+    },
+    {
+     "butce": 4,
+     "onlemler": [
+      "K02",
+      "Y07"
+     ],
+     "efor_saat": 4.0,
+     "yol_riski": 138.467964,
+     "zafiyet_riski": 149.155,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 16,
+      "zayifladi": 7
+     }
+    },
+    {
+     "butce": 5,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "K05"
+     ],
+     "efor_saat": 5.0,
+     "yol_riski": 137.028036,
+     "zafiyet_riski": 147.1642,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 16,
+      "zayifladi": 7
+     }
+    },
+    {
+     "butce": 6,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04"
+     ],
+     "efor_saat": 6.0,
+     "yol_riski": 132.16796399999998,
+     "zafiyet_riski": 144.24099999999999,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 15,
+      "zayifladi": 8
+     }
+    },
+    {
+     "butce": 7,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K05"
+     ],
+     "efor_saat": 7.0,
+     "yol_riski": 130.72803599999997,
+     "zafiyet_riski": 142.2502,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 15,
+      "zayifladi": 8
+     }
+    },
+    {
+     "butce": 8,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04"
+     ],
+     "efor_saat": 8.0,
+     "yol_riski": 126.90578063999997,
+     "zafiyet_riski": 138.0544,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 14,
+      "zayifladi": 9
+     }
+    },
+    {
+     "butce": 9,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "K05"
+     ],
+     "efor_saat": 9.0,
+     "yol_riski": 125.46585263999997,
+     "zafiyet_riski": 136.0636,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 14,
+      "zayifladi": 9
+     }
+    },
+    {
+     "butce": 10,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06"
+     ],
+     "efor_saat": 10.0,
+     "yol_riski": 122.31056063999999,
+     "zafiyet_riski": 133.4554,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 13,
+      "zayifladi": 10
+     }
+    },
+    {
+     "butce": 11,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "K05"
+     ],
+     "efor_saat": 11.0,
+     "yol_riski": 120.87063263999998,
+     "zafiyet_riski": 131.4646,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 13,
+      "zayifladi": 10
+     }
+    },
+    {
+     "butce": 12,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y09"
+     ],
+     "efor_saat": 12.0,
+     "yol_riski": 118.53056063999999,
+     "zafiyet_riski": 129.0454,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 12,
+      "zayifladi": 11
+     }
+    },
+    {
+     "butce": 13,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05"
+     ],
+     "efor_saat": 13.0,
+     "yol_riski": 116.01056063999998,
+     "zafiyet_riski": 128.8564,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 12,
+      "zayifladi": 11
+     }
+    },
+    {
+     "butce": 14,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "K05"
+     ],
+     "efor_saat": 14.0,
+     "yol_riski": 114.57063263999997,
+     "zafiyet_riski": 126.8656,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 12,
+      "zayifladi": 11
+     }
+    },
+    {
+     "butce": 15,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y09"
+     ],
+     "efor_saat": 15.0,
+     "yol_riski": 112.23056063999998,
+     "zafiyet_riski": 124.4464,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 11,
+      "zayifladi": 12
+     }
+    },
+    {
+     "butce": 16,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y09",
+      "K05"
+     ],
+     "efor_saat": 16.0,
+     "yol_riski": 110.79063263999997,
+     "zafiyet_riski": 122.4556,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 11,
+      "zayifladi": 12
+     }
+    },
+    {
+     "butce": 17,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02"
+     ],
+     "efor_saat": 17.0,
+     "yol_riski": 107.70905063999999,
+     "zafiyet_riski": 119.1544,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 10,
+      "zayifladi": 13
+     }
+    },
+    {
+     "butce": 18,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "K05"
+     ],
+     "efor_saat": 18.0,
+     "yol_riski": 106.26912263999998,
+     "zafiyet_riski": 117.1636,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 10,
+      "zayifladi": 13
+     }
+    },
+    {
+     "butce": 19,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09"
+     ],
+     "efor_saat": 19.0,
+     "yol_riski": 103.92905063999999,
+     "zafiyet_riski": 114.7444,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 9,
+      "zayifladi": 14
+     }
+    },
+    {
+     "butce": 20,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K05"
+     ],
+     "efor_saat": 20.0,
+     "yol_riski": 102.48912263999998,
+     "zafiyet_riski": 112.75359999999999,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 9,
+      "zayifladi": 14
+     }
+    },
+    {
+     "butce": 21,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "Y03"
+     ],
+     "efor_saat": 21.0,
+     "yol_riski": 100.79719463999999,
+     "zafiyet_riski": 105.5464,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 8,
+      "zayifladi": 15
+     }
+    },
+    {
+     "butce": 22,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "Y03",
+      "K05"
+     ],
+     "efor_saat": 22.0,
+     "yol_riski": 99.35726663999998,
+     "zafiyet_riski": 103.5556,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 8,
+      "zayifladi": 15
+     }
+    },
+    {
+     "butce": 23,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01"
+     ],
+     "efor_saat": 23.0,
+     "yol_riski": 96.57669863999999,
+     "zafiyet_riski": 107.43639999999999,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 7,
+      "zayifladi": 16
+     }
+    },
+    {
+     "butce": 24,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "K05"
+     ],
+     "efor_saat": 24.0,
+     "yol_riski": 95.13677063999998,
+     "zafiyet_riski": 105.4456,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 7,
+      "zayifladi": 16
+     }
+    },
+    {
+     "butce": 25,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03"
+     ],
+     "efor_saat": 25.0,
+     "yol_riski": 93.44484263999999,
+     "zafiyet_riski": 98.2384,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 6,
+      "zayifladi": 17
+     }
+    },
+    {
+     "butce": 26,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05"
+     ],
+     "efor_saat": 26.0,
+     "yol_riski": 92.00491463999998,
+     "zafiyet_riski": 96.2476,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 6,
+      "zayifladi": 17
+     }
+    },
+    {
+     "butce": 27,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05"
+     ],
+     "efor_saat": 26.0,
+     "yol_riski": 92.00491463999998,
+     "zafiyet_riski": 96.2476,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 6,
+      "zayifladi": 17
+     }
+    },
+    {
+     "butce": 28,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05"
+     ],
+     "efor_saat": 26.0,
+     "yol_riski": 92.00491463999998,
+     "zafiyet_riski": 96.2476,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 6,
+      "zayifladi": 17
+     }
+    },
+    {
+     "butce": 29,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 30,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 31,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 32,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 33,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 34,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 35,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 36,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08"
+     ],
+     "efor_saat": 29.0,
+     "yol_riski": 88.22491463999998,
+     "zafiyet_riski": 91.3336,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 5,
+      "zayifladi": 18
+     }
+    },
+    {
+     "butce": 37,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "K03"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 38,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "K03"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 39,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "K03"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 40,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "K03"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 41,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "K03"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 42,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "K03"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 43,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "K03"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 44,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "K03"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 45,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "K03"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 46,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "K03"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 47,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "K03"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    },
+    {
+     "butce": 48,
+     "onlemler": [
+      "K02",
+      "Y07",
+      "Y04",
+      "K04",
+      "Y06",
+      "Y05",
+      "Y02",
+      "Y09",
+      "K01",
+      "Y03",
+      "K05",
+      "Y08",
+      "K03"
+     ],
+     "efor_saat": 37.0,
+     "yol_riski": 85.34505863999998,
+     "zafiyet_riski": 86.4196,
+     "yol_durum": {
+      "kesildi": 13,
+      "acik": 4,
+      "zayifladi": 19
+     }
+    }
+   ]
+  }
+ }
+}

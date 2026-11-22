@@ -24,6 +24,11 @@ Bu belge `python tools/sonuc_kontrol.py` ile üretilir. SHA-256 özetleri, metin
 | `graph/attack_graph_after.html` | Grafik (sonra) | graph/visualize_graph.py | `python graph/visualize_graph.py --after` | - | `0ef22fb13f249bd3…` |
 | `report/img/graf-once.png` | Rapor görseli | tarayıcı ekran görüntüsü | `attack_graph_v2.html, 1600×1000, ölçek 2` | - | `f8ac3a090de6e8f5…` |
 | `report/img/graf-sonra.png` | Rapor görseli | tarayıcı ekran görüntüsü | `attack_graph_after.html, 1600×1000, ölçek 2` | - | `a41e844468018887…` |
+| `inventory/onlem_katalogu.csv` | Aday önlemler: etki, efor, kesinti, gerekçe | elle (ek savunma) | `-` | 15 | `c9afdf0fa016b3fe…` |
+| `ai/onlem_tekil.csv` | Önlemler tek başına | ai/onlem_secimi.py | `python ai/onlem_secimi.py` | 15 | `74f712c599ccb121…` |
+| `ai/onlem_secimi.json` | Bütçeye göre en iyi bileşim | ai/onlem_secimi.py | `python ai/onlem_secimi.py` | 4 | `89269720875f6825…` |
+| `docs/onlem-secimi.md` | Önlem seçimi özeti | ai/onlem_secimi.py | `python ai/onlem_secimi.py` | - | `8a7e83831f01d72e…` |
+| `report/img/onlem-butce.png` | Rapor grafiği | ai/onlem_secimi.py | `python ai/onlem_secimi.py` | - | `289525974c695192…` |
 
 Tam özetler (`sha256sum` çıktısıyla karşılaştırmak için; satır sonları LF):
 
@@ -44,6 +49,11 @@ c006f38f8f50cb1e68aa159301c8cfa93695df05574cc432f0499c259e002f09  report/img/onc
 0ef22fb13f249bd360d9544985e11ad7f5975d729f0a370703a9ef4a4ed21077  graph/attack_graph_after.html
 f8ac3a090de6e8f51f2f9818efb47c4b8b281954b27ba8cea83fb31cbecc1cf5  report/img/graf-once.png
 a41e844468018887a1b29534b9f7bcbcb7a5d966127c42692e26d6b0649543e9  report/img/graf-sonra.png
+c9afdf0fa016b3fecd566f62df19c44f793ef65d0d60a440423392bf7d54f80c  inventory/onlem_katalogu.csv
+74f712c599ccb1219a82ed763ef485bdf07d6b0734c744605f5a41b0c1386d92  ai/onlem_tekil.csv
+89269720875f6825af20152c201445365bab54cf8057b2113a0aafd242ada4cf  ai/onlem_secimi.json
+8a7e83831f01d72ec4ba7fee7404fd0c1c063e6228749de09ff3fbc5e6f11125  docs/onlem-secimi.md
+289525974c695192b76e72a079c155bfc5210c382ff0e844bc9f0ce5d97e4470  report/img/onlem-butce.png
 ```
 
 ## Yeniden üretim sırası
@@ -56,10 +66,12 @@ Bir girdi değişirse sonraki adımların hepsi yeniden çalıştırılır:
 4. `python graph/cut_edges.py` → `python graph/paths_after.py`
 5. `python ai/before_after.py`
 6. `python graph/visualize_graph.py` ve `python graph/visualize_graph.py --after`; PNG'ler tarayıcıdan 1600×1000 pencerede alınır
-7. `python tools/sonuc_kontrol.py`
+7. `python ai/onlem_secimi.py` (önlem kataloğu ya da residual_risk değişirse)
+8. `python tools/sonuc_kontrol.py`
 
 ## Kontrol sonucu
 
 - Zafiyet: engellendi 12, azaltildi 3; yol: kesildi 13, zayifladi 4, acik 19
 - Toplam artık risk: 240.30 -> 163.33 (%32.03)
+- Önlem seçimi: 15 aday, bütün önlemlerle (48 sa) yol riski 154.85 -> 64.34
 - Tutarsızlık yok.
