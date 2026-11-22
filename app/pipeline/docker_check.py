@@ -41,13 +41,16 @@ def konteyner_durumu(ad, timeout=8):
     return Durum(True, f"'{ad}' konteyneri çalışıyor.")
 
 
-def grafana_durumu(url, timeout=2):
+def grafana_durumu(url, timeout=1):
     """Grafana'nın sağlık uç noktasını sorgular (yalnızca yerel adres, config'de denetleniyor)."""
     import json
     import urllib.error
     import urllib.request
     try:
-        with urllib.request.urlopen(f"{url}/api/health", timeout=timeout) as r:
+        # localhost yerine 127.0.0.1: Windows'ta localhost önce IPv6'yı (::1) deniyor ve kapalı
+        # bir portta her denemede ~2 sn bekletiyor
+        with urllib.request.urlopen(f"{url.replace('://localhost', '://127.0.0.1')}/api/health",
+                                    timeout=timeout) as r:
             veri = json.loads(r.read().decode("utf-8"))
     except (urllib.error.URLError, TimeoutError, OSError, ValueError):
         return Durum(False, "Savunma panosu kapalı. Açmak için defense/ klasöründe: "

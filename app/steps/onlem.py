@@ -16,7 +16,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from config import AI_DIR, GRAPH_DIR
-from steps import ortak
+from steps import ortak, tema
 
 KESINTI_ADI = {"yok": "yok", "dusuk": "düşük", "var": "var"}
 TUR_ADI = {"yama": "Paket yaması", "kod": "Kod düzeltmesi", "yapilandirma": "Yapılandırma"}
@@ -52,8 +52,7 @@ def _yuzde(once, sonra):
 
 
 def render():
-    st.header("6. Önlem seçimi")
-    st.markdown("**Sınırlı eforla riski en çok hangi önlemler azaltır?**")
+    tema.baslik("Adım 6", "Önlem seçimi", "Sınırlı eforla riski en çok hangi önlemler azaltır?")
     st.caption("Aday önlemler (paket yamaları, kod düzeltmeleri, yapılandırma) henüz uygulanmadı. "
                "Kalan risk, mevcut kontrollerin (WAF, sanal yamalar, IDS, IAM, segmentasyon) üzerine "
                "eklenerek hesaplanır. Lab'a hiçbir şey uygulanmaz.")
@@ -157,18 +156,14 @@ def render():
 
     st.subheader("Grafik")
     st.caption("Kesilen kenarlar gri ve kesikli, zayıflayanlar turuncu; kırmızı yollar kalan en riskli 5 yol. "
-               "Düğüm rengi kalan risk. Üç grafik aynı yerleşimde: sekme değiştirince yalnızca durumlar değişir.")
-    t1, t2, t3 = st.tabs(["Seçilen önlemlerden sonra", "Bugün (kontroller açık)", "Kontroller öncesi"])
-    with t1:
+               "Düğüm rengi kalan risk. Üç grafik aynı yerleşimde: seçimi değiştirince yalnızca durumlar değişir.")
+    secenekler = ["Seçilen önlemlerden sonra", "Bugün (kontroller açık)", "Kontroller öncesi"]
+    secili = ortak.grafik_secici(secenekler, "onlem_grafik")
+    if secili == secenekler[0]:
         with st.spinner("Grafik çiziliyor..."):
             components.html(ortak.grafik_html(_senaryo_html(tuple(sorted(secim)), guven)), height=980, scrolling=True)
-    for sekme, dosya in ((t2, "attack_graph_after.html"), (t3, "attack_graph_v2.html")):
-        with sekme:
-            yol = GRAPH_DIR / dosya
-            if yol.exists():
-                components.html(ortak.grafik_html(yol.read_text(encoding="utf-8")), height=980, scrolling=True)
-            else:
-                st.caption(f"`graph/{dosya}` henüz üretilmedi.")
+    else:
+        ortak.grafik_goster(GRAPH_DIR / ("attack_graph_after.html" if secili == secenekler[1] else "attack_graph_v2.html"))
 
     with st.expander("Bütçeye göre kalan yol riski (ekibin raporundaki eğri)"):
         png = AI_DIR.parent / "report" / "img" / "onlem-butce.png"

@@ -18,6 +18,7 @@
 
 | Süre | Adım | Ekranda | Söylenecek |
 |---|---|---|---|
+| 0:00–0:30 | Özet | Açılış sayfası: 5 kart ve "Kontroller sonrası" grafik | "Sonuçtan başlayalım: 36 zafiyet, 36 saldırı yolu. Kontroller açıkken artık risk %32 düştü, 13 yol kesildi. 16 saatlik bir önlem planı yol riskini %33 daha azaltıyor. Şimdi bunu nasıl bulduğumuzu gösterelim." → "Demoyu başlat" |
 | 0:00–0:20 | 1. Hedef | Hedef kartı, yeşil Docker/konteyner durumu | "Uygulama yalnızca kendi izole lab'ımızdaki hedefleri tarayabiliyor; adres girme alanı yok. Juice Shop WAF arkasında, segmentli bir ağda çalışıyor." |
 | 0:20–0:45 | 2. Tarama | Önceki çalıştırmayı aç → ham veri tablosu | "Üç kaynak: ZAP pasif web taraması, Trivy imaj taraması, Juice Shop'un challenge listesi. Canlı tarama birkaç dakika sürdüğü için önceden çalıştırdık." |
 | 0:45–1:20 | 3. Bulgular | Aday bulgu listesi, referans farkı, seçim | "Ham çıktılardan aday bulguları çıkarıyoruz ve ekibin elle doğruladığı envanterle karşılaştırıyoruz. Yeni bir bulgu varsa burada görünür; hangisinin grafiğe gireceğine kullanıcı karar veriyor." |

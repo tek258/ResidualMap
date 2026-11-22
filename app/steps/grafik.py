@@ -12,6 +12,7 @@ import streamlit.components.v1 as components
 
 from config import FROZEN_INVENTORY
 from pipeline import ai_skor, graf, runs
+from steps import tema
 from steps import ortak
 
 
@@ -26,7 +27,7 @@ def render():
     out = rdir / "graph"
     meta = runs.load_meta(run_id)
 
-    st.header("4. Grafik")
+    tema.baslik("Adım 4", "Saldırı grafiği", "Kritik varlıklara hangi yollarla ulaşılır?")
 
     if not inv.exists():
         st.warning("Bu çalıştırmada henüz envanter yok. 3. adımda bulguları seçip kaydedin "
@@ -118,7 +119,7 @@ def render():
     st.caption("Yeşil elmas: giriş noktası · Mavi yıldız: hedef · Daireler: zafiyetler (renk AI v2 "
                "skoruna göre, yoksa CVSS) · Kırmızı kenarlar: en riskli 5 yol. Düğüm ve kenarların "
                "üzerine gelince ayrıntılar görünür. Grafik yakınlaştırılıp sürüklenebilir.")
-    components.html(html.read_text(encoding="utf-8"), height=980, scrolling=True)
+    components.html(ortak.grafik_html(html.read_text(encoding="utf-8")), height=980, scrolling=True)
 
     _ai_bolumu(run_id, rdir, inv, out, meta)
 

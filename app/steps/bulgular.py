@@ -7,6 +7,7 @@ import streamlit as st
 
 from config import RAW_DIR
 from pipeline import envanter, fark, parsers, runs
+from steps import tema
 from pipeline.scans import KAYNAK_ADLARI, RAW_FILES
 
 HEDEF_MIN, HEDEF_MAX = 25, 40
@@ -79,7 +80,7 @@ def render():
     raw_dir = rdir / "raw"
     meta = runs.load_meta(run_id)
 
-    st.header("3. Bulgular")
+    tema.baslik("Adım 3", "Bulgular", "Grafiğe hangi zafiyetler girecek?")
     mevcut = [k for k in RAW_FILES if (raw_dir / RAW_FILES[k]).exists()]
     if not mevcut:
         st.warning("Bu çalıştırmada ham veri yok. Önce 2. adımda en az bir kaynak toplayın.")

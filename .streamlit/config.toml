@@ -9,3 +9,12 @@ address = "localhost"
 [client]
 # Sağ üstteki "Deploy" gibi geliştirici düğmelerini gizle
 toolbarMode = "minimal"
+
+[theme]
+# Açık, ferah tema
+base = "light"
+primaryColor = "#4f5bd5"
+backgroundColor = "#f6f7fb"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#1d2433"
+font = "sans serif"

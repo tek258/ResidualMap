@@ -6,6 +6,7 @@ import streamlit as st
 
 from config import TARGETS
 from pipeline import runs, scans
+from steps import tema
 from steps.ortak import durumlar
 
 CANLI, REPO, YUKLE, ATLA = "Canlı topla", "Repodaki dosya", "Dosya yükle", "Atla"
@@ -49,7 +50,7 @@ def render():
     meta = runs.load_meta(run_id)
     tarama = meta["steps"].get("tarama", {})
 
-    st.header("2. Tarama")
+    tema.baslik("Adım 2", "Tarama", "Hedefte hangi ham bulgular var?")
     st.caption("Her kaynak için yöntemi seçin. Canlı toplama lab ortamının çalışmasını "
                "gerektirir; ZAP baseline pasif bir taramadır, hedefe saldırı isteği göndermez.")
 

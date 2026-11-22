@@ -8,14 +8,13 @@ import streamlit.components.v1 as components
 
 from config import GRAFANA_PANO, GRAFANA_URL, GRAPH_DIR, TARGETS
 from pipeline import ai_skor, runs, saldiri_testi
-from steps import ortak
+from steps import ortak, tema
 
 
 def render():
     run_id = st.session_state["run_id"]
     meta = runs.load_meta(run_id)
-    st.header("5. Savunma testi")
-    st.markdown("**Kontroller bu zafiyetleri yakalıyor mu?**")
+    tema.baslik("Adım 5", "Savunma testi", "Kontroller bu zafiyetleri yakalıyor mu?")
     st.caption("Lab'ın savunma doğrulama testini (`defense/test-waf.sh`) çalıştırır: grafikteki "
                "zafiyetlere (SQLi, XSS, rol atama, XXE, CSRF, açık yönlendirme) ait test istekleri, "
                "güvenlik başlıkları, hata sayfası ve hız sınırı kontrolleri yalnızca kendi lab "
@@ -82,9 +81,6 @@ def _once_sonra_grafik():
         return
     st.caption("Ekibin dondurulmuş sonuçları (testle doğrulanmış kontroller). Sonra grafiğinde kesilen "
                "kenarlar gri ve kesikli, zayıflayanlar turuncu; düğüm rengi kontrol sonrası risk. "
-               "İki grafik aynı yerleşimde: sekme değiştirince yalnızca durumlar değişir.")
-    t1, t2 = st.tabs(["Kontroller öncesi", "Kontroller sonrası"])
-    with t1:
-        components.html(ortak.grafik_html(once.read_text(encoding="utf-8")), height=980, scrolling=True)
-    with t2:
-        components.html(ortak.grafik_html(sonra.read_text(encoding="utf-8")), height=980, scrolling=True)
+               "İki grafik aynı yerleşimde: seçimi değiştirince yalnızca durumlar değişir.")
+    dosyalar = {"Kontroller öncesi": once, "Kontroller sonrası": sonra}
+    ortak.grafik_goster(dosyalar[ortak.grafik_secici(list(dosyalar), "savunma_grafik")])
