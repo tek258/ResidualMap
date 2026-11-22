@@ -20,10 +20,10 @@ Bu belge `python tools/sonuc_kontrol.py` ile üretilir. SHA-256 özetleri, metin
 | `graph/paths_after.json` | Kontrol sonrası yol durumu ve riski | graph/paths_after.py | `python graph/paths_after.py` | 36 | `6517799f9b890740…` |
 | `docs/once-sonra-ozet.md` | Önce/sonra özeti | ai/before_after.py | `python ai/before_after.py` | - | `8b350e99773cde56…` |
 | `report/img/once-sonra.png` | Rapor grafiği | ai/before_after.py | `python ai/before_after.py` | - | `c006f38f8f50cb1e…` |
-| `graph/attack_graph_v2.html` | Grafik (önce) | graph/visualize_graph.py | `python graph/visualize_graph.py` | - | `490d9ec289f2b082…` |
-| `graph/attack_graph_after.html` | Grafik (sonra) | graph/visualize_graph.py | `python graph/visualize_graph.py --after` | - | `0ef22fb13f249bd3…` |
-| `report/img/graf-once.png` | Rapor görseli | tarayıcı ekran görüntüsü | `attack_graph_v2.html, 1600×1000, ölçek 2` | - | `f8ac3a090de6e8f5…` |
-| `report/img/graf-sonra.png` | Rapor görseli | tarayıcı ekran görüntüsü | `attack_graph_after.html, 1600×1000, ölçek 2` | - | `a41e844468018887…` |
+| `graph/attack_graph_v2.html` | Grafik (önce) | graph/visualize_graph.py | `python graph/visualize_graph.py` | - | `b00e3998cc06bbf4…` |
+| `graph/attack_graph_after.html` | Grafik (sonra) | graph/visualize_graph.py | `python graph/visualize_graph.py --after` | - | `3ada1cc16f04f29c…` |
+| `report/img/graf-once.png` | Rapor görseli | tarayıcı ekran görüntüsü | `attack_graph_v2.html, 1600×900, fizik yerleşimi durduktan sonra, ölçek 2` | - | `bdea64101715dfca…` |
+| `report/img/graf-sonra.png` | Rapor görseli | tarayıcı ekran görüntüsü | `attack_graph_after.html, 1600×900, fizik yerleşimi durduktan sonra, ölçek 2` | - | `258256e376e4de70…` |
 | `inventory/onlem_katalogu.csv` | Aday önlemler: etki, efor, kesinti, gerekçe | elle (ek savunma) | `-` | 15 | `c9afdf0fa016b3fe…` |
 | `ai/onlem_tekil.csv` | Önlemler tek başına | ai/onlem_secimi.py | `python ai/onlem_secimi.py` | 15 | `74f712c599ccb121…` |
 | `ai/onlem_secimi.json` | Bütçeye göre en iyi bileşim | ai/onlem_secimi.py | `python ai/onlem_secimi.py` | 4 | `89269720875f6825…` |
@@ -45,10 +45,10 @@ bb75efbb9744c90d5b59e0ea4c935f60cac57cc029f8e6e482658c68cce190b3  graph/edges_af
 6517799f9b8907401be1b2252727c3c01a4acc47bc86a3dd45e11f6ebb00662b  graph/paths_after.json
 8b350e99773cde566f2087eb46809d1564fd9367ca9924f13ac56e3cf8383cc9  docs/once-sonra-ozet.md
 c006f38f8f50cb1e68aa159301c8cfa93695df05574cc432f0499c259e002f09  report/img/once-sonra.png
-490d9ec289f2b08246e977754c71e0b3003cf72d4925bbaa9f63d55a5d0c0a00  graph/attack_graph_v2.html
-0ef22fb13f249bd360d9544985e11ad7f5975d729f0a370703a9ef4a4ed21077  graph/attack_graph_after.html
-f8ac3a090de6e8f51f2f9818efb47c4b8b281954b27ba8cea83fb31cbecc1cf5  report/img/graf-once.png
-a41e844468018887a1b29534b9f7bcbcb7a5d966127c42692e26d6b0649543e9  report/img/graf-sonra.png
+b00e3998cc06bbf4ca05350ab385dcfd7af90211cec476560d8bb679f45bf7d9  graph/attack_graph_v2.html
+3ada1cc16f04f29ca25225f7252c998f7b44b1e9d27150ef7739dbc709b7665a  graph/attack_graph_after.html
+bdea64101715dfca3d0d14c7589f0364174399a8a4f5be03065738d38cb5f242  report/img/graf-once.png
+258256e376e4de707c2462f00d9de37f2da1b2409403e8a79c3097bee92e80b1  report/img/graf-sonra.png
 c9afdf0fa016b3fecd566f62df19c44f793ef65d0d60a440423392bf7d54f80c  inventory/onlem_katalogu.csv
 74f712c599ccb1219a82ed763ef485bdf07d6b0734c744605f5a41b0c1386d92  ai/onlem_tekil.csv
 89269720875f6825af20152c201445365bab54cf8057b2113a0aafd242ada4cf  ai/onlem_secimi.json
@@ -65,7 +65,7 @@ Bir girdi değişirse sonraki adımların hepsi yeniden çalıştırılır:
 3. `python ai/residual_risk.py`
 4. `python graph/cut_edges.py` → `python graph/paths_after.py`
 5. `python ai/before_after.py`
-6. `python graph/visualize_graph.py` ve `python graph/visualize_graph.py --after`; PNG'ler tarayıcıdan 1600×1000 pencerede alınır
+6. `python graph/visualize_graph.py` ve `python graph/visualize_graph.py --after`; PNG'ler tarayıcıdan 1600×900 pencerede, yerleşim durduktan sonra alınır
 7. `python ai/onlem_secimi.py` (önlem kataloğu ya da residual_risk değişirse)
 8. `python tools/sonuc_kontrol.py`
 
