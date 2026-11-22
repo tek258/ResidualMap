@@ -8,14 +8,13 @@ import streamlit.components.v1 as components
 
 from config import GRAFANA_PANO, GRAFANA_URL, GRAPH_DIR, TARGETS
 from pipeline import ai_skor, runs, saldiri_testi
-from steps import ortak
+from steps import ortak, tema
 
 
 def render():
     run_id = st.session_state["run_id"]
     meta = runs.load_meta(run_id)
-    st.header("5. Savunma testi")
-    st.markdown("**Kontroller bu zafiyetleri yakalıyor mu?**")
+    tema.baslik("Adım 5", "Savunma testi", "Kontroller bu zafiyetleri yakalıyor mu?")
     st.caption("Lab'ın savunma doğrulama testini (`defense/test-waf.sh`) çalıştırır: grafikteki "
                "zafiyetlere (SQLi, XSS, rol atama, XXE, CSRF, açık yönlendirme) ait test istekleri, "
                "güvenlik başlıkları, hata sayfası ve hız sınırı kontrolleri yalnızca kendi lab "

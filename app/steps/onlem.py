@@ -16,7 +16,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from config import AI_DIR, GRAPH_DIR
-from steps import ortak
+from steps import ortak, tema
 
 KESINTI_ADI = {"yok": "yok", "dusuk": "düşük", "var": "var"}
 TUR_ADI = {"yama": "Paket yaması", "kod": "Kod düzeltmesi", "yapilandirma": "Yapılandırma"}
@@ -52,8 +52,7 @@ def _yuzde(once, sonra):
 
 
 def render():
-    st.header("6. Önlem seçimi")
-    st.markdown("**Sınırlı eforla riski en çok hangi önlemler azaltır?**")
+    tema.baslik("Adım 6", "Önlem seçimi", "Sınırlı eforla riski en çok hangi önlemler azaltır?")
     st.caption("Aday önlemler (paket yamaları, kod düzeltmeleri, yapılandırma) henüz uygulanmadı. "
                "Kalan risk, mevcut kontrollerin (WAF, sanal yamalar, IDS, IAM, segmentasyon) üzerine "
                "eklenerek hesaplanır. Lab'a hiçbir şey uygulanmaz.")

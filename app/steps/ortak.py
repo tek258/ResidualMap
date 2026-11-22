@@ -39,6 +39,26 @@ _SIGDIR = """
 """
 
 
-def grafik_html(metin):
-    """pyvis HTML'ine sekme içinde doğru sığdırma betiğini ekler (dosyaya yazılmaz)."""
+# Uygulamanın açık temasına uyum: graph/visualize_graph.py'nin koyu renkleri yalnızca ekranda
+# değiştirilir; repodaki HTML dosyaları ve K3'ün kodu aynı kalır.
+_ACIK_RENKLER = [
+    ("#141820", "#ffffff"),                               # tuval zemini
+    ("#f5f7fa", "#1d2433"),                               # düğüm etiketleri, başlık, panel yazısı
+    ("rgba(20, 24, 32, 0.92)", "rgba(255, 255, 255, 0.96)"),   # lejant ve en riskli yollar paneli
+    ("border: 1px solid #4a5568", "border: 1px solid #e3e6ef"),
+    ("rgba(255,255,255,0.14)", "rgba(20,26,42,0.10)"),
+    ("color: #90caf9", "color: #4f5bd5"),                  # lejant başlığı
+    ("box-shadow: 0 4px 16px rgba(0,0,0,0.45)", "box-shadow: 0 8px 24px rgba(20,26,42,0.10)"),
+    ("#f9e79f", "#f4d03f"),                               # "düşük" sarısı beyazda kayboluyordu
+]
+
+
+def grafik_html(metin, acik=True, yukseklik=None):
+    """pyvis HTML'ini uygulamada göstermeye hazırlar (dosyaya yazılmaz): açık tema renkleri,
+    istenirse tuval yüksekliği ve sekme içinde doğru sığdırma betiği."""
+    if acik:
+        for eski, yeni in _ACIK_RENKLER:
+            metin = metin.replace(eski, yeni)
+    if yukseklik:
+        metin = metin.replace("height: 900px", f"height: {yukseklik}px")
     return metin.replace("</body>", _SIGDIR + "</body>") if "</body>" in metin else metin + _SIGDIR

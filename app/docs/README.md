@@ -4,6 +4,7 @@ Lab hedefinin seçilmesinden saldırı grafiğine ve savunma testine kadar olan 
 
 | Adım | Ne yapar |
 |---|---|
+| Özet | Projenin sonucunu tek ekranda gösterir: zafiyet ve yol sayısı, artık risk düşüşü, kesilen yollar, 16 saatlik önlem planı ve önce/sonra grafiği. "Demoyu başlat" 1. adıma geçer |
 | 1. Hedef | İzin listesindeki lab hedefini seçer, çalıştırma başlatır (ya da örnek veriyle başlatır) |
 | 2. Tarama | ZAP baseline, Trivy ve Juice Shop challenge listesini canlı toplar ya da repodaki ham dosyaları yükler |
 | 3. Bulgular | Ham çıktıları ayrıştırır, dondurulmuş envanterle karşılaştırır, grafiğe girecek bulguları seçtirir |

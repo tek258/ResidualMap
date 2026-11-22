@@ -4,11 +4,12 @@ import streamlit as st
 
 from config import TARGETS
 from pipeline import runs, scans
+from steps import tema
 from steps.ortak import durumlar as _durumlar
 
 
 def render():
-    st.header("1. Hedef")
+    tema.baslik("Adım 1", "Hedef", "Hangi lab hedefini değerlendiriyoruz?")
     st.caption(
         "Tarama yalnızca kendi lab ortamınızda çalışan, kasıtlı olarak açıklı "
         "uygulamalara yapılabilir. Liste dışında bir adres taranamaz."

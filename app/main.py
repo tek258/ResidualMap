@@ -9,19 +9,26 @@ import streamlit as st
 
 from config import GRAFANA_PANO, GRAFANA_URL, TARGETS
 from pipeline import runs
-from steps import bulgular, grafik, hedef, onlem, ortak, savunma, tarama
+from steps import bulgular, grafik, hedef, onlem, ortak, ozet, savunma, tarama, tema
 
 st.set_page_config(page_title="ResidualMap", page_icon="🛡️", layout="wide")
+tema.uygula()
 
-ADIMLAR = ["1. Hedef", "2. Tarama", "3. Bulgular", "4. Grafik", "5. Savunma testi", "6. Önlem seçimi"]
+ADIMLAR = ["Özet", "1. Hedef", "2. Tarama", "3. Bulgular", "4. Grafik", "5. Savunma testi", "6. Önlem seçimi"]
 
 st.session_state.setdefault("run_id", None)
 st.session_state.setdefault("target", None)
+st.session_state.setdefault("adim", "Özet")
+
 
 with st.sidebar:
-    st.title("ResidualMap")
-    st.caption("Saldırı grafiği tabanlı zafiyet değerlendirme")
-    adim = st.radio("Adım", ADIMLAR, label_visibility="collapsed")
+    tema.marka()
+    meta = runs.load_meta(st.session_state["run_id"]).get("steps", {}) if st.session_state["run_id"] else {}
+    bitti = {"1. Hedef": bool(st.session_state["run_id"]), "2. Tarama": "tarama" in meta,
+             "3. Bulgular": "bulgular" in meta, "4. Grafik": "grafik" in meta,
+             "5. Savunma testi": "saldiri_testi" in meta}
+    adim = st.radio("Adım", ADIMLAR, key="adim", label_visibility="collapsed",
+                    format_func=lambda a: ("✓  " if bitti.get(a) else "") + a)
     st.divider()
     if st.session_state["run_id"]:
         st.markdown(
@@ -40,7 +47,9 @@ with st.sidebar:
     st.caption(pano.mesaj if not pano.ok else
                "WAF engellemeleri, IDS alarmları ve IAM girişleri. Yeni sekmede açılır.")
 
-if adim == "1. Hedef":
+if adim == "Özet":
+    ozet.render()
+elif adim == "1. Hedef":
     hedef.render()
 elif adim == "6. Önlem seçimi":
     onlem.render()  # ekibin dondurulmuş sonuçlarıyla çalışır, çalıştırma gerektirmez
