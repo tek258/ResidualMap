@@ -11,7 +11,10 @@ import re
 import urllib.error
 import urllib.request
 
+import time
+
 from config import OLLAMA_URL
+from pipeline import ai_iz
 
 HEDEF_TR = {"node_target_admin": "yönetici erişimi", "node_target_rce": "kod çalıştırma",
             "node_target_account_takeover": "hesap ele geçirme", "node_target_leak": "veri sızıntısı",
@@ -84,10 +87,12 @@ def sayi_denetimi(metin, veri):
     return sorted(x for x in _sayilar(metin) if x not in kaynak and not any(abs(x - k) < 0.051 for k in kaynak))
 
 
-def acikla(veri, model, options, timeout=180):
-    """(metin, uyarı listesi) ya da (None, hata)."""
-    istek = json.dumps({"model": model, "prompt": prompt(veri), "stream": False, "format": "json",
+def acikla(veri, model, options, timeout=180, run_dir=None):
+    """(metin, uyarı listesi) ya da (None, hata). Çağrı AI izine yazılır."""
+    p, t0 = prompt(veri), time.time()
+    istek = json.dumps({"model": model, "prompt": p, "stream": False, "format": "json",
                         "options": {**options, "num_predict": 700, "num_ctx": 8192}}).encode("utf-8")
+    plan = ", ".join(o["kod"] for o in veri.get("secilen_onlemler", []))
     try:
         req = urllib.request.Request(f"{OLLAMA_URL}/api/generate", data=istek,
                                      headers={"Content-Type": "application/json"})
@@ -95,7 +100,14 @@ def acikla(veri, model, options, timeout=180):
             govde = json.loads(yanit.read().decode("utf-8"))
         metin = json.loads(govde["response"])["aciklama"].strip()
     except (urllib.error.URLError, TimeoutError, OSError) as e:
-        return None, f"Ollama'ya ulaşılamadı: {e}"
+        hata = f"Ollama'ya ulaşılamadı: {e}"
+        ai_iz.kaydet(run_dir, ai_iz.PLAN, plan, model, p, None, time.time() - t0, ok=False, hata=hata)
+        return None, hata
     except (ValueError, KeyError, TypeError, AttributeError) as e:
-        return None, f"Model geçerli bir yanıt vermedi: {e}"
-    return metin, sayi_denetimi(metin, veri)
+        hata = f"Model geçerli bir yanıt vermedi: {e}"
+        ai_iz.kaydet(run_dir, ai_iz.PLAN, plan, model, p, None, time.time() - t0, ok=False, hata=hata)
+        return None, hata
+    uyari = sayi_denetimi(metin, veri)
+    ai_iz.kaydet(run_dir, ai_iz.PLAN, plan, model, p, {"aciklama": metin}, time.time() - t0,
+                 ek={"sayi_uyarisi": uyari})
+    return metin, uyari

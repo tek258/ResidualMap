@@ -16,6 +16,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from config import AI_DIR, GRAPH_DIR
+from pipeline import runs
 from steps import isler, ortak, tema
 
 KESINTI_ADI = {"yok": "yok", "dusuk": "düşük", "var": "var"}
@@ -198,10 +199,11 @@ def _plani_acikla(mod, m, secim, guven, butce):
                       "anlatır. Model hesap yapmaz: bütün sayılar önlem motorundan verilir."):
         veri = ai_aciklama.baglam(m, secim, guven, butce)
         mm = ai_skor.model_modulu()
+        run_dir = runs.run_dir(st.session_state["run_id"]) if st.session_state.get("run_id") else None
 
         def _is(is_):
             is_.ilerle(None, f"{model} planı yorumluyor…")
-            metin, ek = ai_aciklama.acikla(veri, mm.MODEL_NAME, mm.OPTIONS)
+            metin, ek = ai_aciklama.acikla(veri, mm.MODEL_NAME, mm.OPTIONS, run_dir=run_dir)
             return metin, ek, veri
         isler.baslat(is_anahtari, "Plan açıklaması", _is)
         st.rerun()

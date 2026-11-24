@@ -260,7 +260,7 @@ def _ai_baglanti_is(is_, yol, hedef_ai, envd):
         if is_.iptal_mi():
             break
         is_.ilerle((i - 1) / len(hedef_ai), f"{r['vuln_id']} modele soruluyor ({i}/{len(hedef_ai)})")
-        oneri, hata = baglanti.ai_onerisi(r, envd)
+        oneri, hata = baglanti.ai_onerisi(r, envd, run_dir=yol.parent)
         if not oneri:
             hatalar.append(f"{r['vuln_id']}: {hata}")
             if hata.startswith("Ollama'ya"):

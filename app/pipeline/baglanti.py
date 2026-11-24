@@ -23,7 +23,10 @@ import urllib.error
 import urllib.request
 from functools import lru_cache
 
+import time
+
 from config import AI_DIR, GRAPH_DIR, OLLAMA_URL, REPO_ROOT
+from pipeline import ai_iz
 
 CWE_ETKI = REPO_ROOT / "inventory" / "cwe_etki.csv"
 EK_SUTUNLAR = ["hedef", "hedef_kaynagi", "hedef_gerekcesi"]
@@ -182,24 +185,30 @@ def _dogrula(icerik):
     return veri
 
 
-def ai_onerisi(r, envanter, deneme=3, timeout=120):
-    """Bir kayıt için model önerisi. Dönüş: dict ya da hata durumunda None ve hata metni."""
+def ai_onerisi(r, envanter, deneme=3, timeout=120, run_dir=None):
+    """Bir kayıt için model önerisi. Dönüş: dict ya da hata durumunda None ve hata metni.
+    Çağrı AI izine yazılır (run_dir verilirse o çalıştırmanın klasörüne)."""
     m = _model()
-    istek = json.dumps({"model": m.MODEL_NAME, "prompt": _prompt(r, envanter), "stream": False,
+    prompt = _prompt(r, envanter)
+    istek = json.dumps({"model": m.MODEL_NAME, "prompt": prompt, "stream": False,
                         "format": "json", "options": m.OPTIONS}).encode("utf-8")
-    hata = ""
-    for _ in range(deneme):
+    hata, t0, sonuc = "", time.time(), None
+    for i in range(deneme):
         try:
             req = urllib.request.Request(f"{OLLAMA_URL}/api/generate", data=istek,
                                          headers={"Content-Type": "application/json"})
             with urllib.request.urlopen(req, timeout=timeout) as yanit:
                 govde = json.loads(yanit.read().decode("utf-8"))
-            return _dogrula(govde["response"]), ""
+            sonuc, hata = _dogrula(govde["response"]), ""
+            break
         except (urllib.error.URLError, TimeoutError, OSError) as e:
-            return None, f"Ollama'ya ulaşılamadı: {e}"
+            hata = f"Ollama'ya ulaşılamadı: {e}"
+            break
         except (ValueError, KeyError) as e:     # geçersiz JSON ya da kapalı liste dışı değer: yeniden sor
             hata = f"geçersiz yanıt: {e}"
-    return None, hata
+    ai_iz.kaydet(run_dir, ai_iz.BAGLANTI, r.get("vuln_id"), m.MODEL_NAME, prompt, sonuc, time.time() - t0,
+                 ok=sonuc is not None, hata=hata, gecersiz=i if sonuc else i + 1)
+    return sonuc, hata
 
 
 def ai_uygula(satir, oneri):

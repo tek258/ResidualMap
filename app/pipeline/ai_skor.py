@@ -15,7 +15,7 @@ import urllib.error
 import urllib.request
 
 from config import AI_DIR, FROZEN_INVENTORY, OLLAMA_URL
-from pipeline import dosya
+from pipeline import ai_iz, dosya
 
 HAZIR_SONUC = AI_DIR / "results_v2_llm.csv"
 MODEL_SCRIPT = AI_DIR / "model_v2_local_llm.py"
@@ -102,8 +102,10 @@ def skorla(run_dir, hepsi=False, on_progress=None, iptal=None):
             break
         if on_progress:
             on_progress(i - 1, len(hedef), vid)
-        skor, gerekce, g, _ = m.sor(m.prompt_olustur(inv[vid], envanter), vid, m.MODEL_NAME)
+        prompt, t = m.prompt_olustur(inv[vid], envanter), time.time()
+        skor, gerekce, g, token = m.sor(prompt, vid, m.MODEL_NAME)
         gecersiz += g
+        _iz(run_dir, ai_iz.SKOR, vid, m, prompt, skor, gerekce, time.time() - t, g, token)
         if skor is None:
             basarisiz.append(vid)
             continue
@@ -116,6 +118,14 @@ def skorla(run_dir, hepsi=False, on_progress=None, iptal=None):
             "gecersiz_deneme": gecersiz, "sure_sn": round(time.time() - t0, 1), "model": m.MODEL_NAME}
 
 
+def _iz(run_dir, islem, vid, m, prompt, skor, gerekce, sure, gecersiz, token):
+    ok = skor is not None
+    ai_iz.kaydet(run_dir, islem, vid, m.MODEL_NAME, prompt,
+                 {"risk_score": skor, "reason": gerekce} if ok else None, sure, ok=ok,
+                 hata="" if ok else "geçerli yanıt alınamadı", gecersiz=gecersiz,
+                 ek={"sinif": m.sinif(skor) if ok else "", "prompt_token": token})
+
+
 def skorla_tek(run_dir, vid):
     """Tek kaydı model v2 ile skorlar (demoda canlı gösterim). Dönüş: (skor, sınıf, gerekçe, süre_sn)
     ya da skor None ise hata."""
@@ -124,8 +134,10 @@ def skorla_tek(run_dir, vid):
     envanter = {**{r["vuln_id"]: r for r in _oku(FROZEN_INVENTORY)}, **inv}
     mevcut = {r["vuln_id"]: r for r in _oku(hazirla(run_dir))}
     t0 = time.time()
-    skor, gerekce, _, _ = m.sor(m.prompt_olustur(inv[vid], envanter), vid, m.MODEL_NAME)
+    prompt = m.prompt_olustur(inv[vid], envanter)
+    skor, gerekce, g, token = m.sor(prompt, vid, m.MODEL_NAME)
     sure = round(time.time() - t0, 1)
+    _iz(run_dir, ai_iz.SKOR_TEK, vid, m, prompt, skor, gerekce, sure, g, token)
     if skor is None:
         return None, None, None, sure
     mevcut[vid] = {"vuln_id": vid, "risk_score_llm": skor, "risk_label_llm": m.sinif(skor),
