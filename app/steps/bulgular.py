@@ -114,12 +114,15 @@ def render():
     cols[-1].metric("Seçili toplam", toplam, durum,
                     delta_color="normal" if HEDEF_MIN <= toplam <= HEDEF_MAX else "inverse")
 
-    b1, b2, b3, _ = st.columns([1, 1.4, 1, 2])
+    b1, b2, b3, b4, _ = st.columns([1, 1.4, 1, 1, 1.2])
     if b1.button("Kurala göre seç"):
         _secimi_ayarla(run_id, [a["aday_id"] for a in adaylar if a["kural"]]); st.rerun()
     if b2.button("Dondurulmuş envanteri uygula", type="primary", disabled=not env_rows):
         _secimi_ayarla(run_id, aday_vid.keys()); st.rerun()
-    if b3.button("Seçimi temizle"):
+    if b3.button(f"Hepsini seç ({len(adaylar)})", help="Bütün kaynaklardaki bütün adaylar. Yalnızca filtrede "
+                                                      "görünenleri seçmek için tablonun üstündeki düğmeyi kullanın."):
+        _secimi_ayarla(run_id, [a["aday_id"] for a in adaylar]); st.rerun()
+    if b4.button("Seçimi temizle"):
         _secimi_ayarla(run_id, []); st.rerun()
 
     # --- Filtreler ---
@@ -159,7 +162,17 @@ def render():
     } for a in gorunen], columns=["id", "Seç", "Kaynak", "Ad", "Önem", "CWE", "CVSS",
                                    "Envanter", "Bayrak", "Kanıt"])
 
-    st.caption(f"{len(gorunen)} aday gösteriliyor.")
+    g1, g2, g3 = st.columns([2.6, 1, 1])
+    g1.caption(f"{len(gorunen)} aday gösteriliyor.")
+    gorunen_id = [a["aday_id"] for a in gorunen]
+    filtreli = len(gorunen) < len(adaylar)
+    if g2.button(f"Görünenleri seç ({len(gorunen)})", key="gorunen_sec", disabled=not gorunen,
+                 use_container_width=True, help="Filtreye uyan adayları seçime ekler; diğer seçimler korunur."
+                 if filtreli else "Bütün adaylar görünüyor: hepsini seçer."):
+        _secimi_ayarla(run_id, secili | set(gorunen_id)); st.rerun()
+    if g3.button("Görünenleri bırak", key="gorunen_birak", disabled=not any(i in secili for i in gorunen_id),
+                 use_container_width=True, help="Filtreye uyan adayları seçimden çıkarır; diğer seçimler korunur."):
+        _secimi_ayarla(run_id, secili - set(gorunen_id)); st.rerun()
     duzenli = st.data_editor(
         df,
         key=f"editor_{run_id}_{st.session_state.get('editor_v', 0)}_{gorunum}_{'-'.join(kaynak_f)}_{ara}",
