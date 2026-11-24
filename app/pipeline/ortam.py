@@ -20,8 +20,44 @@ from pathlib import Path
 from config import OLLAMA_URL, REPO_ROOT
 
 DEFENSE_DIR = REPO_ROOT / "defense"
-COMPOSE = ["docker", "compose", "--profile", "siem"]
 SISTEM = platform.system()            # "Windows", "Darwin", "Linux"
+EV = Path.home()
+
+
+def _ilk_var(adaylar):
+    for a in adaylar:
+        if a and Path(a).is_file():
+            return str(a)
+    return None
+
+
+def docker_yolu():
+    """docker komutu. PATH'te yoksa Docker Desktop'ın bilinen kurulum yerlerine bakılır
+    (Mac'te uygulama Finder'dan açılınca /usr/local/bin ya da ~/.docker/bin PATH'te olmayabilir)."""
+    if SISTEM == "Windows":
+        pf = Path(os.environ.get("ProgramFiles", r"C:\Program Files"))
+        return shutil.which("docker") or _ilk_var([pf / "Docker" / "Docker" / "resources" / "bin" / "docker.exe"])
+    return shutil.which("docker") or _ilk_var([
+        "/usr/local/bin/docker", "/opt/homebrew/bin/docker", EV / ".docker" / "bin" / "docker",
+        "/Applications/Docker.app/Contents/Resources/bin/docker",
+        EV / "Applications" / "Docker.app" / "Contents" / "Resources" / "bin" / "docker"])
+
+
+def docker_komutu():
+    # her seferinde yeniden bakılır: Mac'te komut Docker Desktop'ın ilk açılışında kurulabiliyor
+    return docker_yolu() or "docker"
+
+
+def _compose():
+    return [docker_komutu(), "compose", "--profile", "siem"]
+
+
+def _mac_uygulamasi(ad):
+    """Mac'te uygulama kurulu mu? (/Applications, ~/Applications ya da LaunchServices'in bildiği başka bir yer)"""
+    if Path(f"/Applications/{ad}.app").exists() or (EV / "Applications" / f"{ad}.app").exists():
+        return True
+    r = _calistir(["open", "-Ra", ad], timeout=10)
+    return bool(r and r.returncode == 0)
 
 
 @dataclass
@@ -63,11 +99,11 @@ def _bekle(kosul, sure, aralik=3):
 
 # --- Docker ---
 def docker_kurulu():
-    return shutil.which("docker") is not None
+    return docker_yolu() is not None or (SISTEM == "Darwin" and _mac_uygulamasi("Docker"))
 
 
 def docker_hazir():
-    r = _calistir(["docker", "info", "--format", "{{.ServerVersion}}"], timeout=10)
+    r = _calistir([docker_komutu(), "info", "--format", "{{.ServerVersion}}"], timeout=10)
     return bool(r and r.returncode == 0 and r.stdout.strip())
 
 
@@ -78,9 +114,9 @@ def docker_desktop_baslat():
             return Sonuc(False, f"Docker Desktop bulunamadı ({yol}). Kurulum: KURULUM.md")
         _arka_planda([str(yol)])
     elif SISTEM == "Darwin":
-        if not Path("/Applications/Docker.app").exists():
-            return Sonuc(False, "Docker Desktop bulunamadı (/Applications/Docker.app). Kurulum: KURULUM.md")
-        _arka_planda(["open", "-a", "Docker"])
+        if not _mac_uygulamasi("Docker"):
+            return Sonuc(False, "Docker Desktop bulunamadı (Uygulamalar klasöründe Docker.app yok). Kurulum: KURULUM.md")
+        _arka_planda(["open", "-g", "-a", "Docker"])   # -g: arka planda, öne gelmeden
     else:
         r = _calistir(["systemctl", "--user", "start", "docker-desktop"], timeout=20)
         if not r or r.returncode != 0:
@@ -92,7 +128,7 @@ def docker_desktop_baslat():
 # --- Lab (defense/docker-compose.yml) ---
 def lab_durumu():
     """{servis: durum} ya da Docker hazır değilse None."""
-    r = _calistir([*COMPOSE, "ps", "--all", "--format", "json"], timeout=20, cwd=DEFENSE_DIR)
+    r = _calistir([*_compose(), "ps", "--all", "--format", "json"], timeout=20, cwd=DEFENSE_DIR)
     if not r or r.returncode != 0:
         return None
     metin = r.stdout.strip()
@@ -106,14 +142,14 @@ def lab_durumu():
 
 
 def lab_servisleri():
-    r = _calistir([*COMPOSE, "config", "--services"], timeout=20, cwd=DEFENSE_DIR)
+    r = _calistir([*_compose(), "config", "--services"], timeout=20, cwd=DEFENSE_DIR)
     return [s for s in (r.stdout.split() if r and r.returncode == 0 else []) if s]
 
 
 def lab_baslat(satir_cb=None, timeout=1800):
     """`docker compose --profile siem up -d`. İlk seferde imajları indirir (birkaç GB)."""
     try:
-        p = subprocess.Popen([*COMPOSE, "up", "-d"], cwd=DEFENSE_DIR, stdout=subprocess.PIPE,
+        p = subprocess.Popen([*_compose(), "up", "-d"], cwd=DEFENSE_DIR, stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace")
     except FileNotFoundError:
         return Sonuc(False, "Docker komutu bulunamadı.")
@@ -130,7 +166,7 @@ def lab_baslat(satir_cb=None, timeout=1800):
 
 
 def lab_durdur():
-    r = _calistir([*COMPOSE, "stop"], timeout=180, cwd=DEFENSE_DIR)
+    r = _calistir([*_compose(), "stop"], timeout=180, cwd=DEFENSE_DIR)
     return Sonuc(bool(r and r.returncode == 0), "Lab durduruldu." if r and r.returncode == 0
                  else "Lab durdurulamadı: " + ((r.stderr or r.stdout).strip()[-200:] if r else "Docker yok."))
 
@@ -155,14 +191,18 @@ def _ollama_yolu():
     if yol:
         return yol
     if SISTEM == "Windows":
-        aday = Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Ollama" / "ollama.exe"
-        return str(aday) if aday.exists() else None
-    return None
+        return _ilk_var([Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Ollama" / "ollama.exe"])
+    return _ilk_var(["/opt/homebrew/bin/ollama", "/usr/local/bin/ollama",          # Homebrew (Apple Silicon / Intel)
+                     "/Applications/Ollama.app/Contents/Resources/ollama"])
+
+
+def ollama_kurulu():
+    return bool(_ollama_yolu() or (SISTEM == "Darwin" and _mac_uygulamasi("Ollama")))
 
 
 def ollama_baslat():
-    if SISTEM == "Darwin" and Path("/Applications/Ollama.app").exists():
-        _arka_planda(["open", "-a", "Ollama"])
+    if SISTEM == "Darwin" and _mac_uygulamasi("Ollama"):
+        _arka_planda(["open", "-g", "-a", "Ollama"])   # menü çubuğu uygulaması sunucuyu kendisi açar
         return Sonuc(True, "Ollama başlatıldı.")
     yol = _ollama_yolu()
     if not yol:

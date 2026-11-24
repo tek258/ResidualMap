@@ -51,7 +51,7 @@ def ozet():
     elif ortam.ollama_calisiyor():
         d["ai"] = (False, f"Açık, {model} yüklü değil")
     else:
-        d["ai"] = (False, "Kapalı (isteğe bağlı)" if ortam._ollama_yolu() or ortam.SISTEM == "Darwin"
+        d["ai"] = (False, "Kapalı (isteğe bağlı)" if ortam.ollama_kurulu()
                    else "Kurulu değil (isteğe bağlı)")
     return d
 
