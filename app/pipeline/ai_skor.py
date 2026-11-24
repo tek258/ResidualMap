@@ -15,6 +15,7 @@ import urllib.error
 import urllib.request
 
 from config import AI_DIR, FROZEN_INVENTORY, OLLAMA_URL
+from pipeline import dosya
 
 HAZIR_SONUC = AI_DIR / "results_v2_llm.csv"
 MODEL_SCRIPT = AI_DIR / "model_v2_local_llm.py"
@@ -31,7 +32,7 @@ def _oku(path):
 
 
 def _yaz(path, satirlar):
-    with open(path, "w", encoding="utf-8", newline="") as f:
+    with dosya.atomik(path, newline="") as f:
         w = csv.DictWriter(f, fieldnames=ALANLAR)
         w.writeheader()
         w.writerows(sorted(satirlar, key=lambda r: r["vuln_id"]))
@@ -83,8 +84,9 @@ def hazirla(run_dir):
     return run_dir / DOSYA
 
 
-def skorla(run_dir, hepsi=False, on_progress=None):
-    """Eksik (hepsi=True ise tüm) kayıtları model v2 ile skorlar. Sonuç özetini döndürür."""
+def skorla(run_dir, hepsi=False, on_progress=None, iptal=None):
+    """Eksik (hepsi=True ise tüm) kayıtları model v2 ile skorlar. Sonuç özetini döndürür.
+    iptal() True dönerse sıradaki kayda geçmeden durur; o ana kadarki skorlar kaydedilmiştir."""
     m = model_modulu()
     inv = {r["vuln_id"]: r for r in _oku(run_dir / "inventory.csv")}
     # Few-shot örnekleri (V023, V006, V019) dondurulmuş envanterden gelir; yeni bir taramanın
@@ -95,6 +97,9 @@ def skorla(run_dir, hepsi=False, on_progress=None):
 
     basarisiz, gecersiz, t0 = [], 0, time.time()
     for i, vid in enumerate(hedef, start=1):
+        if iptal and iptal():
+            hedef = hedef[:i - 1]
+            break
         if on_progress:
             on_progress(i - 1, len(hedef), vid)
         skor, gerekce, g, _ = m.sor(m.prompt_olustur(inv[vid], envanter), vid, m.MODEL_NAME)

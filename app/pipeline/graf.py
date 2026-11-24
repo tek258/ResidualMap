@@ -9,6 +9,7 @@ import csv
 import importlib.util
 import io
 import json
+import threading
 from collections import Counter
 
 from config import GRAPH_DIR
@@ -56,8 +57,18 @@ def _ai_kaynagini_yonlendir(fp, vg, ai_csv):
     return skorlar
 
 
+# Grafik üretimi stdout'u yönlendiriyor ve modül değişkenlerini değiştiriyor; arka plandaki bir iş
+# ile sayfa aynı anda üretmesin diye sırayla çalışır.
+_KILIT = threading.Lock()
+
+
 def uret(inventory_csv, out_dir):
     """(ok, günlük metni) döndürür. Çıktılar out_dir altına yazılır."""
+    with _KILIT:
+        return _uret(inventory_csv, out_dir)
+
+
+def _uret(inventory_csv, out_dir):
     out_dir.mkdir(parents=True, exist_ok=True)
     edges_p, paths_p, html_p = (out_dir / CIKTILAR[k] for k in ("edges", "paths", "html"))
     gunluk = io.StringIO()

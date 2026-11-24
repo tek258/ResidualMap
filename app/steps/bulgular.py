@@ -7,7 +7,7 @@ import streamlit as st
 
 from config import RAW_DIR
 from pipeline import baglanti, envanter, fark, parsers, runs
-from steps import ortak, tema
+from steps import isler, ortak, tema
 from pipeline.scans import KAYNAK_ADLARI, RAW_FILES
 
 HEDEF_MIN, HEDEF_MAX = 25, 40
@@ -204,7 +204,9 @@ def render():
 
     # --- Kaydet ---
     st.divider()
-    if st.button(f"Seçimi kaydet ({len(secili)} kayıt)", type="primary", disabled=not secili):
+    ai_suruyor = isler.suruyor_mu(f"ai_baglanti_{st.session_state['run_id']}")
+    if st.button(f"Seçimi kaydet ({len(secili)} kayıt)", type="primary", disabled=not secili or ai_suruyor,
+                 help="AI bağlantı önerisi sürüyor; bitince kaydedebilirsiniz." if ai_suruyor else None):
         satirlar, varsayilanlar = envanter.olustur(secili, adaylar, env_rows, eslesme)
         # Yeni kayıtların grafiğe bağlantısı: önceki kayıtta AI ya da elle verilmiş kararlar korunur,
         # boş kalanlar kuraldan (ekip kuralı, MITRE CWE etkisi) önerilir.
@@ -250,6 +252,29 @@ def _onceki_kararlari_tasi(yol, satirlar, yeni_idler):
             r.update({k: o.get(k, "") for k in alanlar})
 
 
+def _ai_baglanti_is(is_, yol, hedef_ai, envd):
+    """Arka planda: her kayıt için model önerisi. Her öneriden sonra envanter dosyası yeniden okunup
+    yalnızca o satır güncellenir; iş yarıda kalırsa alınan öneriler kaybolmaz."""
+    alinan, hatalar = 0, []
+    for i, r in enumerate(hedef_ai, start=1):
+        if is_.iptal_mi():
+            break
+        is_.ilerle((i - 1) / len(hedef_ai), f"{r['vuln_id']} modele soruluyor ({i}/{len(hedef_ai)})")
+        oneri, hata = baglanti.ai_onerisi(r, envd)
+        if not oneri:
+            hatalar.append(f"{r['vuln_id']}: {hata}")
+            if hata.startswith("Ollama'ya"):
+                break
+            continue
+        sutunlar, satirlar = envanter.yukle_envanter(yol)
+        for s in satirlar:
+            if s["vuln_id"] == r["vuln_id"] and s.get("hedef_kaynagi") != baglanti.KAYNAK_ELLE:
+                baglanti.ai_uygula(s, oneri)
+                alinan += 1
+        envanter.kaydet(yol, _sutunlar(sutunlar), satirlar)
+    return alinan, hatalar
+
+
 _BELIRSIZ = "— belirsiz —"
 
 
@@ -285,32 +310,32 @@ def _baglanti_bolumu(run_id, rdir, meta, env_rows):
 
     # --- AI önerisi ---
     ok, mesaj, model = ortak.ollama()
+    anahtar = f"ai_baglanti_{run_id}"
+    suruyor = isler.ilerleme(anahtar)
+    bitti = isler.sonuc(anahtar)
+    if bitti:
+        if bitti.durum == isler.HATA:
+            st.error(f"AI önerisi yarıda kaldı: {bitti.hata}")
+        else:
+            alinan, hatalar = bitti.sonuc
+            (st.warning if hatalar else st.success)(
+                ("İptal edildi. " if bitti.durum == isler.IPTAL else "")
+                + f"{alinan} kayıt için AI önerisi alındı ({bitti.sure():.0f} sn)."
+                + (" Öneri alınamayanlar: " + "; ".join(hatalar[:5]) if hatalar else ""))
     a1, a2, a3 = st.columns([1.4, 1.2, 2.4])
     hedef_ai = None
     if a1.button(f"AI ile öner: belirsizler ({len(belirsiz)})", type="primary",
-                 disabled=not ok or not belirsiz, key="ai_belirsiz"):
+                 disabled=not ok or not belirsiz or suruyor, key="ai_belirsiz"):
         hedef_ai = belirsiz
-    if a2.button(f"AI ile öner: hepsi ({len(yeniler)})", disabled=not ok, key="ai_hepsi",
+    if a2.button(f"AI ile öner: hepsi ({len(yeniler)})", disabled=not ok or suruyor, key="ai_hepsi",
                  help="Kuraldan gelen öneriler dahil bütün yeni kayıtlar modele sorulur; elle "
                       "değiştirilenlere dokunulmaz."):
         hedef_ai = [r for r in yeniler if r.get("hedef_kaynagi") != baglanti.KAYNAK_ELLE]
     a3.caption(mesaj + (" Kayıt başına ~3-5 sn." if ok else ""))
     if hedef_ai:
         envd = {**{r["vuln_id"]: r for r in env_rows}, **{r["vuln_id"]: r for r in satirlar}}
-        cubuk, hatalar = st.progress(0.0, "Model çalışıyor..."), []
-        for i, r in enumerate(hedef_ai, start=1):
-            cubuk.progress((i - 1) / len(hedef_ai), f"{r['vuln_id']} modele soruluyor ({i}/{len(hedef_ai)})")
-            oneri, hata = baglanti.ai_onerisi(r, envd)
-            if oneri:
-                baglanti.ai_uygula(r, oneri)
-            else:
-                hatalar.append(f"{r['vuln_id']}: {hata}")
-                if hata.startswith("Ollama'ya"):
-                    break
-        cubuk.progress(1.0, "Bitti.")
-        envanter.kaydet(yol, _sutunlar(sutunlar), satirlar)
-        if hatalar:
-            st.warning("Öneri alınamayanlar: " + "; ".join(hatalar[:5]))
+        isler.baslat(anahtar, f"AI bağlantı önerisi ({run_id})",
+                     lambda is_: _ai_baglanti_is(is_, yol, [dict(r) for r in hedef_ai], envd))
         st.rerun()
 
     # --- Onay tablosu ---
@@ -341,7 +366,8 @@ def _baglanti_bolumu(run_id, rdir, meta, env_rows):
             "Gerekçe": st.column_config.TextColumn(width="large"),
         },
     )
-    if st.button("Bağlantıları kaydet", key="baglanti_kaydet"):
+    if st.button("Bağlantıları kaydet", key="baglanti_kaydet", disabled=suruyor,
+                 help="AI önerisi sürüyor; bitince kaydedebilirsiniz." if suruyor else None):
         by = {r["vuln_id"]: r for r in yeniler}
         degisen = 0
         for _, s in duz.iterrows():

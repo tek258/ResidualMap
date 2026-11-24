@@ -16,7 +16,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from config import AI_DIR, GRAPH_DIR
-from steps import ortak, tema
+from steps import isler, ortak, tema
 
 KESINTI_ADI = {"yok": "yok", "dusuk": "düşük", "var": "var"}
 TUR_ADI = {"yama": "Paket yaması", "kod": "Kod düzeltmesi", "yapilandirma": "Yapılandırma"}
@@ -66,11 +66,12 @@ def render():
     with st.container(border=True):
         c1, c2, c3 = st.columns([2, 1.3, 1.3])
         toplam = int(sum(o["efor_saat"] for o in m.katalog))
-        butce = c1.slider("Efor bütçesi (saat)", 0, toplam, min(16, toplam))
-        kesintisiz = c2.checkbox("Yalnızca kesinti gerektirmeyenler",
+        st.session_state.setdefault("onlem_butce", min(16, toplam))
+        butce = c1.slider("Efor bütçesi (saat)", 0, toplam, key="onlem_butce")
+        kesintisiz = c2.checkbox("Yalnızca kesinti gerektirmeyenler", key="onlem_kesintisiz",
                                  help="Hizmet kesintisi gerektiren önlemler (yeniden dağıtımda oturum "
                                       "düşmesi, imaj değişimi) dışarıda bırakılır.")
-        test = c3.toggle("Önlemler test edilmiş say", value=False,
+        test = c3.toggle("Önlemler test edilmiş say", key="onlem_test",
                          help="Kapalı: plan aşaması, etkinlik gerekçeye dayalı (engeller = 0.63). "
                               "Açık: uygulanıp test edildiği varsayılır (engeller = 0.9), yollar kesilebilir.")
     guven = "test" if test else "gerekce"
@@ -83,10 +84,14 @@ def render():
     if st.session_state.get("onlem_anahtar") != anahtar:
         st.session_state["onlem_anahtar"] = anahtar
         st.session_state["onlem_secim"] = oneri["onlemler"]
+    elif "onlem_secim" not in st.session_state:
+        # Streamlit başka adıma geçilince seçim kutusunun durumunu siler; son seçim geri yüklenir
+        st.session_state["onlem_secim"] = st.session_state.get("onlem_secim_son", oneri["onlemler"])
 
     ad = {o["onlem_id"]: f"{o['onlem_id']} · {o['ad']}" for o in m.katalog}
     secim = st.multiselect("Uygulanacak önlemler (en iyi bileşim önerildi, değiştirebilirsiniz)",
                            [o["onlem_id"] for o in m.katalog], key="onlem_secim", format_func=ad.get)
+    st.session_state["onlem_secim_son"] = list(secim)
     s = m.senaryo(secim, guven)
 
     if s["efor_saat"] > butce:
@@ -182,15 +187,24 @@ def _plani_acikla(mod, m, secim, guven, butce):
     from pipeline import ai_aciklama, ai_skor
     ok, mesaj, model = ortak.ollama()
     anahtar = ("plan_aciklama", tuple(sorted(secim)), guven, butce)
+    is_anahtari = f"plan_aciklama:{'|'.join(sorted(secim))}:{guven}:{butce}"
+    suruyor = isler.ilerleme(is_anahtari, iptal=False)
+    bitti = isler.sonuc(is_anahtari)
+    if bitti:
+        st.session_state[anahtar] = bitti.sonuc if bitti.durum != isler.HATA else (None, bitti.hata, None)
     c1, c2 = st.columns([1, 3])
-    if c1.button("Planı AI ile açıkla", disabled=not ok or not secim, key="plan_acikla",
+    if c1.button("Planı AI ile açıkla", disabled=not ok or not secim or suruyor, key="plan_acikla",
                  help="Yerel model (Ollama) seçilen önlemleri, kazanımı ve kalan en riskli yolu Türkçe "
                       "anlatır. Model hesap yapmaz: bütün sayılar önlem motorundan verilir."):
         veri = ai_aciklama.baglam(m, secim, guven, butce)
         mm = ai_skor.model_modulu()
-        with st.spinner(f"{model} planı yorumluyor..."):
+
+        def _is(is_):
+            is_.ilerle(None, f"{model} planı yorumluyor…")
             metin, ek = ai_aciklama.acikla(veri, mm.MODEL_NAME, mm.OPTIONS)
-        st.session_state[anahtar] = (metin, ek, veri)
+            return metin, ek, veri
+        isler.baslat(is_anahtari, "Plan açıklaması", _is)
+        st.rerun()
     c2.caption(mesaj if not ok else ("Önlem seçin." if not secim else
                "Model yalnızca anlatır; yazdığı her sayı hesaplanan değerlerle karşılaştırılır."))
     sonuc = st.session_state.get(anahtar)

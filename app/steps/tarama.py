@@ -6,7 +6,7 @@ import streamlit as st
 
 from config import TARGETS
 from pipeline import runs, scans
-from steps import tema
+from steps import isler, tema
 from steps.ortak import durumlar
 
 CANLI, REPO, YUKLE, ATLA = "Canlı topla", "Repodaki dosya", "Dosya yükle", "Atla"
@@ -19,28 +19,41 @@ def _varsayilan(kaynak, lab_hazir):
     return REPO if scans.repo_dosyasi(kaynak).exists() else ATLA
 
 
-def _calistir(kaynak, yontem, target, raw_dir, yuklenen):
+def _calistir(kaynak, yontem, target, raw_dir, yuklenen, is_):
     if yontem == REPO:
         return scans.yukle_repodan(kaynak, raw_dir)
     if yontem == YUKLE:
         if yuklenen is None:
             return scans.Sonuc(False, "Dosya seçilmedi.")
-        return scans.yukle_bayttan(kaynak, raw_dir, yuklenen.getvalue())
+        return scans.yukle_bayttan(kaynak, raw_dir, yuklenen)
 
-    # Canlı: çıktı satırlarını kayan bir günlükte göster
-    satirlar = []
-    with st.status(f"{scans.KAYNAK_ADLARI[kaynak]} çalışıyor...", expanded=True) as durum:
-        kutu = st.empty()
+    # Canlı: çıktı satırları işin günlüğüne yazılır, sayfa son satırları gösterir
+    def on_line(line):
+        is_.satir(line)
+    on_line.iptal = is_.iptal_mi
+    return scans.CANLI[kaynak](target, raw_dir, on_line)
 
-        def on_line(line):
-            if line:
-                satirlar.append(line)
-                kutu.code("\n".join(satirlar[-LOG_SATIR:]), language=None)
 
-        sonuc = scans.CANLI[kaynak](target, raw_dir, on_line)
-        durum.update(label=f"{scans.KAYNAK_ADLARI[kaynak]}: {sonuc.mesaj}",
-                     state="complete" if sonuc.ok else "error", expanded=not sonuc.ok)
-    return sonuc
+def _tarama_is(is_, run_id, secimler, target, raw_dir, yuklenenler):
+    """Arka planda: seçilen kaynakları sırayla toplar, her kaynaktan sonra çalıştırmaya yazar."""
+    sirali = [(k, y) for k, y in secimler.items() if y != ATLA]
+    sonuclar = {}
+    for n, (kaynak, yontem) in enumerate(sirali):
+        if is_.iptal_mi():
+            break
+        is_.ilerle(n / len(sirali), f"{scans.KAYNAK_ADLARI[kaynak]} ({yontem.lower()})")
+        is_.satir(f"--- {scans.KAYNAK_ADLARI[kaynak]} ---")
+        sonuc = _calistir(kaynak, yontem, target, raw_dir, yuklenenler.get(kaynak), is_)
+        is_.satir(f"{scans.KAYNAK_ADLARI[kaynak]}: {sonuc.mesaj}")
+        sonuclar[kaynak] = sonuc
+        meta = runs.load_meta(run_id)     # en güncelini al: o arada başka adımda kaydedilmiş olabilir
+        meta["steps"].setdefault("tarama", {})[kaynak] = {
+            "yontem": yontem, "ok": sonuc.ok, "mesaj": sonuc.mesaj,
+            "sure_sn": round(sonuc.sure, 1), "ozet": sonuc.ozet,
+            "zaman": datetime.datetime.now().isoformat(timespec="seconds"),
+        }
+        runs.save_meta(run_id, meta)   # her kaynaktan sonra kaydet, yarıda kalırsa kaybolmasın
+    return sonuclar
 
 
 def render():
@@ -72,9 +85,9 @@ def render():
                     st.caption(f"Bu çalıştırmada toplandı ({onceki['yontem']}): {ozet}")
             secenekler = [CANLI, REPO, YUKLE, ATLA]
             with ust2:
+                st.session_state.setdefault(f"yontem_{kaynak}", _varsayilan(kaynak, lab_hazir))
                 secimler[kaynak] = st.radio(
                     "Yöntem", secenekler, key=f"yontem_{kaynak}", horizontal=True,
-                    index=secenekler.index(_varsayilan(kaynak, lab_hazir)),
                     label_visibility="collapsed",
                 )
             if secimler[kaynak] == YUKLE:
@@ -83,18 +96,25 @@ def render():
             if kaynak == "trivy" and secimler[kaynak] == CANLI:
                 st.caption("İlk çalıştırmada Trivy zafiyet veritabanını indirir, birkaç dakika sürebilir.")
 
-    if st.button("Başlat", type="primary"):
-        for kaynak, yontem in secimler.items():
-            if yontem == ATLA:
-                continue
-            sonuc = _calistir(kaynak, yontem, target, raw_dir, yuklenenler.get(kaynak))
-            tarama[kaynak] = {
-                "yontem": yontem, "ok": sonuc.ok, "mesaj": sonuc.mesaj,
-                "sure_sn": round(sonuc.sure, 1), "ozet": sonuc.ozet,
-                "zaman": datetime.datetime.now().isoformat(timespec="seconds"),
-            }
-            meta["steps"]["tarama"] = tarama
-            runs.save_meta(run_id, meta)   # her kaynaktan sonra kaydet, yarıda kalırsa kaybolmasın
+    anahtar = f"tarama_{run_id}"
+    suruyor = isler.ilerleme(anahtar, gunluk_satir=LOG_SATIR)
+    bitti = isler.sonuc(anahtar)
+    if bitti:
+        if bitti.durum == isler.HATA:
+            st.error(f"Tarama yarıda kaldı: {bitti.hata}")
+        else:
+            for kaynak, s in (bitti.sonuc or {}).items():
+                (st.success if s.ok else st.error)(f"{scans.KAYNAK_ADLARI[kaynak]}: {s.mesaj}")
+            if bitti.durum == isler.IPTAL:
+                st.warning("Tarama iptal edildi.")
+            if any(not s.ok for s in (bitti.sonuc or {}).values()) and bitti.gunluk:
+                with st.expander("Günlük"):
+                    st.code("\n".join(bitti.gunluk[-60:]), language=None)
+    if st.button("Başlat", type="primary", disabled=suruyor):
+        yuk = {k: (f.getvalue() if f is not None else None) for k, f in yuklenenler.items()}
+        isler.baslat(anahtar, f"Tarama ({run_id})",
+                     lambda is_: _tarama_is(is_, run_id, dict(secimler), target, raw_dir, yuk))
+        st.rerun()
 
     if tarama:
         st.subheader("Bu çalıştırmanın ham verisi")

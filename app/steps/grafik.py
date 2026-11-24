@@ -12,8 +12,7 @@ import streamlit.components.v1 as components
 
 from config import FROZEN_INVENTORY
 from pipeline import ai_skor, graf, runs
-from steps import tema
-from steps import ortak
+from steps import isler, ortak, tema
 
 
 def _ad(ozet, vid):
@@ -67,7 +66,9 @@ def render():
     if html.exists() and inv.stat().st_mtime > html.stat().st_mtime:
         st.warning("Envanter grafik üretildikten sonra değişti. Grafiği yeniden oluşturun.")
 
-    if st.button("Grafiği oluştur", type="primary"):
+    ai_suruyor = isler.suruyor_mu(f"ai_skor_{run_id}")
+    if st.button("Grafiği oluştur", type="primary", disabled=ai_suruyor,
+                 help="AI skorlaması bitince grafik kendiliğinden yeniden oluşturulur." if ai_suruyor else None):
         with st.spinner("Kenarlar, yollar ve grafik üretiliyor..."):
             ok, gunluk = graf.uret(inv, out)
         if not ok:
@@ -174,22 +175,24 @@ def _ai_bolumu(run_id, rdir, inv, out, meta):
 
     ok, mesaj, model = ortak.ollama()
     (st.caption if ok else st.info)(mesaj)
-    hepsi = st.checkbox("Hazır skorları da yeniden hesapla (tüm kayıtlar)", value=False, disabled=not ok)
+    anahtar = f"ai_skor_{run_id}"
+    suruyor = isler.ilerleme(anahtar)
+    bitti = isler.sonuc(anahtar)
+    if bitti:
+        if bitti.durum == isler.HATA:
+            st.error(f"Skorlama yarıda kaldı: {bitti.hata}")
+        else:
+            s = bitti.sonuc
+            if s["basarisiz"]:
+                st.warning(f"Skorlanamayan kayıtlar (geçersiz yanıt): {', '.join(s['basarisiz'])}")
+            st.success(("İptal edildi; o ana kadar " if bitti.durum == isler.IPTAL else "")
+                       + f"{s['skorlanan']} kayıt {s['sure_sn']} sn'de skorlandı; grafik güncellendi.")
+    hepsi = st.checkbox("Hazır skorları da yeniden hesapla (tüm kayıtlar)", value=False,
+                        disabled=not ok or suruyor)
     n = len(satirlar) if hepsi else eksik
     if st.button(f"{n} kaydı modelle skorla (~{max(1, round(n * 3 / 60))} dk)",
-                 disabled=not ok or n == 0):
-        bar = st.progress(0.0, text="Başlıyor...")
-        sonuc = ai_skor.skorla(rdir, hepsi=hepsi, on_progress=lambda i, t, vid: bar.progress(
-            i / t if t else 1.0, text=f"{i}/{t} · {vid}"))
-        bar.empty()
-        with st.spinner("Grafik yeni skorlarla yeniden oluşturuluyor..."):
-            graf.uret(inv, out)
-        meta["steps"].setdefault("grafik", {})["ai"] = sonuc | {
-            "zaman": datetime.datetime.now().isoformat(timespec="seconds")}
-        runs.save_meta(run_id, meta)
-        if sonuc["basarisiz"]:
-            st.warning(f"Skorlanamayan kayıtlar (geçersiz yanıt): {', '.join(sonuc['basarisiz'])}")
-        st.success(f"{sonuc['skorlanan']} kayıt {sonuc['sure_sn']} sn'de skorlandı; grafik güncellendi.")
+                 disabled=not ok or n == 0 or suruyor):
+        isler.baslat(anahtar, f"AI skorlama ({run_id})", lambda is_: _skorla_is(is_, run_id, rdir, inv, out, hepsi))
         st.rerun()
 
     st.caption("CVSS ve AI sıralaması yan yana. Eşit skorlar aynı sırayı alır. AI sınıfı skordan "
@@ -198,6 +201,19 @@ def _ai_bolumu(run_id, rdir, inv, out, meta):
                  column_config={"AI gerekçesi": st.column_config.TextColumn(width="large")})
 
     _model_ne_dusundu(run_id, rdir, inv, out, satirlar, ok)
+
+
+def _skorla_is(is_, run_id, rdir, inv, out, hepsi):
+    """Arka planda: skorla, grafiği yeniden üret, özeti çalıştırmaya yaz."""
+    sonuc = ai_skor.skorla(rdir, hepsi=hepsi, iptal=is_.iptal_mi, on_progress=lambda i, t, vid: is_.ilerle(
+        0.95 * i / t if t else 0.95, f"{i}/{t} kayıt" + (f" · {vid}" if vid else "")))
+    is_.ilerle(0.96, "Grafik yeni skorlarla yeniden oluşturuluyor…")
+    graf.uret(inv, out)
+    meta = runs.load_meta(run_id)        # o arada başka adımda kaydedilmiş olabilir: en güncelini al
+    meta["steps"].setdefault("grafik", {})["ai"] = sonuc | {
+        "zaman": datetime.datetime.now().isoformat(timespec="seconds")}
+    runs.save_meta(run_id, meta)
+    return sonuc
 
 
 _HEDEF_TR = {"node_target_admin": "Yönetici erişimi", "node_target_rce": "Kod çalıştırma",
@@ -228,8 +244,10 @@ def _model_ne_dusundu(run_id, rdir, inv, out, satirlar, ollama_ok):
     etiket = {s["Kayıt"]: f"{s['Kayıt']} · {s['Ad'][:60]}"
               + (f"  (AI {s['AI skoru']:.1f} / CVSS {s['CVSS']:.1f})" if s["AI skoru"] is not None and s["CVSS"] is not None else "")
               for s in satirlar}
+    if st.session_state.get(f"model_kayit_{run_id}") not in secenek:
+        st.session_state[f"model_kayit_{run_id}"] = en_farkli
     vid = st.selectbox("Kayıt (açılışta modelin CVSS'ten en çok ayrıldığı kayıt seçili)", secenek,
-                       index=secenek.index(en_farkli), format_func=etiket.get, key=f"model_kayit_{run_id}")
+                       format_func=etiket.get, key=f"model_kayit_{run_id}")
     s = next(x for x in satirlar if x["Kayıt"] == vid)
     with open(inv, encoding="utf-8", newline="") as f:
         r = next(x for x in csv.DictReader(f) if x["vuln_id"] == vid)
