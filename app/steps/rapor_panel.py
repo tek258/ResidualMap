@@ -8,12 +8,16 @@ from pipeline import rapor
 def _onlem_plani():
     """6. adımdaki seçim (adım hiç açılmadıysa 16 saatlik en iyi plan) ve varsa AI açıklaması."""
     from steps import onlem
-    mod, m = onlem._motor()
+    anahtar_m = onlem.model_anahtari()
+    mod, m = onlem._motor(anahtar_m)
     butce = st.session_state.get("onlem_butce", 16)
     guven = "test" if st.session_state.get("onlem_test") else "gerekce"
+    gecerli = {o["onlem_id"] for o in m.katalog}
     secim = st.session_state.get("onlem_secim_son")
-    if secim is None:
-        secim = onlem._en_iyi(butce, guven, bool(st.session_state.get("onlem_kesintisiz")))["onlemler"]
+    onceki = st.session_state.get("onlem_anahtar")
+    if secim is None or not (onceki and len(onceki) == 4 and onceki[3] == anahtar_m):
+        secim = onlem._en_iyi(butce, guven, bool(st.session_state.get("onlem_kesintisiz")), anahtar_m)["onlemler"]
+    secim = [o for o in secim if o in gecerli]
     taban, s = m.degerlendir(m.mevcut), m.senaryo(secim, guven)
     onlemler = []
     for o in m.katalog:
@@ -26,7 +30,8 @@ def _onlem_plani():
     aciklama = st.session_state.get(("plan_aciklama", tuple(sorted(secim)), guven, butce))
     return {
         "butce": butce, "efor": s["efor_saat"], "toplam_yol": len(m.yollar),
-        "dayanak": "plan aşaması (etkinlik gerekçeye dayalı)" if guven == "gerekce" else "önlemler test edilmiş varsayımı",
+        "dayanak": ("plan aşaması (etkinlik gerekçeye dayalı)" if guven == "gerekce" else "önlemler test edilmiş varsayımı")
+                   + ("; bu çalıştırmanın grafiğiyle" if anahtar_m else "; ekibin dondurulmuş sonuçlarıyla"),
         "once": {"yol": taban["yol_riski"], "kesik": taban["yol_durum"].get("kesildi", 0)},
         "sonra": {"yol": s["yol_riski"], "kesik": s["yol_durum"].get("kesildi", 0)},
         "dusus_yuzde": (1 - s["yol_riski"] / taban["yol_riski"]) * 100 if taban["yol_riski"] else 0,

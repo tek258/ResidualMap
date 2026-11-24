@@ -1,11 +1,11 @@
 """6. adım: önlem seçimi ve uygulama öncesi senaryo.
 
-Ekibin dondurulmuş sonuçları üzerinde çalışır (ai/residual_risk.csv, graph/paths.json):
-"şu önlemleri alırsak kalan risk ne olur, hangi yollar kapanır?" Hesap ai/onlem_secimi.py
-ile aynı motordan gelir; lab'a hiçbir şey uygulanmaz, istek gönderilmez.
+"Şu önlemleri alırsak kalan risk ne olur, hangi yollar kapanır?" Hesap ai/onlem_secimi.py ile
+aynı motordan gelir; lab'a hiçbir şey uygulanmaz, istek gönderilmez. Açık bir çalıştırmanın
+grafiği varsa o çalıştırmanın yolları ve zafiyetleriyle (pipeline/calisma_modeli.py), yoksa
+ekibin dondurulmuş sonuçlarıyla (ai/residual_risk.csv, graph/paths.json) çalışır.
 """
 
-import importlib.util
 import math
 
 import tempfile
@@ -26,26 +26,80 @@ HEDEF_ADI = {"node_target_admin": "Yönetici erişimi", "node_target_rce": "Kod 
              "node_target_dos": "Hizmet kesintisi"}
 
 
-@st.cache_resource(show_spinner=False)
-def _motor():
-    spec = importlib.util.spec_from_file_location("onlem_secimi", AI_DIR / "onlem_secimi.py")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
+def model_anahtari():
+    """Hangi modelin kullanılacağı: açık çalıştırmanın grafiği varsa (run_id, dosya zamanları),
+    yoksa None (ekibin dondurulmuş sonuçları). Dosyalar değişince anahtar da değişir."""
+    rid = st.session_state.get("run_id")
+    if not rid:
+        return None
+    rdir = runs.run_dir(rid)
+    dosyalar = [rdir / "inventory.csv", rdir / "graph" / "paths.json", rdir / "ai_skorlari.csv"]
+    if not dosyalar[0].exists() or not dosyalar[1].exists():
+        return None
+    return (rid, *(f.stat().st_mtime if f.exists() else 0 for f in dosyalar))
+
+
+@st.cache_resource(show_spinner=False, max_entries=4)
+def _motor(anahtar=None):
+    from pipeline import calisma_modeli
+    if anahtar:
+        return calisma_modeli.kur(runs.run_dir(anahtar[0]))
+    mod = calisma_modeli.motor_modulu()
     return mod, mod.Model()
 
 
 @st.cache_data(show_spinner=False, max_entries=32)
-def _senaryo_html(secim, guven):
+def _senaryo_html(secim, guven, anahtar=None, baslik="Seçilen önlemlerden sonra (senaryo)"):
     """Seçilen önlemlerden sonraki grafik (HTML metni). Geçici klasöre yazılır, repo değişmez."""
-    mod, m = _motor()
+    from pipeline import calisma_modeli
+    mod, m = _motor(anahtar)
     with tempfile.TemporaryDirectory() as d:
-        return Path(mod.senaryo_grafigi(m, list(secim), guven, d)).read_text(encoding="utf-8")
+        if anahtar:
+            yol = calisma_modeli.senaryo_grafigi(mod, m, runs.run_dir(anahtar[0]), list(secim), guven, d, baslik)
+        else:
+            yol = mod.senaryo_grafigi(m, list(secim), guven, d)
+        return Path(yol).read_text(encoding="utf-8")
 
 
 @st.cache_data(show_spinner=False)
-def _en_iyi(butce, guven, kesintisiz):
-    _, m = _motor()
+def _en_iyi(butce, guven, kesintisiz, anahtar=None):
+    _, m = _motor(anahtar)
     return m.en_iyi(butce, guven, kesintisiz)
+
+
+def kaynak_notu(m, anahtar):
+    """Hesabın hangi veriyle yapıldığı (6. ve 5. adım)."""
+    if not anahtar:
+        st.info("Açık bir çalıştırmanın grafiği yok: hesap ekibin dondurulmuş sonuçlarıyla (36 zafiyet, "
+                "36 yol) yapılıyor. Kendi seçiminizle hesaplamak için 1-4. adımları tamamlayın.")
+        return
+    yeni_yol = sum(1 for y in m.yollar if any(v in set(m.eslenmemis) for v in y["zafiyetler"]))
+    oto = [o for o in m.katalog if o.get("oto")]
+    eklenen = sum(o.get("eklenen", 0) for o in m.katalog)
+    st.info(f"Hesap bu çalıştırmanın grafiğiyle yapılıyor: {len(m.risk_before)} zafiyet, "
+            f"{len(m.yollar) + m.risksiz_yol} yol"
+            + (f" (bunların {m.risksiz_yol} tanesinde bir zafiyetin CVSS vektörü olmadığı için yol riski "
+               f"hesaplanamıyor; bu yollar grafikte var, risk toplamına girmiyor)" if m.risksiz_yol else "")
+            + ". Mevcut kontrollerin etkinliği ekibin eşlemesinden gelir"
+            + (f"; eşlemesi olmayan {len(m.eslenmemis)} yeni zafiyet için 0 sayıldı ({yeni_yol} yolda)" if m.eslenmemis else "")
+            + ". Önlemler: ekibin kataloğu"
+            + (f" + {len(oto)} otomatik paket yükseltmesi" if oto else "")
+            + (f" (katalogdaki önlemlere {eklenen} yeni CVE eklendi)" if eklenen else "") + "."
+            + (" Önlem sayısı fazla olduğu için en iyi bileşim açgözlü seçimle bulunuyor (kesin değil)."
+               if m.yontem == "açgözlü" else ""))
+    if m.eslenmemis or oto:
+        with st.expander("Yeni zafiyetler ve otomatik önlemler"):
+            if oto:
+                st.markdown("**Otomatik paket yükseltmeleri** (Trivy'deki düzeltilmiş sürümden; ekip değerlendirmedi)")
+                st.dataframe(pd.DataFrame([{"Önlem": f"{o['onlem_id']} · {o['ad']}", "Zafiyetler": ", ".join(o["hedefler"]),
+                                            "Efor (sa)": o["efor_saat"], "Gerekçe": o["gerekce"]} for o in oto]),
+                             hide_index=True, width="stretch")
+            if m.duzeltmesiz:
+                st.caption(f"Düzeltilmiş sürümü olmayan {len(m.duzeltmesiz)} CVE için önlem önerilmedi: "
+                           + ", ".join(m.duzeltmesiz[:20]) + (" …" if len(m.duzeltmesiz) > 20 else ""))
+            if m.eslenmemis:
+                st.caption(f"Kontrol eşlemesi olmayan (mevcut etkinlik 0) zafiyetler: "
+                           + ", ".join(m.eslenmemis[:30]) + (" …" if len(m.eslenmemis) > 30 else ""))
 
 
 def _yuzde(once, sonra):
@@ -57,11 +111,14 @@ def render():
     st.caption("Aday önlemler (paket yamaları, kod düzeltmeleri, yapılandırma) henüz uygulanmadı. "
                "Kalan risk, mevcut kontrollerin (WAF, sanal yamalar, IDS, IAM, segmentasyon) üzerine "
                "eklenerek hesaplanır. Lab'a hiçbir şey uygulanmaz.")
+    anahtar_m = model_anahtari()
     try:
-        mod, m = _motor()
+        with st.spinner("Önlem modeli bu çalıştırmanın grafiğiyle kuruluyor..."):
+            mod, m = _motor(anahtar_m)
     except Exception as e:  # noqa: BLE001 - arayüzde anlaşılır mesaj
         st.error(f"Önlem modeli yüklenemedi: {e}")
         return
+    kaynak_notu(m, anahtar_m)
     taban = m.degerlendir(m.mevcut)
 
     with st.container(border=True):
@@ -77,17 +134,20 @@ def render():
                               "Açık: uygulanıp test edildiği varsayılır (engeller = 0.9), yollar kesilebilir.")
     guven = "test" if test else "gerekce"
 
-    with st.spinner("Bütçeye sığan bütün bileşimler deneniyor..."):
-        oneri = _en_iyi(butce, guven, kesintisiz)
+    with st.spinner("Bütçeye sığan bütün bileşimler deneniyor..." if getattr(m, "yontem", "kesin") == "kesin"
+                    else "En iyi bileşim açgözlü seçimle aranıyor..."):
+        oneri = _en_iyi(butce, guven, kesintisiz, anahtar_m)
 
     # Öneri değişince seçim kutusu öneriyle yeniden doldurulur; kullanıcı sonra değiştirebilir.
-    anahtar = (butce, guven, kesintisiz)
+    anahtar = (butce, guven, kesintisiz, anahtar_m)
+    gecerli = {o["onlem_id"] for o in m.katalog}
     if st.session_state.get("onlem_anahtar") != anahtar:
         st.session_state["onlem_anahtar"] = anahtar
         st.session_state["onlem_secim"] = oneri["onlemler"]
     elif "onlem_secim" not in st.session_state:
         # Streamlit başka adıma geçilince seçim kutusunun durumunu siler; son seçim geri yüklenir
-        st.session_state["onlem_secim"] = st.session_state.get("onlem_secim_son", oneri["onlemler"])
+        st.session_state["onlem_secim"] = [o for o in st.session_state.get("onlem_secim_son", oneri["onlemler"])
+                                           if o in gecerli]
 
     ad = {o["onlem_id"]: f"{o['onlem_id']} · {o['ad']}" for o in m.katalog}
     secim = st.multiselect("Uygulanacak önlemler (en iyi bileşim önerildi, değiştirebilirsiniz)",
@@ -103,11 +163,13 @@ def render():
 
     k1, k2, k3, k4 = st.columns(4)
     k1.metric("Kalan yol riski", f"{s['yol_riski']:.2f}", _yuzde(taban["yol_riski"], s["yol_riski"]),
-              delta_color="inverse", help="Kritik varlıklara giden 36 yolun toplam riski.")
+              delta_color="inverse", help=f"Kritik varlıklara giden {len(m.yollar)} yolun toplam riski.")
     k2.metric("Kalan zafiyet riski", f"{s['zafiyet_riski']:.2f}",
               _yuzde(taban["zafiyet_riski"], s["zafiyet_riski"]), delta_color="inverse")
     kes0, kes1 = taban["yol_durum"].get("kesildi", 0), s["yol_durum"].get("kesildi", 0)
-    k3.metric("Kesilen yol", f"{kes1} / {len(m.yollar)}", f"+{kes1 - kes0}" if kes1 > kes0 else None)
+    k3.metric("Kesilen yol", f"{kes1} / {len(m.yollar)}", f"+{kes1 - kes0}" if kes1 > kes0 else None,
+              help=f"Riski hesaplanabilen {len(m.yollar)} yol üzerinden; {m.risksiz_yol} yolda CVSS vektörü eksik."
+              if getattr(m, "risksiz_yol", 0) else None)
     k4.metric("Efor", f"{s['efor_saat']:.0f} / {butce} saat")
     k4.caption("Hizmet kesintisi gerektiren önlem var." if "var" in s["kesinti"] else "Hizmet kesintisi gerekmiyor.")
     st.caption(f"Önlemlerden önce (mevcut kontroller açık): yol riski {taban['yol_riski']:.2f}, "
@@ -169,10 +231,14 @@ def render():
     secili = ortak.grafik_secici(secenekler, "onlem_grafik")
     if secili == secenekler[0]:
         with st.spinner("Grafik çiziliyor..."):
-            components.html(ortak.grafik_html(_senaryo_html(tuple(sorted(secim)), guven)), height=980, scrolling=True)
+            components.html(ortak.grafik_html(_senaryo_html(tuple(sorted(secim)), guven, anahtar_m)), height=980, scrolling=True)
+    elif anahtar_m:
+        bugun_ve_once_grafik(secili == secenekler[1], anahtar_m)
     else:
         ortak.grafik_goster(GRAPH_DIR / ("attack_graph_after.html" if secili == secenekler[1] else "attack_graph_v2.html"))
 
+    if anahtar_m:
+        return
     with st.expander("Bütçeye göre kalan yol riski (ekibin raporundaki eğri)"):
         png = AI_DIR.parent / "report" / "img" / "onlem-butce.png"
         if png.exists():
@@ -181,6 +247,16 @@ def render():
                        "Ayrıntı: `docs/onlem-secimi.md`.")
         else:
             st.caption("Eğri henüz üretilmedi: `python ai/onlem_secimi.py`.")
+
+
+def bugun_ve_once_grafik(bugun, anahtar_m, yukseklik=980):
+    """Çalıştırmanın grafiği: kontroller öncesi (4. adımdaki grafik) ya da bugün (kontroller açık)."""
+    if bugun:
+        with st.spinner("Grafik çiziliyor..."):
+            components.html(ortak.grafik_html(_senaryo_html((), "gerekce", anahtar_m, "Bugün (kontroller açık)")),
+                            height=yukseklik, scrolling=True)
+    else:
+        ortak.grafik_goster(runs.run_dir(anahtar_m[0]) / "graph" / "attack_graph.html")
 
 
 def _plani_acikla(mod, m, secim, guven, butce):

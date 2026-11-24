@@ -65,3 +65,17 @@ Kalan 58 kaydın 17'si CWE'siz. Diğerlerinin çoğu teknik etkisi tanımlı olm
 - **Ön koşul ve kazanım alanları:** Bunları yalnızca AI önerisi ya da kullanıcı doldurur, kural katmanları doldurmaz. Yeni kayıtlar kural katmanlarıyla bir hedefe bağlanır ama zincire girmez.
 - **Varsayılan alanlar:** Yeni kayıtların varlık kritikliği gibi bazı alanları varsayılandır (3). Bu kayıtların grafikteki yeri dondurulmuş envanterdekiler kadar güvenilir değildir; 4. adımda bu belirtilir.
 - **AI önerisinin değerlendirilmesi:** AI önerisi uzman etiketleriyle değerlendirilmedi. Risk skorundaki gibi bir uyum ölçümü (24/33) burada yok.
+
+## 5. ve 6. adımda yeni zafiyetler
+
+5. adımdaki kontroller öncesi/sonrası grafik ve 6. adımdaki önlem seçimi, açık bir çalıştırmanın grafiği varsa o çalıştırmanın yolları ve zafiyetleriyle hesaplanır (`app/pipeline/calisma_modeli.py`). Motor ve formüller `ai/onlem_secimi.py` ile aynıdır. Yalnızca dondurulmuş envanterle yapılan bir çalıştırma ekibin sonucunu birebir verir: yol riski 154.85, 16 saatte 103.41.
+
+- **Risk:** Zafiyetin riski (risk_before) bu çalıştırmanın AI skorudur. AI skoru yoksa CVSS kullanılır.
+- **Mevcut kontroller:** Etkinlik ekibin eşlemesinden (`ai/residual_risk.csv`) gelir. Eşlemesi olmayan yeni zafiyetler için etkinlik 0 sayılır, çünkü hiçbir kontrolün onları durdurduğu test edilmedi ya da gerekçelendirilmedi. Ekranda bu zafiyetlerin sayısı ve listesi gösterilir.
+- **Önlemler:** Ekibin kataloğu kullanılır. Yeni Trivy CVE'leri için Trivy'deki düzeltilmiş sürümden otomatik paket yükseltmeleri eklenir:
+  - Aynı paketi yükselten bir katalog önlemi varsa yeni CVE o önleme eklenir.
+  - İşletim sistemi paketleri taban imaj güncellemesine eklenir.
+  - Diğer paketler için "<paket> yükseltmesi (otomatik)" önlemi oluşturulur. Eforu 2 saat varsayılır; ana sürüm değişiyorsa 4 saat.
+  - Düzeltilmiş sürümü olmayan CVE için önlem önerilmez.
+- **Seçim yöntemi:** Yollara dokunan önlem sayısı 18'i aşarsa en iyi bileşim kesin arama yerine açgözlü seçimle bulunur. Bu ekranda belirtilir.
+- **Bilinen sınır:** CVSS vektörü olmayan zafiyetlerin (ZAP, challenge) olduğu yollarda yol olasılığı hesaplanamaz. Bu yollar grafikte görünür ama risk toplamına girmez; sayıları ekranda yazar.

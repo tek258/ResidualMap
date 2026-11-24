@@ -91,6 +91,8 @@ def render():
         ("16 saatlik önlem planı", f"−%{(1 - b16['yol_riski'] / taban) * 100:.0f}",
          f"yol riski {taban:.0f} → {b16['yol_riski']:.0f}", "vurgu"),
     ])
+    st.caption("Kartlar ve aşağıdaki grafik ekibin dondurulmuş 36 kayıtlık sonuçlarıdır. Kendi seçiminizle "
+               "yapılan bir çalıştırmanın sonuçları 4-6. adımlarda ve çalıştırma raporunda görünür.")
     st.write("")
     _ai_seridi()
     st.write("")

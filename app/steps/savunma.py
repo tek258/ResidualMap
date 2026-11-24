@@ -88,9 +88,25 @@ def _once_sonra_grafik():
     """Ekibin sonuç dosyalarından kontroller öncesi ve sonrası grafik (graph/attack_graph_v2.html,
     graph/attack_graph_after.html). İki grafik aynı yerleşimde çizildiği için sekmeler arasında
     geçince yalnızca kenar ve düğüm durumları değişir."""
+    from steps import onlem
     once, sonra = GRAPH_DIR / "attack_graph_v2.html", GRAPH_DIR / "attack_graph_after.html"
     st.divider()
     st.subheader("Kontroller öncesi ve sonrası grafik")
+    anahtar_m = onlem.model_anahtari()
+    if anahtar_m:   # bu çalıştırmanın grafiği: 4. adımdakiyle aynı yollar
+        _, m = onlem._motor(anahtar_m)
+        b0 = m.degerlendir({})
+        b1 = m.degerlendir(m.mevcut)
+        st.caption(f"Bu çalıştırmanın grafiği ({len(m.risk_before)} zafiyet, {len(m.yollar) + m.risksiz_yol} yol"
+                   + (f"; {m.risksiz_yol} yolun riski CVSS vektörü eksik olduğu için hesaplanamıyor" if m.risksiz_yol else "")
+                   + "). Kontroller açıkken "
+                   f"yol riski {b0['yol_riski']:.2f} → {b1['yol_riski']:.2f}; {b1['yol_durum'].get('kesildi', 0)} yol "
+                   f"kesik, {b1['yol_durum'].get('zayifladi', 0)} zayıf. Kontrol etkinliği ekibin eşlemesinden"
+                   + (f"; eşlemesi olmayan {len(m.eslenmemis)} yeni zafiyet için 0 sayıldı." if m.eslenmemis else ".")
+                   + " Sonra grafiğinde kesilen kenarlar gri ve kesikli, zayıflayanlar turuncu.")
+        secenek = ["Kontroller öncesi", "Kontroller sonrası"]
+        onlem.bugun_ve_once_grafik(ortak.grafik_secici(secenek, "savunma_grafik") == secenek[1], anahtar_m)
+        return
     if not (once.exists() and sonra.exists()):
         st.caption("Grafikler henüz üretilmedi: `python graph/visualize_graph.py` ve "
                    "`python graph/visualize_graph.py --after`.")
