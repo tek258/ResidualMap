@@ -9,7 +9,8 @@ import streamlit as st
 
 from config import GRAFANA_PANO, GRAFANA_URL, TARGETS
 from pipeline import runs
-from steps import ai_iz_panel, bulgular, grafik, hedef, isler, onlem, ortak, ortam_panel, ozet, savunma, tarama, tema
+from steps import (ai_iz_panel, bulgular, grafik, hedef, isler, onlem, ortak, ortam_panel, ozet, rapor_panel,
+                   savunma, tarama, tema)
 
 st.set_page_config(page_title="ResidualMap", page_icon="🛡️", layout="wide")
 tema.uygula()
@@ -50,6 +51,7 @@ with st.sidebar:
         st.markdown("Henüz çalıştırma yok.")
 
     ai_iz_panel.yan_menu()
+    rapor_panel.yan_menu()
     isler.yan_menu()
     st.divider()
     ortam_panel.yan_menu()
