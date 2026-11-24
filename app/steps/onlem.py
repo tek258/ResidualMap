@@ -107,6 +107,8 @@ def render():
     st.caption(f"Önlemlerden önce (mevcut kontroller açık): yol riski {taban['yol_riski']:.2f}, "
                f"zafiyet riski {taban['zafiyet_riski']:.2f}, {kes0} yol kesik.")
 
+    _plani_acikla(mod, m, secim, guven, butce)
+
     sol, sag = st.columns([1.15, 1])
     with sol:
         st.subheader("Seçilen önlemler")
@@ -173,3 +175,38 @@ def render():
                        "Ayrıntı: `docs/onlem-secimi.md`.")
         else:
             st.caption("Eğri henüz üretilmedi: `python ai/onlem_secimi.py`.")
+
+
+def _plani_acikla(mod, m, secim, guven, butce):
+    """Seçilen planı yerel modelle Türkçe açıklar. Sayılar motordan gelir; model yalnızca anlatır."""
+    from pipeline import ai_aciklama, ai_skor
+    ok, mesaj, model = ortak.ollama()
+    anahtar = ("plan_aciklama", tuple(sorted(secim)), guven, butce)
+    c1, c2 = st.columns([1, 3])
+    if c1.button("Planı AI ile açıkla", disabled=not ok or not secim, key="plan_acikla",
+                 help="Yerel model (Ollama) seçilen önlemleri, kazanımı ve kalan en riskli yolu Türkçe "
+                      "anlatır. Model hesap yapmaz: bütün sayılar önlem motorundan verilir."):
+        veri = ai_aciklama.baglam(m, secim, guven, butce)
+        mm = ai_skor.model_modulu()
+        with st.spinner(f"{model} planı yorumluyor..."):
+            metin, ek = ai_aciklama.acikla(veri, mm.MODEL_NAME, mm.OPTIONS)
+        st.session_state[anahtar] = (metin, ek, veri)
+    c2.caption(mesaj if not ok else ("Önlem seçin." if not secim else
+               "Model yalnızca anlatır; yazdığı her sayı hesaplanan değerlerle karşılaştırılır."))
+    sonuc = st.session_state.get(anahtar)
+    if not sonuc:
+        return
+    metin, ek, veri = sonuc
+    with st.container(border=True):
+        if metin is None:
+            st.warning(ek)
+            return
+        st.markdown(f"**AI açıklaması** · `{model}`")
+        st.markdown(metin)
+        if ek:
+            st.warning("Metinde hesaplanan verilerde olmayan sayılar var, dikkatle okuyun: "
+                       + ", ".join(f"{x:g}" for x in ek))
+        else:
+            st.caption("Sayı denetimi: metindeki bütün sayılar hesaplanan değerlerde var.")
+        with st.expander("Modele verilen veri"):
+            st.json(veri)

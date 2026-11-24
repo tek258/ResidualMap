@@ -111,6 +111,32 @@ def skorla(run_dir, hepsi=False, on_progress=None):
             "gecersiz_deneme": gecersiz, "sure_sn": round(time.time() - t0, 1), "model": m.MODEL_NAME}
 
 
+def skorla_tek(run_dir, vid):
+    """Tek kaydı model v2 ile skorlar (demoda canlı gösterim). Dönüş: (skor, sınıf, gerekçe, süre_sn)
+    ya da skor None ise hata."""
+    m = model_modulu()
+    inv = {r["vuln_id"]: r for r in _oku(run_dir / "inventory.csv")}
+    envanter = {**{r["vuln_id"]: r for r in _oku(FROZEN_INVENTORY)}, **inv}
+    mevcut = {r["vuln_id"]: r for r in _oku(hazirla(run_dir))}
+    t0 = time.time()
+    skor, gerekce, _, _ = m.sor(m.prompt_olustur(inv[vid], envanter), vid, m.MODEL_NAME)
+    sure = round(time.time() - t0, 1)
+    if skor is None:
+        return None, None, None, sure
+    mevcut[vid] = {"vuln_id": vid, "risk_score_llm": skor, "risk_label_llm": m.sinif(skor),
+                   "llm_reason": gerekce, "kaynak": MODEL}
+    _yaz(run_dir / DOSYA, mevcut.values())
+    return skor, m.sinif(skor), gerekce, sure
+
+
+def modele_giden(run_dir, vid):
+    """(kanıt metni, tam prompt): modelin bu kayıt için gördüğü her şey."""
+    m = model_modulu()
+    inv = {r["vuln_id"]: r for r in _oku(run_dir / "inventory.csv")}
+    envanter = {**{r["vuln_id"]: r for r in _oku(FROZEN_INVENTORY)}, **inv}
+    return m.bulgu_metni(inv[vid]), m.prompt_olustur(inv[vid], envanter), m.MODEL_NAME
+
+
 def tablo(run_dir):
     """CVSS ve AI sıralamasını yan yana veren satırlar (AI skoru olmayanlar sonda)."""
     inv = _oku(run_dir / "inventory.csv")

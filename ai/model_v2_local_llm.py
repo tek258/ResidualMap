@@ -80,6 +80,8 @@ def kanit(notes):
     n = (notes or "").strip()
     belirsiz = n.upper().startswith("[EMIN DEGIL]")
     n = re.sub(r"^\[EMIN DEGIL\]\s*", "", n, flags=re.I)
+    # Uygulamanın yeni kayıtlara eklediği işaret (envanterde olmayan, otomatik oluşturulan satır)
+    n = re.sub(r"^\[OTOMATIK\]\s*", "", n, flags=re.I)
     if n.startswith("challenges.json"):
         tur = ("Confirmed in this application: Juice Shop has a challenge for this weakness, "
                "so it is known to be exploitable here")

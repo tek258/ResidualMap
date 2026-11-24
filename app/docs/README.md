@@ -7,10 +7,10 @@ Lab hedefinin seçilmesinden saldırı grafiğine ve savunma testine kadar olan 
 | Özet | Projenin sonucunu tek ekranda gösterir: zafiyet ve yol sayısı, artık risk düşüşü, kesilen yollar, 16 saatlik önlem planı ve önce/sonra grafiği. "Demoyu başlat" 1. adıma geçer |
 | 1. Hedef | İzin listesindeki lab hedefini seçer, çalıştırma başlatır (ya da örnek veriyle başlatır) |
 | 2. Tarama | ZAP baseline, Trivy ve Juice Shop challenge listesini canlı toplar ya da repodaki ham dosyaları yükler |
-| 3. Bulgular | Ham çıktıları ayrıştırır, dondurulmuş envanterle karşılaştırır, grafiğe girecek bulguları seçtirir |
-| 4. Grafik | Kenarları, saldırı yollarını ve etkileşimli grafiği üretir; CVSS ve AI (model v2) sıralamasını yan yana gösterir |
+| 3. Bulgular | Ham çıktıları ayrıştırır, dondurulmuş envanterle karşılaştırır, grafiğe girecek bulguları seçtirir. Envanterde olmayan yeni kayıtların grafikteki yerini ekip kuralı, MITRE CWE etkisi ve AI önerisiyle önerir; kullanıcı onaylar (docs/yeni-zafiyet-baglama.md) |
+| 4. Grafik | Kenarları, saldırı yollarını ve etkileşimli grafiği üretir; CVSS ve AI (model v2) sıralamasını yan yana gösterir. "Model ne düşündü?" paneli bir kayıt için modele giden kanıtı, kararı, gerekçeyi ve tam prompt'u gösterir; kayıt canlı skorlanabilir |
 | 5. Savunma testi | Lab'ın WAF doğrulama testini çalıştırır; sonuçlar savunma panosunda (Grafana) da görünür |
-| 6. Önlem seçimi | Aday önlemlerden (yama, kod düzeltmesi, yapılandırma) efor bütçesine göre en iyi bileşimi önerir; seçilen önlemlerle kalan riski ve değişen yolları gösterir. Ekibin sonuç dosyalarıyla çalışır, çalıştırma ve Docker gerektirmez |
+| 6. Önlem seçimi | Aday önlemlerden (yama, kod düzeltmesi, yapılandırma) efor bütçesine göre en iyi bileşimi önerir; seçilen önlemlerle kalan riski ve değişen yolları gösterir. Ekibin sonuç dosyalarıyla çalışır, çalıştırma ve Docker gerektirmez. "Planı AI ile açıkla" seçilen planı yerel modelle Türkçe anlatır; model hesap yapmaz, yazdığı sayılar denetlenir |
 
 ## Değişmez kurallar
 

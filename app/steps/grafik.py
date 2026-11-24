@@ -48,9 +48,20 @@ def render():
         bilgi += f" · {b['kaynak']}"
     st.caption(bilgi)
     if b.get("yeni"):
-        st.info(f"{b['yeni']} yeni kayıtta bazı alanlar varsayılan değerlerle dolduruldu "
-                "(varlık kritikliği, yetkinlik, giriş noktası). Bu kayıtların grafikteki "
-                "yeri envanterdekiler kadar güvenilir değildir.")
+        import csv
+        from collections import Counter
+        with open(inv, encoding="utf-8", newline="") as f:
+            yeni = [r for r in csv.DictReader(f) if r["vuln_id"] in b.get("varsayilanlar", {})]
+        kaynak = Counter(r.get("hedef_kaynagi") or "belirsiz" for r in yeni if r.get("hedef")) 
+        belirsiz = [r["vuln_id"] for r in yeni if not r.get("hedef")]
+        dagilim = ", ".join(f"{v} {k}" for k, v in kaynak.most_common())
+        st.info(f"{b['yeni']} yeni kayıt grafiğe 3. adımdaki bağlantı kararlarıyla girer"
+                + (f" ({dagilim})" if dagilim else "") + ". Varlık kritikliği gibi bazı alanlar "
+                "varsayılan değerlerdedir; bu kayıtların yeri envanterdekiler kadar güvenilir değildir.")
+        if belirsiz:
+            st.warning(f"{len(belirsiz)} yeni kaydın hedefi belirsiz; bu kayıtlar hiçbir saldırı yoluna "
+                       f"girmez: {', '.join(belirsiz[:12])}{' …' if len(belirsiz) > 12 else ''}. "
+                       "3. adımdaki \"Grafiğe bağlantı\" tablosundan hedef seçin ya da AI önerisi alın.")
 
     html = out / graf.CIKTILAR["html"]
     if html.exists() and inv.stat().st_mtime > html.stat().st_mtime:
@@ -185,4 +196,92 @@ def _ai_bolumu(run_id, rdir, inv, out, meta):
                "türetilir (≥9 Kritik, ≥7 Yüksek, ≥4 Orta, altı Düşük).")
     st.dataframe(pd.DataFrame(satirlar), hide_index=True, use_container_width=True,
                  column_config={"AI gerekçesi": st.column_config.TextColumn(width="large")})
+
+    _model_ne_dusundu(run_id, rdir, inv, out, satirlar, ok)
+
+
+_HEDEF_TR = {"node_target_admin": "Yönetici erişimi", "node_target_rce": "Kod çalıştırma",
+             "node_target_account_takeover": "Hesap ele geçirme", "node_target_leak": "Veri sızıntısı",
+             "node_target_dos": "Hizmet kesintisi"}
+
+
+def _model_ne_dusundu(run_id, rdir, inv, out, satirlar, ollama_ok):
+    """Seçilen kayıt için modelin gördüğü kanıt, verdiği karar ve gerekçesi; CVSS ile farkı ve
+    kaydın grafikteki yeri. İsteğe bağlı: kaydı canlı skorlama."""
+    import csv
+    import json
+    st.divider()
+    st.subheader("Model ne düşündü?")
+    st.caption("Risk skoru yerel bir dil modelinden gelir (Ollama, temperature 0, sabit seed). Model CVSS'i "
+               "kopyalamaz: kanıtın türüne (uygulamada doğrulanmış / bağımlılık sürümü / pasif tarama), "
+               "kimlik doğrulama ihtiyacına ve etkisine bakarak rubrikten bir bant seçer. Uzman etiketleriyle "
+               "sınıf uyumu 24/33, yalnızca CVSS ile 19/33 (docs/model-v2-degerlendirme.md).")
+    skorlu = [s for s in satirlar if s["AI skoru"] is not None]
+    if not skorlu:
+        st.info("Bu çalıştırmada AI skoru olan kayıt yok.")
+        return
+    # Varsayılan: modelin CVSS'ten en çok ayrıldığı kayıt (en öğretici örnek)
+    fark = lambda s: abs((s["AI skoru"] or 0) - (s["CVSS"] or 0)) if s["CVSS"] is not None else -1
+    en_farkli = max(skorlu, key=fark)["Kayıt"]
+    # Seçenek sırası sabit (kayıt numarası): skor değişince liste sıfırlanmasın
+    secenek = sorted(s["Kayıt"] for s in satirlar)
+    etiket = {s["Kayıt"]: f"{s['Kayıt']} · {s['Ad'][:60]}"
+              + (f"  (AI {s['AI skoru']:.1f} / CVSS {s['CVSS']:.1f})" if s["AI skoru"] is not None and s["CVSS"] is not None else "")
+              for s in satirlar}
+    vid = st.selectbox("Kayıt (açılışta modelin CVSS'ten en çok ayrıldığı kayıt seçili)", secenek,
+                       index=secenek.index(en_farkli), format_func=etiket.get, key=f"model_kayit_{run_id}")
+    s = next(x for x in satirlar if x["Kayıt"] == vid)
+    with open(inv, encoding="utf-8", newline="") as f:
+        r = next(x for x in csv.DictReader(f) if x["vuln_id"] == vid)
+    kanit, prompt, model = ai_skor.modele_giden(rdir, vid)
+
+    k1, k2, k3 = st.columns([1.25, 1, 1])
+    with k1:
+        st.markdown("**1. Modele giden kanıt**")
+        st.code(kanit, language=None, wrap_lines=True)
+    with k2:
+        st.markdown(f"**2. Modelin kararı** · `{model}`")
+        if s["AI skoru"] is None:
+            st.info("Bu kayıt henüz skorlanmadı.")
+        else:
+            m1, m2 = st.columns(2)
+            m1.metric("AI skoru", f"{s['AI skoru']:.1f}", s["AI sınıfı"], delta_color="off")
+            if s["CVSS"] is not None:
+                fark_ = s["AI skoru"] - s["CVSS"]
+                m2.metric("CVSS", f"{s['CVSS']:.1f}", f"AI {fark_:+.1f}", delta_color="off")
+            st.markdown(f"> {s['AI gerekçesi'] or '(gerekçe yok)'}")
+            st.caption("Gerekçe modelin kendi cümlesi (İngilizce prompt, İngilizce yanıt).")
+            st.caption(f"Sıra: AI {s['AI sırası']} · CVSS {s['CVSS sırası']} · kaynak: {s['Kaynak']}")
+        if ollama_ok and st.button("Bu kaydı şimdi canlı skorla", key=f"canli_{run_id}_{vid}",
+                                   help="Model bu kayıt için şimdi yeniden çalışır (~3-5 sn); sonuç bu "
+                                        "çalıştırmanın skor dosyasına yazılır."):
+            with st.spinner(f"{model} çalışıyor..."):
+                skor, sinif, gerekce, sure = ai_skor.skorla_tek(rdir, vid)
+            st.session_state[f"canli_sonuc_{run_id}"] = (
+                vid, None if skor is None else f"{sure} sn'de yeniden skorlandı: {skor:.1f} ({sinif}). {gerekce}")
+            st.rerun()       # tablo ve kart yeni skorla yeniden çizilsin
+        son = st.session_state.get(f"canli_sonuc_{run_id}")
+        if son and son[0] == vid:
+            (st.success if son[1] else st.warning)(son[1] or "Model geçerli bir yanıt vermedi, tekrar deneyin.")
+    with k3:
+        st.markdown("**3. Grafikteki yeri**")
+        edges = json.loads((out / "edges.json").read_text(encoding="utf-8")) if (out / "edges.json").exists() else []
+        paths = json.loads((out / "paths.json").read_text(encoding="utf-8")) if (out / "paths.json").exists() else []
+        hedefler = sorted({e["target"] for e in edges if e["source"] == vid and e["relation"] == "Leads To"})
+        girisler = sorted({e["source"].replace("node_entry_", "") for e in edges
+                           if e["target"] == vid and e["relation"] == "Entry Point"})
+        zincir = sorted({e["source"] for e in edges if e["target"] == vid and e["relation"] == "Chains To"})
+        yollar = [p for p in paths if vid in p["path"]]
+        st.markdown(
+            f"- **Hedef:** {', '.join(_HEDEF_TR.get(h, h) for h in hedefler) or '— (bağlı değil)'}\n"
+            f"- **Giriş:** {', '.join(girisler) or ('zincirle: ' + ', '.join(zincir) if zincir else '—')}\n"
+            f"- **Ön koşul / kazanım:** {r.get('requires_capability') or 'none'} / {r.get('grants_capability') or 'none'}\n"
+            f"- **Yer aldığı yol:** {len(yollar)}"
+            + (f" (en yüksek yol riski {max((p.get('path_risk') or 0) for p in yollar):.2f})" if yollar else ""))
+        if r.get("hedef_kaynagi"):
+            st.caption(f"Bağlantı kaynağı: {r['hedef_kaynagi']}. {r.get('hedef_gerekcesi', '')}")
+        else:
+            st.caption("Bağlantı: ekibin dondurulmuş envanteri.")
+    with st.expander("Modele gönderilen tam prompt (rubrik, örnekler ve bu kayıt)"):
+        st.code(prompt, language=None, wrap_lines=True)
 
