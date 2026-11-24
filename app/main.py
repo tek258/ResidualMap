@@ -9,7 +9,7 @@ import streamlit as st
 
 from config import GRAFANA_PANO, GRAFANA_URL, TARGETS
 from pipeline import runs
-from steps import bulgular, grafik, hedef, onlem, ortak, ozet, savunma, tarama, tema
+from steps import bulgular, grafik, hedef, onlem, ortak, ortam_panel, ozet, savunma, tarama, tema
 
 st.set_page_config(page_title="ResidualMap", page_icon="🛡️", layout="wide")
 tema.uygula()
@@ -41,6 +41,7 @@ with st.sidebar:
         st.markdown("Henüz çalıştırma yok.")
 
     st.divider()
+    ortam_panel.yan_menu()
     pano = ortak.grafana(GRAFANA_URL)
     st.link_button("Savunma panosu (Grafana) ↗", GRAFANA_PANO, disabled=not pano.ok,
                    use_container_width=True)

@@ -6,11 +6,11 @@
 
 ## Demodan önce (yarım saat önce)
 
-- [ ] Lab ve pano açık: `cd defense` → `docker compose --profile siem up -d` → `docker compose ps` (hepsi `running`)
 - [ ] `streamlit run app/main.py`, tarayıcıda uygulama açık
+- [ ] **Yan menü → "Ortamı başlat" → "Hepsini başlat":** Docker Desktop, lab, savunma panosu ve Ollama sırayla açılır, model belleğe yüklenir. Dört satır da yeşil olmalı (elle: `cd defense` → `docker compose --profile siem up -d`)
 - [ ] **Canlı tarama demoda yapılmaz:** ZAP birkaç dakika sürer. Demodan önce bir canlı çalıştırma tamamlanmış olsun (2–4. adımlar dahil); demoda "Önceki çalıştırmayı aç" ile açılır
 - [ ] Grafana ayrı sekmede açık ve giriş yapılmış, zaman aralığı "Son 15 dakika"
-- [ ] **Ollama açık ve model ısınmış:** `ollama run qwen2.5:7b "merhaba"` ile modeli bir kez yükle (ilk çağrı 10-20 sn sürer). 3. adımdaki AI bağlantı önerisi, 4. adımdaki canlı skorlama ve 6. adımdaki plan açıklaması bunu gerektirir. Demodan önce her birini bir kez dene
+- [ ] **Ollama açık ve model ısınmış:** "Ortamı başlat" bunu yapar (elle: `ollama run qwen2.5:7b "merhaba"`; ilk çağrı 10-20 sn sürer). 3. adımdaki AI bağlantı önerisi, 4. adımdaki canlı skorlama ve 6. adımdaki plan açıklaması bunu gerektirir. Demodan önce her birini bir kez dene
 - [ ] Ekran çözünürlüğü 1920×1080, tarayıcı yakınlaştırma %90; bildirimler kapalı
 - [ ] Yedek ekran kaydı masaüstünde, oynatıcıda açık
 

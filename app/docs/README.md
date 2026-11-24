@@ -51,6 +51,8 @@ Ekibin `inventory/raw/` altındaki ZAP, Trivy ve challenge dosyaları kullanıl�
 
 ### Lab ortamıyla (canlı tarama ve savunma testi)
 
+Uygulamayı açıp yan menüdeki **"Ortamı başlat"** düğmesine basmak yeterli: Docker Desktop'ı, lab'ı (`docker compose --profile siem up -d`), savunma panosunu ve Ollama'yı sırayla başlatır, model yoksa indirir ve belleğe yükler. Docker Desktop'ın ve Ollama'nın kendisi önceden kurulu olmalı. Elle başlatmak için:
+
 ```powershell
 cd defense
 docker compose --profile siem up -d   # siem profili savunma panosunu da açar; istenmezse çıkarın
