@@ -31,12 +31,39 @@ def _ilk_var(adaylar):
     return None
 
 
+def _windows_docker_klasorleri():
+    """Docker Desktop'ın kurulu olabileceği klasörler: makine geneli (Program Files), kullanıcıya
+    özel kurulum (%LOCALAPPDATA%\\Programs\\DockerDesktop) ve Windows'un kayıtlı kurulum yeri."""
+    klasorler = []
+    try:
+        import winreg
+        for kok in (winreg.HKEY_CURRENT_USER, winreg.HKEY_LOCAL_MACHINE):
+            try:
+                with winreg.OpenKey(kok, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Docker Desktop") as k:
+                    klasorler.append(Path(winreg.QueryValueEx(k, "InstallLocation")[0]))
+            except OSError:
+                pass
+    except ImportError:
+        pass
+    yerel = os.environ.get("LOCALAPPDATA")
+    if yerel:
+        klasorler.append(Path(yerel) / "Programs" / "DockerDesktop")
+    klasorler.append(Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "Docker" / "Docker")
+    return klasorler
+
+
+def docker_desktop_exe():
+    if SISTEM != "Windows":
+        return None
+    return _ilk_var([k / "Docker Desktop.exe" for k in _windows_docker_klasorleri()])
+
+
 def docker_yolu():
     """docker komutu. PATH'te yoksa Docker Desktop'ın bilinen kurulum yerlerine bakılır
     (Mac'te uygulama Finder'dan açılınca /usr/local/bin ya da ~/.docker/bin PATH'te olmayabilir)."""
     if SISTEM == "Windows":
-        pf = Path(os.environ.get("ProgramFiles", r"C:\Program Files"))
-        return shutil.which("docker") or _ilk_var([pf / "Docker" / "Docker" / "resources" / "bin" / "docker.exe"])
+        return shutil.which("docker") or _ilk_var(
+            [k / "resources" / "bin" / "docker.exe" for k in _windows_docker_klasorleri()])
     return shutil.which("docker") or _ilk_var([
         "/usr/local/bin/docker", "/opt/homebrew/bin/docker", EV / ".docker" / "bin" / "docker",
         "/Applications/Docker.app/Contents/Resources/bin/docker",
@@ -44,8 +71,16 @@ def docker_yolu():
 
 
 def docker_komutu():
-    # her seferinde yeniden bakılır: Mac'te komut Docker Desktop'ın ilk açılışında kurulabiliyor
-    return docker_yolu() or "docker"
+    """Her seferinde yeniden bakılır: Mac'te komut Docker Desktop'ın ilk açılışında kurulabiliyor.
+    Komut PATH dışında bulunursa klasörü bu sürecin PATH'ine eklenir; docker compose ve imaj
+    indirirken kullanılan yardımcı komutlar (docker-credential-desktop gibi) aynı klasördedir."""
+    yol = docker_yolu()
+    if not yol:
+        return "docker"
+    klasor = str(Path(yol).parent)
+    if klasor not in os.environ.get("PATH", "").split(os.pathsep):
+        os.environ["PATH"] = klasor + os.pathsep + os.environ.get("PATH", "")
+    return yol
 
 
 def _compose():
@@ -99,7 +134,8 @@ def _bekle(kosul, sure, aralik=3):
 
 # --- Docker ---
 def docker_kurulu():
-    return docker_yolu() is not None or (SISTEM == "Darwin" and _mac_uygulamasi("Docker"))
+    return (docker_yolu() is not None or (SISTEM == "Windows" and docker_desktop_exe() is not None)
+            or (SISTEM == "Darwin" and _mac_uygulamasi("Docker")))
 
 
 def docker_hazir():
@@ -109,10 +145,11 @@ def docker_hazir():
 
 def docker_desktop_baslat():
     if SISTEM == "Windows":
-        yol = Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "Docker" / "Docker" / "Docker Desktop.exe"
-        if not yol.exists():
-            return Sonuc(False, f"Docker Desktop bulunamadı ({yol}). Kurulum: KURULUM.md")
-        _arka_planda([str(yol)])
+        yol = docker_desktop_exe()
+        if not yol:
+            return Sonuc(False, "Docker Desktop bulunamadı (Program Files ve %LOCALAPPDATA%\\Programs\\DockerDesktop "
+                                "denendi). Kurulum: KURULUM.md")
+        _arka_planda([yol])
     elif SISTEM == "Darwin":
         if not _mac_uygulamasi("Docker"):
             return Sonuc(False, "Docker Desktop bulunamadı (Uygulamalar klasöründe Docker.app yok). Kurulum: KURULUM.md")
