@@ -6,8 +6,8 @@ import pandas as pd
 import streamlit as st
 
 from config import RAW_DIR
-from pipeline import envanter, fark, parsers, runs
-from steps import tema
+from pipeline import baglanti, envanter, fark, parsers, runs
+from steps import isler, ortak, tema
 from pipeline.scans import KAYNAK_ADLARI, RAW_FILES
 
 HEDEF_MIN, HEDEF_MAX = 25, 40
@@ -114,12 +114,15 @@ def render():
     cols[-1].metric("Seçili toplam", toplam, durum,
                     delta_color="normal" if HEDEF_MIN <= toplam <= HEDEF_MAX else "inverse")
 
-    b1, b2, b3, _ = st.columns([1, 1.4, 1, 2])
+    b1, b2, b3, b4, _ = st.columns([1, 1.4, 1, 1, 1.2])
     if b1.button("Kurala göre seç"):
         _secimi_ayarla(run_id, [a["aday_id"] for a in adaylar if a["kural"]]); st.rerun()
     if b2.button("Dondurulmuş envanteri uygula", type="primary", disabled=not env_rows):
         _secimi_ayarla(run_id, aday_vid.keys()); st.rerun()
-    if b3.button("Seçimi temizle"):
+    if b3.button(f"Hepsini seç ({len(adaylar)})", help="Bütün kaynaklardaki bütün adaylar. Yalnızca filtrede "
+                                                      "görünenleri seçmek için tablonun üstündeki düğmeyi kullanın."):
+        _secimi_ayarla(run_id, [a["aday_id"] for a in adaylar]); st.rerun()
+    if b4.button("Seçimi temizle"):
         _secimi_ayarla(run_id, []); st.rerun()
 
     # --- Filtreler ---
@@ -159,7 +162,17 @@ def render():
     } for a in gorunen], columns=["id", "Seç", "Kaynak", "Ad", "Önem", "CWE", "CVSS",
                                    "Envanter", "Bayrak", "Kanıt"])
 
-    st.caption(f"{len(gorunen)} aday gösteriliyor.")
+    g1, g2, g3 = st.columns([2.6, 1, 1])
+    g1.caption(f"{len(gorunen)} aday gösteriliyor.")
+    gorunen_id = [a["aday_id"] for a in gorunen]
+    filtreli = len(gorunen) < len(adaylar)
+    if g2.button(f"Görünenleri seç ({len(gorunen)})", key="gorunen_sec", disabled=not gorunen,
+                 use_container_width=True, help="Filtreye uyan adayları seçime ekler; diğer seçimler korunur."
+                 if filtreli else "Bütün adaylar görünüyor: hepsini seçer."):
+        _secimi_ayarla(run_id, secili | set(gorunen_id)); st.rerun()
+    if g3.button("Görünenleri bırak", key="gorunen_birak", disabled=not any(i in secili for i in gorunen_id),
+                 use_container_width=True, help="Filtreye uyan adayları seçimden çıkarır; diğer seçimler korunur."):
+        _secimi_ayarla(run_id, secili - set(gorunen_id)); st.rerun()
     duzenli = st.data_editor(
         df,
         key=f"editor_{run_id}_{st.session_state.get('editor_v', 0)}_{gorunum}_{'-'.join(kaynak_f)}_{ara}",
@@ -204,9 +217,15 @@ def render():
 
     # --- Kaydet ---
     st.divider()
-    if st.button(f"Seçimi kaydet ({len(secili)} kayıt)", type="primary", disabled=not secili):
+    ai_suruyor = isler.suruyor_mu(f"ai_baglanti_{st.session_state['run_id']}")
+    if st.button(f"Seçimi kaydet ({len(secili)} kayıt)", type="primary", disabled=not secili or ai_suruyor,
+                 help="AI bağlantı önerisi sürüyor; bitince kaydedebilirsiniz." if ai_suruyor else None):
         satirlar, varsayilanlar = envanter.olustur(secili, adaylar, env_rows, eslesme)
-        envanter.kaydet(rdir / "inventory.csv", sutunlar, satirlar)
+        # Yeni kayıtların grafiğe bağlantısı: önceki kayıtta AI ya da elle verilmiş kararlar korunur,
+        # boş kalanlar kuraldan (ekip kuralı, MITRE CWE etkisi) önerilir.
+        _onceki_kararlari_tasi(rdir / "inventory.csv", satirlar, set(varsayilanlar))
+        belirsiz = baglanti.onerileri_uygula(satirlar, set(varsayilanlar))
+        envanter.kaydet(rdir / "inventory.csv", _sutunlar(sutunlar), satirlar)
         meta["steps"]["bulgular"] = {
             "secili": sorted(secili),
             "kayit": len(satirlar),
@@ -220,6 +239,161 @@ def render():
                    f"({len(satirlar) - len(varsayilanlar)} envanterden, {len(varsayilanlar)} yeni). "
                    "Sol menüden 4. adıma geçin.")
         if varsayilanlar:
-            st.info("Yeni kayıtlarda bazı alanlar varsayılan değerlerle dolduruldu "
-                    "(varlık kritikliği 3, yetkinlik yok, ZAP/challenge için giriş noktası 'web'). "
-                    "Grafikte bu kayıtlar envanterdekiler kadar güvenilir değildir.")
+            st.info(f"{len(varsayilanlar)} yeni kayıt için grafikteki hedef kuraldan önerildi"
+                    + (f"; {len(belirsiz)} kaydın hedefi belirsiz" if belirsiz else "")
+                    + ". Aşağıdaki \"Grafiğe bağlantı\" tablosundan kontrol edin.")
+
+    _baglanti_bolumu(run_id, rdir, meta, env_rows)
+
+
+def _sutunlar(sutunlar):
+    return list(sutunlar) + [c for c in baglanti.EK_SUTUNLAR if c not in sutunlar]
+
+
+def _onceki_kararlari_tasi(yol, satirlar, yeni_idler):
+    """Seçim yeniden kaydedilince, aynı kayıt için daha önce AI ya da elle verilmiş bağlantı
+    kararlarını yeni satırlara taşır."""
+    import csv
+    if not yol.exists():
+        return
+    with open(yol, encoding="utf-8", newline="") as f:
+        onceki = {(r["vuln_id"], r.get("name")): r for r in csv.DictReader(f)}
+    alanlar = baglanti.EK_SUTUNLAR + ["entry_point", "requires_capability", "grants_capability"]
+    for r in satirlar:
+        o = onceki.get((r["vuln_id"], r.get("name")))
+        if r["vuln_id"] in yeni_idler and o and o.get("hedef_kaynagi") in (baglanti.KAYNAK_AI, baglanti.KAYNAK_ELLE):
+            r.update({k: o.get(k, "") for k in alanlar})
+
+
+def _ai_baglanti_is(is_, yol, hedef_ai, envd):
+    """Arka planda: her kayıt için model önerisi. Her öneriden sonra envanter dosyası yeniden okunup
+    yalnızca o satır güncellenir; iş yarıda kalırsa alınan öneriler kaybolmaz."""
+    alinan, hatalar = 0, []
+    for i, r in enumerate(hedef_ai, start=1):
+        if is_.iptal_mi():
+            break
+        is_.ilerle((i - 1) / len(hedef_ai), f"{r['vuln_id']} modele soruluyor ({i}/{len(hedef_ai)})")
+        oneri, hata = baglanti.ai_onerisi(r, envd, run_dir=yol.parent)
+        if not oneri:
+            hatalar.append(f"{r['vuln_id']}: {hata}")
+            if hata.startswith("Ollama'ya"):
+                break
+            continue
+        sutunlar, satirlar = envanter.yukle_envanter(yol)
+        for s in satirlar:
+            if s["vuln_id"] == r["vuln_id"] and s.get("hedef_kaynagi") != baglanti.KAYNAK_ELLE:
+                baglanti.ai_uygula(s, oneri)
+                alinan += 1
+        envanter.kaydet(yol, _sutunlar(sutunlar), satirlar)
+    return alinan, hatalar
+
+
+_BELIRSIZ = "— belirsiz —"
+
+
+def _baglanti_bolumu(run_id, rdir, meta, env_rows):
+    """Yeni kayıtların grafikte nereye bağlanacağı: öneri, AI önerisi ve kullanıcı onayı."""
+    yol = rdir / "inventory.csv"
+    yeni_idler = set(meta["steps"].get("bulgular", {}).get("varsayilanlar", {}))
+    if not yol.exists() or not yeni_idler:
+        return
+    sutunlar, satirlar = envanter.yukle_envanter(yol)
+    yeniler = [r for r in satirlar if r["vuln_id"] in yeni_idler]
+    if not yeniler:
+        return
+    for r in yeniler:
+        for c in baglanti.EK_SUTUNLAR:
+            r.setdefault(c, "")
+
+    st.divider()
+    st.subheader("Grafiğe bağlantı")
+    st.caption("Dondurulmuş envanterde olmayan kayıtların grafikte nereye bağlanacağı. Hedef sırayla "
+               "ekibin CWE kuralından, MITRE CWE kataloğundaki teknik etkiden ya da AI önerisinden gelir; "
+               "son karar sizin. Değiştirdiğiniz satırlar \"elle\" olarak işaretlenir. Hedefi belirsiz "
+               "kayıtlar grafikte hiçbir yola girmez.")
+    sayim = {k: sum(1 for r in yeniler if (r.get("hedef_kaynagi") or "") == k)
+             for k in (baglanti.KAYNAK_EKIP, baglanti.KAYNAK_CWE, baglanti.KAYNAK_AI, baglanti.KAYNAK_ELLE)}
+    belirsiz = [r for r in yeniler if not r.get("hedef")]
+    c = st.columns(5)
+    c[0].metric("Ekip kuralı", sayim[baglanti.KAYNAK_EKIP])
+    c[1].metric("MITRE CWE etkisi", sayim[baglanti.KAYNAK_CWE])
+    c[2].metric("AI önerisi", sayim[baglanti.KAYNAK_AI])
+    c[3].metric("Elle", sayim[baglanti.KAYNAK_ELLE])
+    c[4].metric("Hedefi belirsiz", len(belirsiz))
+
+    # --- AI önerisi ---
+    ok, mesaj, model = ortak.ollama()
+    anahtar = f"ai_baglanti_{run_id}"
+    suruyor = isler.ilerleme(anahtar)
+    bitti = isler.sonuc(anahtar)
+    if bitti:
+        if bitti.durum == isler.HATA:
+            st.error(f"AI önerisi yarıda kaldı: {bitti.hata}")
+        else:
+            alinan, hatalar = bitti.sonuc
+            (st.warning if hatalar else st.success)(
+                ("İptal edildi. " if bitti.durum == isler.IPTAL else "")
+                + f"{alinan} kayıt için AI önerisi alındı ({bitti.sure():.0f} sn)."
+                + (" Öneri alınamayanlar: " + "; ".join(hatalar[:5]) if hatalar else ""))
+    a1, a2, a3 = st.columns([1.4, 1.2, 2.4])
+    hedef_ai = None
+    if a1.button(f"AI ile öner: belirsizler ({len(belirsiz)})", type="primary",
+                 disabled=not ok or not belirsiz or suruyor, key="ai_belirsiz"):
+        hedef_ai = belirsiz
+    if a2.button(f"AI ile öner: hepsi ({len(yeniler)})", disabled=not ok or suruyor, key="ai_hepsi",
+                 help="Kuraldan gelen öneriler dahil bütün yeni kayıtlar modele sorulur; elle "
+                      "değiştirilenlere dokunulmaz."):
+        hedef_ai = [r for r in yeniler if r.get("hedef_kaynagi") != baglanti.KAYNAK_ELLE]
+    a3.caption(mesaj + (" Kayıt başına ~3-5 sn." if ok else ""))
+    if hedef_ai:
+        envd = {**{r["vuln_id"]: r for r in env_rows}, **{r["vuln_id"]: r for r in satirlar}}
+        isler.baslat(anahtar, f"AI bağlantı önerisi ({run_id})",
+                     lambda is_: _ai_baglanti_is(is_, yol, [dict(r) for r in hedef_ai], envd))
+        st.rerun()
+
+    # --- Onay tablosu ---
+    etiket = {k: v for k, v in baglanti.HEDEFLER.items()}
+    ters = {v: k for k, v in etiket.items()}
+    df = pd.DataFrame([{
+        "Kayıt": r["vuln_id"], "Ad": r["name"], "CWE": r.get("cwe_id", ""),
+        "Hedef": etiket.get(r.get("hedef"), _BELIRSIZ),
+        "Giriş": r.get("entry_point") or "web",
+        "Ön koşul": r.get("requires_capability") or "none",
+        "Kazanım": r.get("grants_capability") or "none",
+        "Kaynak": r.get("hedef_kaynagi") or "-",
+        "Gerekçe": r.get("hedef_gerekcesi", ""),
+    } for r in sorted(yeniler, key=lambda r: (bool(r.get("hedef")), r["vuln_id"]))])
+    duz = st.data_editor(
+        df, key=f"baglanti_{run_id}_{meta['steps'].get('bulgular', {}).get('zaman', '')}",
+        hide_index=True, height=min(80 + 35 * len(df), 460),
+        disabled=["Kayıt", "Ad", "CWE", "Kaynak", "Gerekçe"],
+        column_config={
+            "Hedef": st.column_config.SelectboxColumn(options=[_BELIRSIZ, *etiket.values()], required=True),
+            "Giriş": st.column_config.SelectboxColumn(options=baglanti.GIRISLER, required=True),
+            "Ön koşul": st.column_config.SelectboxColumn(options=baglanti.YETKINLIKLER, required=True,
+                                                         help="Bu kaydı sömürmek için önce elde edilmesi gereken yetkinlik "
+                                                              "(docs/yetkinlik-sozlugu.md). none değilse kayıt girişe değil, "
+                                                              "bu yetkinliği kazandıran kayda bağlanır."),
+            "Kazanım": st.column_config.SelectboxColumn(options=baglanti.YETKINLIKLER, required=True),
+            "Ad": st.column_config.TextColumn(width="medium"),
+            "Gerekçe": st.column_config.TextColumn(width="large"),
+        },
+    )
+    if st.button("Bağlantıları kaydet", key="baglanti_kaydet", disabled=suruyor,
+                 help="AI önerisi sürüyor; bitince kaydedebilirsiniz." if suruyor else None):
+        by = {r["vuln_id"]: r for r in yeniler}
+        degisen = 0
+        for _, s in duz.iterrows():
+            r = by[s["Kayıt"]]
+            yeni = {"hedef": ters.get(s["Hedef"], ""), "entry_point": s["Giriş"],
+                    "requires_capability": s["Ön koşul"], "grants_capability": s["Kazanım"]}
+            if any((r.get(k) or ("none" if "capability" in k else "")) != v for k, v in yeni.items()):
+                once = etiket.get(r.get("hedef"), "belirsiz")
+                r.update(yeni)
+                r["hedef_kaynagi"] = baglanti.KAYNAK_ELLE
+                r["hedef_gerekcesi"] = f"Kullanıcı değiştirdi (önceki öneri: {once})."
+                degisen += 1
+        envanter.kaydet(yol, _sutunlar(sutunlar), satirlar)
+        meta["steps"].pop("grafik", None)          # grafik eski bağlantılarla üretildi
+        runs.save_meta(run_id, meta)
+        st.success(f"Kaydedildi ({degisen} satır değişti). Grafiği 4. adımda yeniden oluşturun.")

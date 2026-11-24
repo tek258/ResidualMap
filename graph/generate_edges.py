@@ -112,6 +112,9 @@ def generate_attack_edges(csv_path=CSV_PATH, output_edges_path=OUTPUT_EDGES_PATH
                 "entry_point": row.get("entry_point", "").strip().lower(),
                 "requires_capability": row.get("requires_capability", "none").strip().lower() or "none",
                 "grants_capability": row.get("grants_capability", "none").strip().lower() or "none",
+                # İsteğe bağlı: uygulamanın 3. adımında yeni kayıtlar için onaylanan hedef.
+                # Dondurulmuş envanterde bu sütun yok; o zaman hedef aşağıdaki kuraldan gelir.
+                "hedef": (row.get("hedef") or "").strip(),
             })
 
     unmapped_targets = []
@@ -138,7 +141,10 @@ def generate_attack_edges(csv_path=CSV_PATH, output_edges_path=OUTPUT_EDGES_PATH
                 print(f"[UYARI] {v_id}: geçersiz veya boş entry_point ('{entry_point}'), giriş kenarı eklenmedi.")
 
         # CWE / yetkinlik bazlı hedef eşlemesi ve Leads To kenarının eklenmesi
-        target_node = map_to_target(v_id, name, cwe_id, v["grants_capability"])
+        if v["hedef"] in TARGET_TECHNIQUE_NAMES:
+            target_node = v["hedef"]
+        else:
+            target_node = map_to_target(v_id, name, cwe_id, v["grants_capability"])
         if target_node is not None:
             edges.append({
                 "source": v_id,

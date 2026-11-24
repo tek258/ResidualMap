@@ -64,6 +64,23 @@ h2, h3 { margin-top: 1.4rem; }
 .rm-hero h1 { font-size:2.15rem; margin:0 0 .6rem; line-height:1.2; }
 .rm-hero p { color:#5b6377; font-size:1.05rem; margin:0; max-width: 860px; line-height:1.6; }
 
+/* Özet: AI nerede? şeridi */
+.rm-akis { display:grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap:.6rem; margin:.4rem 0 .6rem; }
+.rm-akis .adim { position:relative; background:#fff; border:1px solid #eceef4; border-radius:16px; padding:.85rem .9rem .9rem;
+  box-shadow: 0 1px 2px rgba(20,26,42,.03); }
+.rm-akis .adim:not(:last-child)::after { content:"→"; position:absolute; right:-.55rem; top:1rem; color:#b7bccb;
+  font-size:.9rem; z-index:2; }
+.rm-akis .no { color:#8a92a6; font-size:.74rem; font-weight:600; }
+.rm-akis .ad { color:#141a2a; font-weight:700; font-size:.95rem; margin:.1rem 0 .35rem; }
+.rm-akis .ne { color:#6b7387; font-size:.8rem; line-height:1.4; }
+.rm-akis .adim.ai { background: linear-gradient(160deg,#f1efff 0%,#ffffff 85%); border-color:#d9d6fb; }
+.rm-akis .ai-rozet { display:inline-block; background:#6d5ce8; color:#fff; font-size:.68rem; font-weight:700;
+  letter-spacing:.04em; padding:.1rem .45rem; border-radius:999px; margin-left:.3rem; vertical-align:2px; }
+.rm-akis .ai-ne { color:#4b3fc0; font-size:.8rem; font-weight:600; line-height:1.4; margin-top:.35rem; }
+.rm-akis .sayi { color:#6d5ce8; font-size:.76rem; margin-top:.3rem; }
+@media (max-width: 900px) { .rm-akis { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .rm-akis .adim::after { display:none; } }
+
 /* Tablolar, kutular, girdiler: yuvarlak ve yumuşak */
 [data-testid="stDataFrame"], [data-testid="stExpander"], [data-testid="stVerticalBlockBorderWrapper"] {
   border-radius:16px !important; }

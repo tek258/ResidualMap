@@ -73,7 +73,9 @@ def grafik_goster(yol, yukseklik=980, tuval=None):
 def grafik_secici(secenekler, anahtar):
     """Sekme yerine seçici: yalnızca seçili grafik çizilir (her grafik ~750 KB, hepsini birden
     göndermek her adım geçişini yavaşlatıyordu)."""
-    return st.segmented_control("Grafik", secenekler, default=secenekler[0], key=anahtar,
+    if st.session_state.get(anahtar) not in secenekler:
+        st.session_state[anahtar] = secenekler[0]
+    return st.segmented_control("Grafik", secenekler, key=anahtar,
                                 label_visibility="collapsed") or secenekler[0]
 
 

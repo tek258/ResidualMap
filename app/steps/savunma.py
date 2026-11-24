@@ -8,7 +8,7 @@ import streamlit.components.v1 as components
 
 from config import GRAFANA_PANO, GRAFANA_URL, GRAPH_DIR, TARGETS
 from pipeline import ai_skor, runs, saldiri_testi
-from steps import ortak, tema
+from steps import isler, ortak, tema
 
 
 def render():
@@ -27,8 +27,10 @@ def render():
     if not (docker.ok and konteyner.ok):
         hazir, neden = False, "Lab ortamı çalışmıyor; test canlı hedef gerektirir."
 
+    anahtar = f"savunma_{run_id}"
+    suruyor = isler.suruyor_mu(anahtar)
     c1, c2 = st.columns(2)
-    calistir = c1.button("Saldırı testlerini çalıştır", disabled=not hazir, use_container_width=True)
+    calistir = c1.button("Saldırı testlerini çalıştır", disabled=not hazir or suruyor, use_container_width=True)
     pano = ortak.grafana(GRAFANA_URL)
     c2.link_button("Sonuçları savunma panosunda gör ↗", GRAFANA_PANO, disabled=not pano.ok,
                    use_container_width=True)
@@ -36,17 +38,18 @@ def render():
         st.caption(neden)
 
     if calistir:
-        with st.spinner("Test istekleri gönderiliyor..."):
-            sonuc = saldiri_testi.calistir(target)
-        meta["steps"]["saldiri_testi"] = {
-            "ok": sonuc.ok, "mesaj": sonuc.mesaj, "satirlar": sonuc.satirlar, "sure_sn": round(sonuc.sure, 1),
-            "zaman": datetime.datetime.now().isoformat(timespec="seconds")}
-        runs.save_meta(run_id, meta)
-        if not sonuc.satirlar:
-            st.error(sonuc.mesaj)
-            if sonuc.cikti:
-                st.code(sonuc.cikti, language=None)
-            return
+        isler.baslat(anahtar, f"Savunma testi ({run_id})", lambda is_: _test_is(is_, run_id, target))
+        st.rerun()
+    isler.ilerleme(anahtar, iptal=False)
+    bitti = isler.sonuc(anahtar)
+    if bitti:
+        if bitti.durum == isler.HATA:
+            st.error(f"Test yarıda kaldı: {bitti.hata}")
+        elif not bitti.sonuc.satirlar:
+            st.error(bitti.sonuc.mesaj)
+            if bitti.sonuc.cikti:
+                st.code(bitti.sonuc.cikti, language=None)
+        meta = runs.load_meta(run_id)
 
     son = meta["steps"].get("saldiri_testi")
     if son and son.get("satirlar"):
@@ -68,13 +71,42 @@ def render():
     _once_sonra_grafik()
 
 
+def _test_is(is_, run_id, target):
+    """Arka planda: test betiğini çalıştırır, sonucu çalıştırmaya yazar."""
+    is_.ilerle(None, "Test istekleri gönderiliyor…")
+    sonuc = saldiri_testi.calistir(target)
+    meta = runs.load_meta(run_id)
+    meta["steps"]["saldiri_testi"] = {
+        "ok": sonuc.ok, "mesaj": sonuc.mesaj, "satirlar": sonuc.satirlar, "sure_sn": round(sonuc.sure, 1),
+        "zaman": datetime.datetime.now().isoformat(timespec="seconds")}
+    if sonuc.satirlar:
+        runs.save_meta(run_id, meta)
+    return sonuc
+
+
 def _once_sonra_grafik():
     """Ekibin sonuç dosyalarından kontroller öncesi ve sonrası grafik (graph/attack_graph_v2.html,
     graph/attack_graph_after.html). İki grafik aynı yerleşimde çizildiği için sekmeler arasında
     geçince yalnızca kenar ve düğüm durumları değişir."""
+    from steps import onlem
     once, sonra = GRAPH_DIR / "attack_graph_v2.html", GRAPH_DIR / "attack_graph_after.html"
     st.divider()
     st.subheader("Kontroller öncesi ve sonrası grafik")
+    anahtar_m = onlem.model_anahtari()
+    if anahtar_m:   # bu çalıştırmanın grafiği: 4. adımdakiyle aynı yollar
+        _, m = onlem._motor(anahtar_m)
+        b0 = m.degerlendir({})
+        b1 = m.degerlendir(m.mevcut)
+        st.caption(f"Bu çalıştırmanın grafiği ({len(m.risk_before)} zafiyet, {len(m.yollar) + m.risksiz_yol} yol"
+                   + (f"; {m.risksiz_yol} yolun riski CVSS vektörü eksik olduğu için hesaplanamıyor" if m.risksiz_yol else "")
+                   + "). Kontroller açıkken "
+                   f"yol riski {b0['yol_riski']:.2f} → {b1['yol_riski']:.2f}; {b1['yol_durum'].get('kesildi', 0)} yol "
+                   f"kesik, {b1['yol_durum'].get('zayifladi', 0)} zayıf. Kontrol etkinliği ekibin eşlemesinden"
+                   + (f"; eşlemesi olmayan {len(m.eslenmemis)} yeni zafiyet için 0 sayıldı." if m.eslenmemis else ".")
+                   + " Sonra grafiğinde kesilen kenarlar gri ve kesikli, zayıflayanlar turuncu.")
+        secenek = ["Kontroller öncesi", "Kontroller sonrası"]
+        onlem.bugun_ve_once_grafik(ortak.grafik_secici(secenek, "savunma_grafik") == secenek[1], anahtar_m)
+        return
     if not (once.exists() and sonra.exists()):
         st.caption("Grafikler henüz üretilmedi: `python graph/visualize_graph.py` ve "
                    "`python graph/visualize_graph.py --after`.")

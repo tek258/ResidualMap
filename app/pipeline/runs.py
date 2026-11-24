@@ -10,6 +10,7 @@ import json
 import re
 
 from config import RUNS_DIR
+from pipeline import dosya
 
 RUN_ID_RE = re.compile(r"^\d{8}-\d{6}(-\d+)?$")
 
@@ -72,7 +73,7 @@ def load_meta(run_id):
 
 
 def save_meta(run_id, meta):
-    with open(run_dir(run_id) / "meta.json", "w", encoding="utf-8") as f:
+    with dosya.atomik(run_dir(run_id) / "meta.json") as f:
         json.dump(meta, f, indent=2, ensure_ascii=False)
 
 

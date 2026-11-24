@@ -17,6 +17,48 @@ def _oku():
     return rr, yollar, secim
 
 
+def _ai_seridi():
+    """Akış şeması: AI'nın girdiği adımlar vurgulu, altında bu çalıştırmadaki çağrı sayıları."""
+    from collections import Counter
+
+    from pipeline import ai_iz, runs
+    from steps import ai_iz_panel
+    rid = st.session_state.get("run_id")
+    say = Counter(s["islem"] for s in ai_iz.oku(runs.run_dir(rid))) if rid else Counter()
+    model = ai_iz_panel.hazir_sayisi()
+
+    def n(*islemler):
+        t = sum(say[i] for i in islemler)
+        return f"Bu çalıştırmada {t} model çağrısı" if rid else ""
+
+    adimlar = [
+        ("1", "Hedef", "Yalnızca izin listesindeki yerel lab", None, ""),
+        ("2", "Tarama", "ZAP, Trivy ve challenge verisi", None, ""),
+        ("3", "Bulgular", "Envanter; yeni zafiyetler ekip kuralı ve MITRE CWE ile bağlanır",
+         "Kuralın bağlayamadığı zafiyete hedef, giriş ve yetkinlik önerir", n(ai_iz.BAGLANTI)),
+        ("4", "Grafik", "Saldırı yolları ve yol riski",
+         f"Her zafiyete bağlamla risk skoru verir; gerekçesi görünür. Uzman uyumu 24/33 (CVSS 19/33)",
+         n(ai_iz.SKOR, ai_iz.SKOR_TEK) or f"{model} kayıt modelle skorlandı"),
+        ("5", "Savunma testi", "WAF, IDS, IAM lab'da sınanır", None, ""),
+        ("6", "Önlem seçimi", "Bütçeye göre en iyi önlem bileşimi (kesin arama)",
+         "Planı Türkçe açıklar; yazdığı her sayı denetlenir", n(ai_iz.PLAN)),
+    ]
+    html = ['<div class="rm-akis">']
+    for no, ad, ne, ai, sayi in adimlar:
+        html.append(
+            f'<div class="adim{" ai" if ai else ""}"><div class="no">ADIM {no}</div>'
+            f'<div class="ad">{ad}{"<span class=ai-rozet>AI</span>" if ai else ""}</div>'
+            f'<div class="ne">{ne}</div>'
+            + (f'<div class="ai-ne">{ai}</div>' if ai else "")
+            + (f'<div class="sayi">{sayi}</div>' if ai and sayi else "") + "</div>")
+    html.append("</div>")
+    st.markdown("#### Yapay zekâ nerede?")
+    st.caption("Yerel bir dil modeli (qwen2.5:7b, Ollama; bu makinede çalışır, veri dışarı çıkmaz) üç adımda "
+               "karar verir. Hesapları model yapmaz; model yorumlar, önerir ve gerekçesini yazar. Her çağrı "
+               "yan menüdeki \"AI izi\" penceresinde görünür.")
+    st.markdown("".join(html), unsafe_allow_html=True)
+
+
 def _git(ad):
     # Düğme geri çağırması: yan menüdeki adım seçimi bir sonraki çizimden önce değişir
     st.session_state["adim"] = ad
@@ -49,7 +91,10 @@ def render():
         ("16 saatlik önlem planı", f"−%{(1 - b16['yol_riski'] / taban) * 100:.0f}",
          f"yol riski {taban:.0f} → {b16['yol_riski']:.0f}", "vurgu"),
     ])
+    st.caption("Kartlar ve aşağıdaki grafik ekibin dondurulmuş 36 kayıtlık sonuçlarıdır. Kendi seçiminizle "
+               "yapılan bir çalıştırmanın sonuçları 4-6. adımlarda ve çalıştırma raporunda görünür.")
     st.write("")
+    _ai_seridi()
     st.write("")
     st.markdown("#### Saldırı grafiği: kontroller öncesi ve sonrası")
     st.caption("Kesilen kenarlar gri ve kesikli, zayıflayanlar turuncu. Düğümlerin üstüne gelince ayrıntı görünür.")

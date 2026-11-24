@@ -16,6 +16,7 @@ import urllib.request
 from dataclasses import dataclass, field
 
 from config import RAW_DIR
+from pipeline.ortam import docker_komutu
 
 ZAP_IMAGE = "ghcr.io/zaproxy/zaproxy:2.17.0"     # S5-K2 ile aynı sürüm (sabit)
 TRIVY_IMAGE = "aquasec/trivy:0.75.0"             # S5-K2 ile aynı sürüm (sabit)
@@ -123,8 +124,10 @@ def _calistir(cmd, timeout, on_line, stdout_dosyasi=None):
     """Komutu çalıştırır, çıktıyı satır satır on_line'a iletir.
 
     stdout_dosyasi verilirse standart çıktı o dosyaya yazılır (Trivy JSON'u),
-    ekrana yalnızca hata akışı gelir.
+    ekrana yalnızca hata akışı gelir. on_line'ın `iptal` niteliği varsa (arka plan işi) ve True
+    dönerse süreç durdurulur.
     """
+    iptal = getattr(on_line, "iptal", None)
     baslangic = time.time()
     out = open(stdout_dosyasi, "wb") if stdout_dosyasi else None
     try:
@@ -142,6 +145,9 @@ def _calistir(cmd, timeout, on_line, stdout_dosyasi=None):
     try:
         for line in akis:
             on_line(line.rstrip())
+            if iptal and iptal():
+                proc.kill()
+                raise RuntimeError("İptal edildi.")
             if time.time() - baslangic > timeout:
                 proc.kill()
                 raise RuntimeError(f"Zaman aşımı ({timeout // 60} dk).")
@@ -155,7 +161,7 @@ def _calistir(cmd, timeout, on_line, stdout_dosyasi=None):
 def tara_zap(target, raw_dir, on_line):
     """ZAP baseline: pasif tarama, hedefe saldırı isteği göndermez."""
     cmd = [
-        "docker", "run", "--rm",
+        docker_komutu(), "run", "--rm",
         # Linux'ta host.docker.internal tanımlı değil; Docker Desktop'ta zararsız
         "--add-host=host.docker.internal:host-gateway",
         "-v", f"{raw_dir.resolve()}:/zap/wrk:rw",
@@ -176,7 +182,7 @@ def tara_zap(target, raw_dir, on_line):
 def tara_trivy(target, raw_dir, on_line):
     """Trivy: imajdaki paketlerin bilinen zafiyetlerini listeler."""
     cmd = [
-        "docker", "run", "--rm",
+        docker_komutu(), "run", "--rm",
         "-v", "/var/run/docker.sock:/var/run/docker.sock",
         "-v", "residualmap-trivy-cache:/root/.cache/",   # veritabanı her seferinde inmesin
         TRIVY_IMAGE, "image",

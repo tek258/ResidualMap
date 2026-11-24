@@ -11,6 +11,7 @@ import csv
 import re
 
 from config import FROZEN_INVENTORY
+from pipeline import dosya
 
 # K2'nin ZAP bulgularını envantere alırken yaptığı eşleme kararları.
 # Envanter ZAP eklenti kimliğini tutmadığı için burada açıkça yazılı.
@@ -160,7 +161,7 @@ def olustur(secili_ids, adaylar, env_rows, eslesme):
 
 
 def kaydet(path, sutunlar, satirlar):
-    with open(path, "w", encoding="utf-8", newline="") as f:
+    with dosya.atomik(path, newline="") as f:
         w = csv.DictWriter(f, fieldnames=sutunlar, extrasaction="ignore")
         w.writeheader()
         w.writerows(satirlar)

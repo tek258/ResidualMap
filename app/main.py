@@ -9,7 +9,8 @@ import streamlit as st
 
 from config import GRAFANA_PANO, GRAFANA_URL, TARGETS
 from pipeline import runs
-from steps import bulgular, grafik, hedef, onlem, ortak, ozet, savunma, tarama, tema
+from steps import (ai_iz_panel, bulgular, grafik, hedef, isler, onlem, ortak, ortam_panel, ozet, rapor_panel,
+                   savunma, tarama, tema)
 
 st.set_page_config(page_title="ResidualMap", page_icon="🛡️", layout="wide")
 tema.uygula()
@@ -19,6 +20,15 @@ ADIMLAR = ["Özet", "1. Hedef", "2. Tarama", "3. Bulgular", "4. Grafik", "5. Sav
 st.session_state.setdefault("run_id", None)
 st.session_state.setdefault("target", None)
 st.session_state.setdefault("adim", "Özet")
+
+# Streamlit, o çalıştırmada ekranda olmayan seçim kutularının durumunu siler: başka adıma geçip
+# dönünce bütçe, seçilen önlemler, tarama yöntemleri sıfırlanırdı. Değeri her çalıştırmada
+# kendine yeniden atamak durumu korur. (Düğmeler ve tablolar bu listeye girmez.)
+_KALICI = ("onlem_butce", "onlem_kesintisiz", "onlem_test", "onlem_secim", "onlem_grafik",
+           "yontem_", "model_kayit_", "ozet_grafik", "savunma_grafik")
+for _k in list(st.session_state):
+    if isinstance(_k, str) and _k.startswith(_KALICI):
+        st.session_state[_k] = st.session_state[_k]
 
 
 with st.sidebar:
@@ -40,7 +50,11 @@ with st.sidebar:
     else:
         st.markdown("Henüz çalıştırma yok.")
 
+    ai_iz_panel.yan_menu()
+    rapor_panel.yan_menu()
+    isler.yan_menu()
     st.divider()
+    ortam_panel.yan_menu()
     pano = ortak.grafana(GRAFANA_URL)
     st.link_button("Savunma panosu (Grafana) ↗", GRAFANA_PANO, disabled=not pano.ok,
                    use_container_width=True)

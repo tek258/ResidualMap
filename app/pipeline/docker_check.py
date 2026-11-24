@@ -11,7 +11,8 @@ class Durum:
 
 
 def _docker(args, timeout):
-    return subprocess.run(["docker", *args], capture_output=True, text=True, timeout=timeout)
+    from pipeline.ortam import docker_komutu   # PATH'te yoksa bilinen kurulum yeri (Mac)
+    return subprocess.run([docker_komutu(), *args], capture_output=True, text=True, timeout=timeout)
 
 
 def docker_durumu(timeout=8):
